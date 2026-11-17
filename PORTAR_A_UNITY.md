@@ -391,3 +391,10 @@ con borde y sombra, icono relleno con brillo del color de su función (ver `inde
 ## 19. Vida del Espíritu del Jaguar (etapa 33)
 
 Vida **540** (420 desde la etapa 23; 160 en Unity), para que dure más que la nauyaca con un jugador de celular.
+
+## 20. Música prehispánica (etapa 34, `js/musica.js`)
+
+Unity aún no tiene audio. Opciones: grabar dos bucles desde el navegador (explorar y pelear, en re y en la) e importarlos como
+`AudioClip`, o rehacer el secuenciador con `OnAudioFilterRead`. Lógica a portar: un `MusicDirector` que pasa a pelea con un
+aviso o proyectil activo, un jefe despierto o un enemigo a menos de 5 m (y se queda 4 s), cambia solo al empezar un compás y
+suena el caracol al entrar en pelea; volumen propio en Opciones y al 40 % en pausa.

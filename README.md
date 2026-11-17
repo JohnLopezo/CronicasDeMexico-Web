@@ -47,10 +47,33 @@ mismos números (escala ×10).
 | `PORTAR_A_UNITY.md` | Qué falta en Unity de lo hecho aquí, con valores y clases |
 | `js/senda.js` | Acciones de senda: mantener Usar junto a un habitante |
 | `js/sonido.js` | Efectos y ambiente sintetizados, y la pantalla de Opciones |
+| `js/musica.js` | Música prehispánica sintetizada: explorar y pelear (etapa 34) |
 | `js/actores.js` | Jugador, espíritus, ecos, Espíritu del Jaguar, habitantes, guardias, figura espiritual y fragmentos |
 | `js/juego.js` | Banderas, misiones, diálogos por ramas, contenido de cada región, guardado, HUD y bucle |
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
+
+## Etapa 34 (2026-11-17): música prehispánica (`js/musica.js`)
+
+Música de fondo hecha con código (Web Audio, sin archivos), en el estilo que eligió el autor: prehispánico.
+
+- **Instrumentos sintetizados:** flauta de barro (seno con un armónico, ataque suave, vibrato que entra tarde y un soplo),
+  huehuetl (tambor grave que cae de 95 a 45 Hz), teponaztli (tambor de madera de dos lengüetas, a una quinta), sonaja (ruido
+  agudo) y caracol (grave y áspero, entra despacio).
+- **Escala pentatónica menor**: afuera (ciudad, selva) en re; en la mazmorra en la, más grave.
+- **Dos modos que cambian solos**, siempre al empezar un compás:
+  - **Explorar:** 76 pulsos por minuto, tambores espaciados y la flauta en frases de 4 compases con 4 de silencio.
+  - **Pelear:** 118 pulsos por minuto, teponaztli y sonaja seguidos y la flauta más presente; el **caracol** anuncia la pelea.
+    Hay pelea con un aviso o un proyectil en el aire, un jefe despierto o un enemigo a menos de 5 m, y dura 4 s tras el último
+    indicio (para no saltar de un modo a otro).
+- La flauta improvisa: pasea por la escala a saltos cortos y cierra cada frase en la tónica.
+- **Volumen propio** en Opciones («Música», 0,5 de inicio); en pausa baja al 40 %. Tras una pestaña oculta no recupera las
+  notas perdidas.
+- Secuenciador con adelanto: cada 50 ms programa las semicorcheas de los próximos 0,25 s (`MUSICA`, `MUS`).
+
+**Pruebas:** en la selva sin enemigos suena en modo explorar (en re); con una serpiente a 2 m pasa a pelea con el caracol;
+sin enemigos vuelve a explorar; en el 1-1 toca en la; en pausa el volumen baja de 0,5 a 0,2. Sin `[assert]` ni excepciones.
+**Falta oírla en el celular** (la prueba sin ventana no escucha).
 
 ## Etapa 33 (2026-11-17): los jefes con el perfil del celular
 

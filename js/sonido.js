@@ -3,7 +3,7 @@
 
 // ---------- Opciones (guardadas aparte de la partida) ----------
 const OPC_CLAVE = 'cronicas.web.opciones';
-const opciones = { efectos: 0.8, ambiente: 0.5, sacudida: true, vibracion: true };
+const opciones = { efectos: 0.8, ambiente: 0.5, musica: 0.5, sacudida: true, vibracion: true };
 try { Object.assign(opciones, JSON.parse(localStorage.getItem(OPC_CLAVE))); } catch { /* sin almacenamiento */ }
 const guardarOpciones = () => { try { localStorage.setItem(OPC_CLAVE, JSON.stringify(opciones)); } catch { /* sin almacenamiento */ } };
 const vibrar = (ms) => { if (opciones.vibracion && navigator.userActivation?.hasBeenActive !== false) navigator.vibrate?.(ms); }; // antes del primer toque, Chrome la bloquea y avisa
@@ -136,7 +136,7 @@ setInterval(() => {
 }, 250);
 
 // ---------- Pantalla de opciones (desde el inicio y desde la pausa) ----------
-const OPC = { oEfectos: 'efectos', oAmbiente: 'ambiente', oSacudida: 'sacudida', oVibracion: 'vibracion' };
+const OPC = { oEfectos: 'efectos', oAmbiente: 'ambiente', oMusica: 'musica', oSacudida: 'sacudida', oVibracion: 'vibracion' };
 function abrirOpciones() {
   for (const [id, k] of Object.entries(OPC)) { const el = $(id); if (el.type === 'checkbox') el.checked = opciones[k]; else el.value = opciones[k]; }
   $('opciones').classList.remove('oculto');
