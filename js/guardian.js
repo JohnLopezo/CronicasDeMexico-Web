@@ -164,7 +164,10 @@ function dibujarGuardian(g) {
   // Movimiento por código: respira, camina con peso, se echa atrás al avisar y se lanza al embestir.
   const mov = g.estado === 'dormido' || g.estado === 'liberado' ? ['Reposo'] : g.embiste > 0 ? ['Correr'] : g.estado === 'ataca' ? (pose === 'Embestida' || pose === 'Golpe' ? ['Aviso', 0.8] : ['Aviso', 0.5])
     : g.mov ? ['Caminar'] : ['Reposo'];
-  dibujar(n, g.x, g.y, z, { espejo: g.fx < 0 && !(quieto && !SPRITES[chac]), filtro, escala: SPRITES[chac] ? ESCALA_CHACMOOL : null, ...(g.salto ? {} : movimiento(g, 'guardian', ...mov)) });
+  // Partes (js/cuadros.js): en la embestida los puños se alzan mientras avisa y golpean al lanzarse.
+  g.embisteDesde = g.embiste > 0 ? g.embisteDesde || juego.t : 0;
+  const fase = g.embiste > 0 ? { golpe: juego.t - g.embisteDesde } : g.estado === 'ataca' ? { aviso: 1 } : {};
+  dibujar(n, g.x, g.y, z, { espejo: g.fx < 0 && !(quieto && !SPRITES[chac]), filtro, escala: SPRITES[chac] ? ESCALA_CHACMOOL : null, lienzo: conPartes(g, n, fase), ...(g.salto ? {} : movimiento(g, 'guardian', ...mov)) });
 }
 
 // Autocomprobación: el orden de ataques de StoneGuardian.ChooseAttack.

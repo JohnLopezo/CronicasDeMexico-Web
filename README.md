@@ -52,6 +52,22 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 29 (2026-11-17): partes para el vuelo, el espíritu jaguar y los jefes (`js/cuadros.js`)
+
+`PARTES` va ahora por cuadro (clave = nombre del sprite sin `1_03`) y `conPartes(e, nombre, fase)` sirve a cualquier enemigo:
+
+- **Vuelo:** las alas de la avispa (16 Hz), la guacamaya (3,2 Hz) y el murciélago (4,6 Hz) aletean de verdad en `Volar`, al ritmo
+  que ya tenía `movimiento`.
+- **Espíritu jaguar:** cabeza y zarpa se lanzan en el mordisco. Como su cuerpo es macizo, la parte se pinta sobre el cuadro sin
+  quitarlo (`sinHueco`): queda como un rastro luminoso en vez de un hueco.
+- **Xolotl** (`Jefe_PerroFuego`): la cabeza se echa atrás en el aviso del zarpazo y muerde al soltarlo; las llamas de la cola se
+  mecen siempre en ese cuadro.
+- **Chac Mool** (`Jefe_GuardianOfrenda`): en la embestida, los dos puños se alzan mientras avisa y golpean el suelo al lanzarse.
+- Autocomprobación: cada clave de `PARTES` tiene su sprite y sus rectángulos están bien orientados.
+
+**Pruebas:** tira de 7 instantes por cuadro revisada en captura; pelea de 6 s con avispa, guacamaya, murciélago, jaguar y Guardián,
+y el espíritu aparte (avisa y muerde): 62 FPS, sin `[assert]` ni excepciones. **Sin probar a mano ni en el celular.**
+
 ## Etapa 28 (2026-11-17): cuadros de ataque por partes para la fauna de la lámina (`js/cuadros.js`)
 
 La fauna de Unity tiene **un solo cuadro de ataque**. Sin dibujar arte nuevo, `js/cuadros.js` recorta una parte de ese cuadro y la

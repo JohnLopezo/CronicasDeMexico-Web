@@ -364,3 +364,9 @@ En Unity, lo más limpio es partir el sprite de ataque de cada fauna en hijos (c
 rectángulos y pivotes de `PARTES` (píxeles del PNG de 64 px de alto, mirando a la derecha) y animar su rotación y posición en el
 `Animator`: aviso = valor `aviso` con ease-out según el progreso del windup; golpe = `golpe` × curva 0 → 1,25 en 0,06 s → 0,55
 con exp(-10 t); alas con seno a `hz`. Alternativa: pedir al artista 3 cuadros (preparación, golpe, seguimiento) con esas poses.
+
+## 15. Partes para el vuelo, el espíritu y los jefes (etapa 29, `js/cuadros.js`)
+
+Igual que el apartado 14, con los rectángulos de `PARTES` para `Enemigo_{Avispa,Guacamaya,Murcielago}_Volar` (alas con seno),
+`Enemigo_EspirituJaguar_Ataque` (sin quitar el cuadro de debajo), `Jefe_PerroFuego_Ataque` (cabeza; llamas con seno de 2,5 Hz) y
+`Jefe_GuardianOfrenda_Ataque` (puños: arriba en el aviso de la embestida, golpe al lanzarse). En Unity los PNG de jefe son de 128 px.

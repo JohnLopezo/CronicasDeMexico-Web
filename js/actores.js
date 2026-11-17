@@ -326,7 +326,7 @@ function dibujarEspiritu(e) {
   const pose = e.vida <= 0 ? 'Muerte' : e.destello > 0 || e.aturdido > 0 ? 'Dano' : e.ataca > 0 ? 'Ataque' : e.mov ? (e.alerta ? 'Correr' : 'Caminar') : 'Reposo';
   elipse(e.x, e.y, 0.35, '#0006', null, e.suelo ?? e.z ?? 0); // la sombra se queda en el suelo al saltar
   const mov = e.vida <= 0 ? ['Muerte', 1 - e.muriendo / 0.6] : e.prep > 0 ? ['Aviso', 1 - e.prep / ESPIRITU_MORDIDA.aviso] : e.ataca > 0 ? ['Ataque'] : e.mov ? [e.alerta ? 'Correr' : 'Caminar'] : ['Flotar'];
-  dibujar(`${b}${pose}1_03`, e.x, e.y, e.z || 0, { espejo: e.fx < 0, alfa: e.vida <= 0 ? e.muriendo / 0.6 : null,
+  dibujar(`${b}${pose}1_03`, e.x, e.y, e.z || 0, { espejo: e.fx < 0, alfa: e.vida <= 0 ? e.muriendo / 0.6 : null, lienzo: conPartes(e, `${b}${pose}1_03`), // js/cuadros.js
     filtro: e.destello > 0 ? 'brightness(3)' : e.roto > 0 ? ROTO_FILTRO : null, escala: e.escala, ...movimiento(e, 'espiritu', ...mov) });
   if (e.vida > 0 && e.vida < e.max && !e.jefe) barraMini(e, 1.5);
 }
@@ -468,7 +468,9 @@ function dibujarJaguar(e) {
   // Movimiento por código: aviso del zarpazo y del rugido, estocada, carrera en el salto.
   const mov = e.estado === 'zarpazo' ? (e.t > 0.3 ? ['Aviso', (0.8 - e.t) / 0.5] : ['Ataque']) : e.estado === 'rugido' ? ['Aviso', 1 - e.t / 0.8]
     : e.estado === 'salto' ? (e.z > 0 ? ['Correr'] : ['Aviso', Math.min(1, (1.7 - e.t) / 0.45)]) : e.estado === 'acecho' && e.mov ? ['Caminar'] : ['Reposo'];
-  if (SPRITES[xolotl]) dibujar(xolotl, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, escala: 1.5, ...(e.estado === 'liberado' ? {} : movimiento(e, 'jaguar', ...mov)) });
+  // Partes (js/cuadros.js): la cabeza avisa y muerde en el zarpazo; en el salto solo se mecen las llamas.
+  const fase = e.estado === 'zarpazo' ? (e.t > 0.3 ? { aviso: (0.8 - e.t) / 0.5 } : { golpe: 0.3 - e.t }) : {};
+  if (SPRITES[xolotl]) dibujar(xolotl, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, escala: 1.5, lienzo: conPartes(e, xolotl, fase), ...(e.estado === 'liberado' ? {} : movimiento(e, 'jaguar', ...mov)) });
   else dibujar(`${b}${pose}1_03`, e.x, e.y, e.z || 0, { espejo: e.fx < 0, escala: 2, filtro });
 }
 
