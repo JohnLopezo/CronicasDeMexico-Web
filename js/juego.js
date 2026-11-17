@@ -473,7 +473,7 @@ function hud(dtReal) {
   $('bTierra').classList.toggle('apagado', juego.esperaTierra > 0 || p.energia < (BENDICIONES.tierra?.coste || 0));
   $('bEspecial').classList.toggle('oculto', !especialDe());
   $('bEspecial').classList.toggle('apagado', juego.esperaEspecial > 0 || p.energia < (especialDe()?.coste || 0));
-  $('bTierra').textContent = juego.esperaTierra > 0 ? juego.esperaTierra.toFixed(1) : 'Tierra';
+  $('bTierra').dataset.espera = juego.esperaTierra > 0 ? juego.esperaTierra.toFixed(1) : '';
   const nivel = nombreNivel(juego.region), quedan = esGenerado(juego.region) ? vivos().length : 0;
   $('esqTxt').textContent = `Esquivas ${'◆'.repeat(j.cargas)}${'◇'.repeat(MOV.cargas - j.cargas)}${nivel ? ` · Nivel ${nivel}` : ''}${quedan ? ` · quedan ${quedan}` : ''}`;
   $('objetivo').textContent = objetivo();
@@ -496,7 +496,7 @@ function hud(dtReal) {
   if (c) $('aviso').textContent = esTactil() ? `${c.texto}${senda}` : `E · ${c.texto}${senda}`;
   $('bUsar').classList.toggle('apagado', !c && !juego.dialogo);
   $('bFijar').classList.toggle('sostenido', !!juego.fijado);
-  $('bUsar').textContent = juego.dialogo ? 'Seguir' : 'Usar';
+  $('bUsar').classList.toggle('seguir', !!juego.dialogo);
   if (juego.dialogo) {
     const d = juego.dialogo, linea = d.lineas[d.i];
     d.letras = Math.min(linea.length, d.letras + dtReal * 60); // letra a letra, como MessageBox

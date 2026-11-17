@@ -5,11 +5,11 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
-- **Última etapa:** 29 (2026-11-17), partes para el vuelo, el espíritu jaguar, Xolotl y Chac Mool (`js/cuadros.js`). 28: ataque
-  por partes de la fauna; 26-27: efectos de golpe (`js/efectos.js`). Sin probar a mano.
+- **Última etapa:** 30 (2026-11-17), botones táctiles en dos arcos alrededor de Atacar y con iconos SVG (`index.html`). Probado
+  en celular: los controles responden bien. 26-29: efectos de golpe y animación por partes (`js/efectos.js`, `js/cuadros.js`).
 - **Animación:** el plan de animación está cubierto. Quedan opcionales: partes para `Caminar`/`Correr` (patas) y para el
   rugido (`Especial`) de Xolotl.
-- **Siguiente propuesta:** probar en un celular real y ajustar dificultad (esquivas); luego música (estilo lo decide el
+- **Siguiente propuesta:** que el usuario confirme en el celular el nuevo acomodo; ajustar dificultad (esquivas); luego música (estilo lo decide el
   autor); pasar a Unity según `PORTAR_A_UNITY.md`.
 - **Deseo pendiente del usuario:** mejor animación para los enemigos actuales; más animales de Veracruz/Tabasco.
 - **Deudas:** `/ponytail-debt` lista los `shortcut:` del código.

@@ -370,3 +370,9 @@ con exp(-10 t); alas con seno a `hz`. Alternativa: pedir al artista 3 cuadros (p
 Igual que el apartado 14, con los rectángulos de `PARTES` para `Enemigo_{Avispa,Guacamaya,Murcielago}_Volar` (alas con seno),
 `Enemigo_EspirituJaguar_Ataque` (sin quitar el cuadro de debajo), `Jefe_PerroFuego_Ataque` (cabeza; llamas con seno de 2,5 Hz) y
 `Jefe_GuardianOfrenda_Ataque` (puños: arriba en el aviso de la embestida, golpe al lanzarse). En Unity los PNG de jefe son de 128 px.
+
+## 16. Botones táctiles en arco con iconos (etapa 30, `index.html`)
+
+En el Canvas táctil de Unity: Atacar grande en la esquina inferior derecha; arco interior (r ≈ 104 px de referencia) con
+Esquivar, Saltar y Defender; arco exterior (r ≈ 176 px) con Fijar, Tierra, Especial y Usar; Bolsa junto a Pausa. Iconos en lugar
+de texto (los trazos están en `index.html`), Usar con icono «seguir» en diálogos y la espera de Tierra como número encima.

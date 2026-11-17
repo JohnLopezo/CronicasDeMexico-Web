@@ -52,6 +52,20 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 30 (2026-11-17): botones táctiles acomodados y con iconos
+
+Primera prueba en un celular real: los controles responden, pero había muchos botones sueltos y con texto. Ahora (`index.html`):
+
+- **Dos arcos alrededor de Atacar** (88 px, abajo a la derecha), al estilo de los juegos de acción para celular. Arco interior
+  (r = 104 px, botones de 60 px): Esquivar, Saltar, Defender. Arco exterior (r = 176 px, 52 px): Fijar, Tierra, Especial, Usar.
+- **Iconos SVG propios** en vez de texto (espada, doble flecha, flecha arriba, escudo, mira, montaña, estrella, mano, bolsa), con
+  `aria-label`. Color por función: Atacar rojo, Defender azul, poderes (Tierra, Especial) dorado.
+- Usar cambia a una flecha «seguir» en los diálogos (clase `seguir`); la espera de Tierra sale como número encima del icono
+  (`data-espera`), sin borrarlo.
+- La Bolsa pasa arriba, junto a la Pausa.
+
+**Pruebas:** captura a 844 × 390 (celular en horizontal), con y sin diálogo; ningún botón se pisa; sin `[assert]` ni excepciones.
+
 ## Etapa 29 (2026-11-17): partes para el vuelo, el espíritu jaguar y los jefes (`js/cuadros.js`)
 
 `PARTES` va ahora por cuadro (clave = nombre del sprite sin `1_03`) y `conPartes(e, nombre, fase)` sirve a cualquier enemigo:
