@@ -56,37 +56,42 @@
   .tbtn { position: fixed; border-radius: 50%; background: #ffffff1c; border: 2px solid #ffffff40; color: var(--tinta); font-size: 13px;
     display: none; place-items: center; padding: 0; }
   body.es-tactil .tbtn { display: grid; }
-  /* Etapa 30: dos arcos alrededor de Atacar (centro a 44 + --d px del borde derecho y 72 px del de abajo). Interior, r = 104 px:
-     Esquivar, Saltar, Defender. Exterior, r = 176 px: Fijar, Tierra, Especial, Usar. Iconos SVG propios en vez de texto. */
-  .tbtn { --d: max(28px, env(safe-area-inset-right)); width: 52px; height: 52px; }
-  .tbtn svg { width: 52%; height: 52%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+  /* Etapa 31 (análisis de controles tipo Soul Knight): pocos botones, grandes y de color. Atacar hace también de Usar (mano
+     dorada) junto a algo y de Seguir (▸) en un diálogo; Fijar queda en el teclado (el ataque ya apunta solo). Centro de Atacar a
+     46 + --d px del borde derecho y 74 del de abajo; arco r = 108 px: Esquivar, Saltar, Defender; poderes a r = 185 px. */
+  .tbtn { --d: max(28px, env(safe-area-inset-right)); --c: #e8e2d0; width: 62px; height: 62px; color: var(--c);
+    background: radial-gradient(circle at 50% 35%, #3a3646ee, #1b1922ee 70%); border: 3px solid #5a566a;
+    box-shadow: 0 3px 0 #0009, inset 0 0 0 2px color-mix(in srgb, var(--c) 40%, transparent); transition: transform .06s; }
+  .tbtn svg { width: 54%; height: 54%; fill: currentColor; fill-opacity: .22; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round;
+    stroke-linejoin: round; pointer-events: none; filter: drop-shadow(0 0 4px var(--c)); }
   .tbtn[data-espera]:not([data-espera=""]) svg { opacity: .3; }
-  .tbtn[data-espera]:not([data-espera=""])::after { content: attr(data-espera); position: absolute; font-size: 14px; font-weight: bold; }
-  #bAtacar { right: var(--d); bottom: 28px; width: 88px; height: 88px; background: #e0604a40; border-color: #e0604a90; }
-  #bEsquivar { right: calc(var(--d) + 118px); bottom: 42px; width: 60px; height: 60px; }
-  #bSaltar { right: calc(var(--d) + 87px); bottom: 115px; width: 60px; height: 60px; }
-  #bDefender { right: calc(var(--d) + 14px); bottom: 146px; width: 60px; height: 60px; background: #4fa3d930; border-color: #4fa3d980; }
-  #bFijar { right: calc(var(--d) + 194px); bottom: 46px; }
-  #bTierra { right: calc(var(--d) + 170px); bottom: 134px; background: #c9a24a30; border-color: #c9a24a90; }
-  #bEspecial { right: calc(var(--d) + 106px); bottom: 198px; background: #c9a24a30; border-color: #c9a24a90; }
-  #bUsar .seguir, #bUsar.seguir .mano { display: none; } #bUsar.seguir .seguir { display: block; } /* en un diálogo: «seguir» */
-  #bUsar { right: calc(var(--d) + 18px); bottom: 222px; }
-  #bBolsa { top: 10px; right: calc(max(12px, env(safe-area-inset-right)) + 54px); width: 44px; height: 44px; border-radius: 8px; }
+  .tbtn[data-espera]:not([data-espera=""])::after { content: attr(data-espera); position: absolute; font-size: 16px; font-weight: bold; }
+  .tbtn .mano, .tbtn .seguir, #bAtacar.usar .espada, #bAtacar.seguir .espada { display: none; }
+  #bAtacar.usar .mano, #bAtacar.seguir .seguir { display: block; }
+  #bAtacar { --c: #ff7a5c; right: var(--d); bottom: 28px; width: 92px; height: 92px; }
+  #bAtacar.usar, #bAtacar.seguir { --c: #ffd36a; }
+  body.en-dialogo .tbtn:not(#bAtacar), body.en-dialogo #stick { visibility: hidden; } /* en un diálogo solo queda Seguir */
+  #bEsquivar { --c: #7be08a; right: calc(var(--d) + 123px); bottom: 43px; }
+  #bSaltar { --c: #8fd8ff; right: calc(var(--d) + 91px); bottom: 119px; }
+  #bDefender { --c: #6aa8ff; right: calc(var(--d) + 15px); bottom: 151px; }
+  #bTierra { --c: #e6b94a; right: calc(var(--d) + 189px); bottom: 106px; }
+  #bEspecial { --c: #c58cff; right: calc(var(--d) + 107px); bottom: 203px; }
+  #bBolsa { --c: #e6b94a; top: 10px; right: calc(max(12px, env(safe-area-inset-right)) + 54px); width: 44px; height: 44px; border-radius: 10px; }
   /* En un celular en vertical: pedir que se gire (el juego se pausa al girarlo, ver juego.js). */
   #girar { position: fixed; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
     background: #000; color: var(--tinta); font-size: 18px; text-align: center; padding: 24px; }
   #girar .icono { font-size: 64px; animation: girar 2s ease-in-out infinite; }
   @keyframes girar { 0%, 30% { transform: rotate(0); } 60%, 100% { transform: rotate(-90deg); } }
   @media (orientation: portrait) { body.es-tactil #girar { display: flex; } }
-  .tbtn.sostenido { background: #ffffff40; }
-  .tbtn.apagado { opacity: .35; }
+  .tbtn.sostenido { transform: scale(.9); background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--c) 45%, #1b1922), #1b1922 75%); }
+  .tbtn.apagado { opacity: .4; filter: grayscale(.8); }
   .carta.guardian img { width: 64px; height: 64px; object-fit: contain; image-rendering: pixelated; justify-self: center; }
   .carta.guardian small { opacity: .75; }
   .carta.actual { border-color: var(--oro); }
   .barra.fina { height: 5px; margin-top: 2px; }
   .barra.fina > i { background: #4fa3d9; }
   .barra.fina.xp > i { background: var(--oro); }
-  #avisos { position: fixed; right: max(68px, env(safe-area-inset-right)); top: 12px; display: grid; gap: 4px; justify-items: end; pointer-events: none; }
+  #avisos { position: fixed; right: calc(max(12px, env(safe-area-inset-right)) + 108px); /* deja sitio a Bolsa y Pausa */ top: 12px; display: grid; gap: 4px; justify-items: end; pointer-events: none; }
   #avisos > div { background: var(--panel); border: 1px solid var(--linea); border-radius: 6px; padding: 3px 10px; font-size: 13px; }
   .caja.ancha { width: min(760px, 94vw); max-height: 88vh; overflow: auto; text-align: left; }
   .pestanas { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
@@ -130,14 +135,12 @@
 <div id="dialogo" class="oculto"><b id="dQuien"></b><span id="dTexto"></span><small>continuar ▸</small></div>
 
 <div id="stick" class="tactil oculto"><div id="perilla"></div></div>
-<button id="bAtacar" class="tbtn oculto" data-acc="atacar" aria-label="Atacar"><svg viewBox="0 0 24 24"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/></svg></button>
+<button id="bAtacar" class="tbtn oculto" data-acc="atacar" aria-label="Atacar"><svg class="seguir" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg><svg class="mano" viewBox="0 0 24 24"><path d="M8 13V5a1.5 1.5 0 0 1 3 0v6M11 10V4a1.5 1.5 0 0 1 3 0v6M14 10V5a1.5 1.5 0 0 1 3 0v7c0 5-3 8-7 8s-6-3-7-6l-1-3a1.5 1.5 0 0 1 3-1l1 2"/></svg><svg class="espada" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/></svg></button>
 <button id="bEsquivar" class="tbtn oculto" data-acc="esquivar" aria-label="Esquivar"><svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M13 5l7 7-7 7"/></svg></button>
-<button id="bUsar" class="tbtn oculto" data-acc="usar" aria-label="Usar"><svg class="seguir" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg><svg class="mano" viewBox="0 0 24 24"><path d="M8 13V5a1.5 1.5 0 0 1 3 0v6M11 10V4a1.5 1.5 0 0 1 3 0v6M14 10V5a1.5 1.5 0 0 1 3 0v7c0 5-3 8-7 8s-6-3-7-6l-1-3a1.5 1.5 0 0 1 3-1l1 2"/></svg></button>
 <button id="bTierra" class="tbtn oculto" data-acc="tierra" aria-label="Tierra"><svg viewBox="0 0 24 24"><path d="M3 20l6-10 4 6 3-4 5 8z"/></svg></button>
 <button id="bEspecial" class="tbtn oculto" data-acc="especial" aria-label="Especial"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg></button>
 <button id="bDefender" class="tbtn oculto" data-acc="defender" aria-label="Defender"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></button>
 <button id="bBolsa" class="tbtn oculto" data-acc="bolsa" aria-label="Bolsa"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/></svg></button>
-<button id="bFijar" class="tbtn oculto" data-acc="fijar" aria-label="Fijar objetivo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
 <button id="bSaltar" class="tbtn oculto" data-acc="saltar" aria-label="Saltar"><svg viewBox="0 0 24 24"><path d="M12 18V5M6 11l6-6 6 6M4 21h16"/></svg></button>
 <div id="girar"><div class="icono">📱</div><div>Gira el celular para jugar en horizontal</div></div>
 <button id="bPausa" class="oculto" aria-label="Pausa">II</button>

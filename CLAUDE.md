@@ -5,8 +5,8 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
-- **Última etapa:** 30 (2026-11-17), botones táctiles en dos arcos alrededor de Atacar y con iconos SVG (`index.html`). Probado
-  en celular: los controles responden bien. 26-29: efectos de golpe y animación por partes (`js/efectos.js`, `js/cuadros.js`).
+- **Última etapa:** 31 (2026-11-17), controles táctiles tipo Soul Knight: 4 botones fijos + poderes, Atacar contextual
+  (espada / mano = Usar / ▸ = Seguir), colores vivos; fuera Usar y Fijar en táctil. 30: arcos e iconos. Falta probar 31 en celular. 26-29: efectos de golpe y animación por partes (`js/efectos.js`, `js/cuadros.js`).
 - **Animación:** el plan de animación está cubierto. Quedan opcionales: partes para `Caminar`/`Correr` (patas) y para el
   rugido (`Especial`) de Xolotl.
 - **Siguiente propuesta:** que el usuario confirme en el celular el nuevo acomodo; ajustar dificultad (esquivas); luego música (estilo lo decide el

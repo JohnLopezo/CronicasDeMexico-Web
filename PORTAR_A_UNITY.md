@@ -376,3 +376,9 @@ Igual que el apartado 14, con los rectángulos de `PARTES` para `Enemigo_{Avispa
 En el Canvas táctil de Unity: Atacar grande en la esquina inferior derecha; arco interior (r ≈ 104 px de referencia) con
 Esquivar, Saltar y Defender; arco exterior (r ≈ 176 px) con Fijar, Tierra, Especial y Usar; Bolsa junto a Pausa. Iconos en lugar
 de texto (los trazos están en `index.html`), Usar con icono «seguir» en diálogos y la espera de Tierra como número encima.
+
+## 17. Atacar contextual y menos botones (etapa 31)
+
+En táctil, el botón de ataque cambia de icono y de acción: Usar si `PlayerInteractor` tiene un objetivo y no hay enemigo a menos
+de 3 m (mantener = acción de senda), Seguir en un diálogo. Sin botones de Usar ni de Fijar en táctil. Estilo: círculo oscuro
+con borde y sombra, icono relleno con brillo del color de su función (ver `index.html`, `.tbtn`). En diálogo, ocultar el resto.

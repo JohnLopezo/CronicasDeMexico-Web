@@ -52,6 +52,25 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 31 (2026-11-17): menos botones y más llamativos (análisis de controles tipo Soul Knight)
+
+El usuario dejó una captura de los controles de Soul Knight (`Ejemplo de controles/`). Lo que hace que se jueguen fácil:
+joystick a la izquierda, **un solo botón grande** que cambia según el contexto (atacar o interactuar), una habilidad de color
+vivo y nada más; el apuntado es automático. Aplicado aquí (`index.html`, `js/motor.js`, `js/juego.js`):
+
+- **De 9 botones a 4 fijos** (Atacar, Esquivar, Saltar, Defender) más los poderes solo si los tienes (Tierra, Especial).
+- **Atacar es contextual:** junto a algo usable y sin enemigos a menos de 3 m, la espada pasa a una **mano dorada** y hace de
+  Usar (mantenerla sigue lanzando la acción de senda); en un diálogo es **▸ Seguir**. El modo lo pone `hud()` en
+  `data-modo` y `motor.js` lo lee al pulsar. Con un enemigo cerca siempre es espada.
+- **Fuera Usar y Fijar** en táctil: el ataque ya apunta solo al más cercano; Fijar sigue en Tab.
+- **Más llamativos:** fondo oscuro con relieve, borde y sombra, icono relleno y brillante con color por función (Atacar rojo,
+  Esquivar verde, Saltar celeste, Defender azul, Tierra dorado, Especial morado). Al pulsar, se hunde y se ilumina de su color.
+- En un diálogo se ocultan el joystick y los demás botones (solo queda ▸). Los avisos de arriba se corren para no quedar bajo
+  la Bolsa.
+
+**Pruebas:** a 844 × 390, junto al Santuario de Vida la mano lo usa y abre el diálogo, ▸ lo avanza; con una serpiente a 1,5 m
+vuelve a ser espada y ataca; sin `[assert]` ni excepciones. **Falta probarlo en el celular.**
+
 ## Etapa 30 (2026-11-17): botones táctiles acomodados y con iconos
 
 Primera prueba en un celular real: los controles responden, pero había muchos botones sueltos y con texto. Ahora (`index.html`):

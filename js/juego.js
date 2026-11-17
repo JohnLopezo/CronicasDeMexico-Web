@@ -346,7 +346,7 @@ const esTactil = () => document.body.classList.contains('es-tactil');
 function alternarPausa() {
   juego.pausa = !juego.pausa;
   $('pausa').classList.toggle('oculto', !juego.pausa);
-  $('pausaAyuda').textContent = esTactil() ? 'Joystick: mover · Atacar · Defender (mantener) · Esquivar · Saltar · Usar · Fijar · Tierra · Especial · Bolsa' : 'WASD o flechas: mover · J o clic: atacar · Q o clic derecho (mantener): defender · Espacio: esquivar · K: saltar · E: usar · Tab: fijar objetivo · C: tierra · F: especial (Balam) · 1: uso rápido · I: bolsa · Esc: pausa';
+  $('pausaAyuda').textContent = esTactil() ? 'Joystick: mover · Espada: atacar (junto a algo, la mano: usar; mantener: acción de senda) · Escudo (mantener): defender · Flechas: esquivar · Flecha arriba: saltar · Montaña: tierra · Estrella: especial · Bolsa' : 'WASD o flechas: mover · J o clic: atacar · Q o clic derecho (mantener): defender · Espacio: esquivar · K: saltar · E: usar · Tab: fijar objetivo · C: tierra · F: especial (Balam) · 1: uso rápido · I: bolsa · Esc: pausa';
   if (juego.pausa) $('reanudar').focus();
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden && juego.activo && !juego.pausa) alternarPausa(); });
@@ -355,7 +355,7 @@ matchMedia('(orientation: portrait)').addEventListener('change', (m) => { if (m.
 $('reanudar').onclick = alternarPausa;
 $('salir').onclick = () => { juego.activo = false; juego.pausa = false; $('pausa').classList.add('oculto'); mostrarInicio(); };
 
-const UI_JUEGO = ['hud', 'stick', 'bAtacar', 'bEsquivar', 'bUsar', 'bPausa', 'bBolsa', 'bDefender', 'bFijar', 'bSaltar'];
+const UI_JUEGO = ['hud', 'stick', 'bAtacar', 'bEsquivar', 'bPausa', 'bBolsa', 'bDefender', 'bSaltar'];
 function mostrarInicio() {
   for (const id of UI_JUEGO.concat('jefe', 'aviso', 'dialogo', 'toast', 'ruptura')) $(id).classList.add('oculto');
   $('continuar').classList.toggle('oculto', !leerPartida());
@@ -373,7 +373,7 @@ async function empezar(partida) {
   for (const id of UI_JUEGO) $(id).classList.remove('oculto');
   juego.activo = true;
   await cargarRegion(partida ? partida.region : 'ciudad', partida ? 'memoria_llegada' : 'inicio', partida ? partida.vida : estadisticas().vida);
-  if (!partida) toast(esTactil() ? 'Joystick para moverte · Atacar · Esquivar · Saltar · Usar' : 'WASD: mover · J: atacar · Espacio: esquivar · K: saltar · E: usar', 5);
+  if (!partida) toast(esTactil() ? 'Joystick para moverte · Espada: atacar o usar · Flechas: esquivar' : 'WASD: mover · J: atacar · Espacio: esquivar · K: saltar · E: usar', 5);
 }
 $('nueva').onclick = () => { if (!leerPartida() || confirm('¿Empezar de nuevo? Se borrará la partida guardada.')) { try { localStorage.removeItem(CLAVE); } catch { /* sin almacenamiento */ } empezar(null); } };
 $('continuar').onclick = () => empezar(leerPartida());
@@ -494,9 +494,9 @@ function hud(dtReal) {
   const senda = c ? avisoSenda(c) : '';
   $('aviso').classList.toggle('oculto', !c || (esTactil() && !senda)); // en táctil, solo si hay que avisar de la senda
   if (c) $('aviso').textContent = esTactil() ? `${c.texto}${senda}` : `E · ${c.texto}${senda}`;
-  $('bUsar').classList.toggle('apagado', !c && !juego.dialogo);
-  $('bFijar').classList.toggle('sostenido', !!juego.fijado);
-  $('bUsar').classList.toggle('seguir', !!juego.dialogo);
+  // Atacar es Usar junto a algo si no hay un enemigo a menos de 3 m, y Seguir en un diálogo (pedir() ya lo hace avanzar).
+  const usar = !!c && !juego.enemigos.some((e) => e.vida > 0 && dist(e, juego.jugador) < 3), bA = $('bAtacar');
+  bA.dataset.modo = usar ? 'usar' : ''; bA.classList.toggle('usar', usar); bA.classList.toggle('seguir', !!juego.dialogo); document.body.classList.toggle('en-dialogo', !!juego.dialogo);
   if (juego.dialogo) {
     const d = juego.dialogo, linea = d.lineas[d.i];
     d.letras = Math.min(linea.length, d.letras + dtReal * 60); // letra a letra, como MessageBox

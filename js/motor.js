@@ -140,10 +140,11 @@ stick.addEventListener('pointermove', (e) => { if (e.pointerId === stickId) move
 stick.addEventListener('pointerup', soltarStick);
 stick.addEventListener('pointercancel', soltarStick);
 for (const b of document.querySelectorAll('.tbtn')) {
-  const acc = b.dataset.acc;
-  const soltar = () => { if (acc !== 'fijar') b.classList.remove('sostenido'); if (acc === 'atacar') entrada.atacarSostenido = false; if (acc === 'defender') entrada.defensaTactil = false; if (acc === 'usar') entrada.usarTactil = false; };
+  let acc = b.dataset.acc;
+  const soltar = () => { b.classList.remove('sostenido'); if (acc === 'atacar') entrada.atacarSostenido = false; if (acc === 'defender') entrada.defensaTactil = false; if (acc === 'usar') entrada.usarTactil = false; };
   b.addEventListener('pointerdown', (e) => {
     e.preventDefault(); b.setPointerCapture(e.pointerId); b.classList.add('sostenido');
+    acc = b.dataset.modo || b.dataset.acc; // Atacar hace de Usar junto a algo (etapa 31; el modo lo pone hud() en juego.js)
     if (acc === 'atacar') entrada.atacarSostenido = true;
     if (acc === 'defender') entrada.defensaTactil = true;
     if (acc === 'usar') entrada.usarTactil = true; // mantener Usar: acción de senda
