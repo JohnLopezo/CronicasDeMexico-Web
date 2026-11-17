@@ -4,7 +4,7 @@ La versión del juego en HTML y JavaScript normal, sin frameworks ni dependencia
 Usa **el mismo arte y los mismos mapas** que el proyecto de Unity (`C:\Users\Usuario\Documents\CronicasDeMexico`) y sus
 mismos números (escala ×10).
 
-- Esta carpeta está **fuera del repositorio de Unity** y no está en Git.
+- Esta carpeta está **fuera del repositorio de Unity** y tiene su propio repositorio de Git (rama `main`).
 - El proyecto de Unity no se modifica: de él solo se **leen** el arte y los mapas.
 
 ## Cómo abrirlo
