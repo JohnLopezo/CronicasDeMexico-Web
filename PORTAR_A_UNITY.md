@@ -357,3 +357,10 @@ se asienta con exp(-12 t).
 - Número de daño: escala 11/8 → 1 en 0,12 s, bote parabólico de 0,6 m en 0,3 s, rebote de 0,15 en 0,2 s, deriva lateral ±0,3 m
   (en Unity, en el prefab del número flotante con una `AnimationCurve`).
 - Restos por especie (`RESTOS`: colores, cantidad, gravedad, tamaño, si planean): un campo `deathDebris` en `EnemyDefinition`.
+
+## 14. Cuadros de ataque por partes (etapa 28, `js/cuadros.js`)
+
+En Unity, lo más limpio es partir el sprite de ataque de cada fauna en hijos (cabeza, mandíbulas, torso, aguijón, alas) con los
+rectángulos y pivotes de `PARTES` (píxeles del PNG de 64 px de alto, mirando a la derecha) y animar su rotación y posición en el
+`Animator`: aviso = valor `aviso` con ease-out según el progreso del windup; golpe = `golpe` × curva 0 → 1,25 en 0,06 s → 0,55
+con exp(-10 t); alas con seno a `hz`. Alternativa: pedir al artista 3 cuadros (preparación, golpe, seguimiento) con esas poses.

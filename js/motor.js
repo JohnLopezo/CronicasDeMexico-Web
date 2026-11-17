@@ -51,9 +51,9 @@ function camara(x, y, dt) {
 const ESCALA_SPRITE = { Cabeza_Piedra_01: 2, Canoa_01: 2 };
 // Dibuja un sprite con su pivote en el punto de pantalla (sx, sy), en píxeles del mundo.
 function dibujarEn(nombre, sx, sy, o = {}) {
-  const s = SPRITES[nombre], im = imagen(nombre);
-  if (!s || !im || !im.naturalWidth) return;
-  const f = (PPU / s[3]) * (o.escala || 1) * (ESCALA_SPRITE[nombre] || 1), w = im.naturalWidth * f, h = im.naturalHeight * f;
+  const s = SPRITES[nombre], im = o.lienzo || imagen(nombre); // o.lienzo: el mismo cuadro repintado por partes (js/cuadros.js)
+  if (!s || !im || !(im.naturalWidth || im.width)) return;
+  const f = (PPU / s[3]) * (o.escala || 1) * (ESCALA_SPRITE[nombre] || 1), w = (im.naturalWidth || im.width) * f, h = (im.naturalHeight || im.height) * f;
   const px = Math.round(sx - vista.cx), py = Math.round(sy - vista.cy);
   if (px + w < 0 || px - w > vista.w || py - h > vista.h + 8 || py + h < -8) return;
   const mueve = o.sx != null || o.sy != null || o.giro || o.dx || o.dy; // js/movimiento.js

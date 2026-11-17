@@ -217,8 +217,14 @@ function dibujarFauna(e) {
   const mov = e.vida <= 0 ? ['Muerte', 1 - e.muriendo / 0.6] : e.estado === 'aviso' ? ['Aviso', 1 - Math.max(0, e.t) / (e.d.attackWindup || 0.6)]
     : e.estado === 'golpe' || e.estado === 'especial' ? ['Ataque'] : e.estado === 'guardia' ? ['Defensa'] : vuela ? ['Volar']
     : e.movido ? [e.persigue ? 'Correr' : 'Caminar'] : ['Reposo'];
-  dibujar(elegir(`${b}${pose}1_03`, `${b}Reposo1_03`), e.x, e.y, e.z + e.alto, { espejo: e.fx < 0, alfa, escala: e.escala,
-    filtro: e.destello > 0 ? 'brightness(3)' : e.roto > 0 ? ROTO_FILTRO : null, ...movimiento(e, e.especie, ...mov) });
+  const nombre = elegir(`${b}${pose}1_03`, `${b}Reposo1_03`), o = { espejo: e.fx < 0, alfa, escala: e.escala,
+    filtro: e.destello > 0 ? 'brightness(3)' : e.roto > 0 ? ROTO_FILTRO : null, ...movimiento(e, e.especie, ...mov) };
+  // Ataque por partes (js/cuadros.js); al soltarlo, el cuadro de ataque se funde 0,12 s sobre el siguiente.
+  if (e.cuadro?.includes('_Ataque') && nombre !== e.cuadro && !juego.dibujandoEstela) e.salida = { nombre: e.cuadro, t: juego.t };
+  if (!juego.dibujandoEstela) e.cuadro = nombre;
+  dibujar(nombre, e.x, e.y, e.z + e.alto, { ...o, lienzo: cuadroAtaque(e, nombre) });
+  const fu = e.salida ? 1 - (juego.t - e.salida.t) / CUADROS.salida : 0;
+  if (fu > 0 && e.vida > 0) dibujar(e.salida.nombre, e.x, e.y, e.z + e.alto, { ...o, alfa: fu * (alfa ?? 1) });
   if (e.vida > 0 && e.vida < e.max) barraMini(e, 1.2 + e.alto);
 }
 

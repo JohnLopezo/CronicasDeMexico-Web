@@ -39,6 +39,7 @@ mismos números (escala ×10).
 | `js/fauna.js` | Fauna hostil (`WildEnemy`) y vasijas rompibles |
 | `js/trampas.js` | Pinchos, placas de presión, braseros, cristales, esteras y cabezas de piedra |
 | `js/efectos.js` | Chispas, estrella de impacto, «!» de aviso, polvo y estela de los enemigos rápidos |
+| `js/cuadros.js` | Cuadros de ataque por partes de la fauna de la lámina (`PARTES`) |
 | `js/movimiento.js` | Movimiento por código (respirar, botar, aletear, anticipar, estocada…) de los enemigos de un solo cuadro |
 | `js/animales.js` | Animales de Veracruz y Tabasco: nauyaca real, pecarí de collar, tapir, ocelote, mono aullador, armadillo y pejelagarto |
 | `herramientas/animales.mjs` | Dibuja por código los animales y sus animaciones (`arte/Animales`, `datos/animales.js`) |
@@ -50,6 +51,27 @@ mismos números (escala ×10).
 | `js/juego.js` | Banderas, misiones, diálogos por ramas, contenido de cada región, guardado, HUD y bucle |
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
+
+## Etapa 28 (2026-11-17): cuadros de ataque por partes para la fauna de la lámina (`js/cuadros.js`)
+
+La fauna de Unity tiene **un solo cuadro de ataque**. Sin dibujar arte nuevo, `js/cuadros.js` recorta una parte de ese cuadro y la
+mueve sobre su pivote: durante el **aviso** se prepara (con temblor al final) y en el **golpe** sale en 0,06 s, se pasa un 25 % y
+se asienta. Al soltar el ataque, su cuadro se funde 0,12 s sobre el siguiente en vez de cambiar de golpe.
+
+| Especie | Parte | Aviso | Golpe |
+|---|---|---|---|
+| Serpiente | cabeza y cuello | se echa atrás y arriba | se lanza hacia delante y abajo |
+| Cocodrilo | mandíbulas | abre más | cierra de golpe |
+| Mono | torso y brazos (y la cola, al revés) | se echa atrás | zarpazo hacia delante |
+| Avispa | abdomen con aguijón (y alas a 14 Hz) | lo dobla bajo el cuerpo | pica |
+| Guacamaya, murciélago | las dos alas (aletean) | las alzan | aletazo hacia abajo |
+
+Los rectángulos y pivotes (`PARTES`) se midieron sobre los PNG con un mapa ASCII. Se pinta en un lienzo por enemigo del mismo
+tamaño que el PNG (`dibujarEn` acepta `lienzo`), así el pivote del sprite no cambia y la estela, el espejo y el movimiento siguen igual.
+
+**Pruebas:** tira de 7 instantes por especie revisada en captura (se quitó el avance de la mandíbula del cocodrilo y se redujo el
+giro del mono porque abrían una raya); pelea real 4 s con las seis especies: 62 FPS, sin `[assert]` ni excepciones. Queda una costura
+de un píxel en el cocodrilo y el mono durante ~0,05 s en el pico del golpe. **Sin probar a mano ni en el celular.**
 
 ## Etapa 27 (2026-11-17): onda al aterrizar, números que botan y restos por animal (`js/efectos.js`)
 
