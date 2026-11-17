@@ -12,6 +12,8 @@
     aullador: { vida: V(AULLADOR.vida), dps: AULLADOR.fruto.dano / 2.4 + AULLADOR.aullido.dano / 6.5, evitable: 0.65, esquiva: 0.25, xp: 8 },
     armadillo: { vida: V(ARMADILLO.vida), dps: ARMADILLO.excava.dano / 4.2, evitable: 0.7, esquiva: 0, xp: 8 },
   };
+  // Pejelagarto (etapa 25): en el uno contra uno quitó 2/3 de lo del ocelote (6 % frente a 9 %); se escala desde él.
+  T.pejelagarto = { ...T.ocelote, vida: V(PEJE.vida), dps: T.ocelote.dps * 2 / 3 };
   for (const n of ['Serpiente', 'Cocodrilo', 'Mono', 'Avispa', 'Guacamaya', 'Murcielago']) T[n] = { vida: V(F(n).maxHealth), dps: dpsFauna(F(n)), evitable: 0.65, esquiva: n === 'Guacamaya' || n === 'Avispa' || n === 'Murcielago' ? 0.35 : 0.25, xp: 8 };
   const grupo = { pecari: 3, aullador: 2 };
   // Jugador: vida y ataque por nivel (Balam); dps efectivo = ataque × 1,2 golpes/s (moverse, esquivar, combos a medias).

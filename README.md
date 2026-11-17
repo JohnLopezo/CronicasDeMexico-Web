@@ -52,6 +52,34 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 32 (2026-11-17): dificultad para jugar en el celular
+
+**Revisión.** Los bots de las etapas 22-24 juegan mejor que una persona con el celular: pegan en cada cuadro y responden a un
+aviso al instante. `bot_grupo.js` admite ahora `cadencia` (segundos entre toques de Atacar) y `reaccion` (segundos desde que
+sale un aviso hasta poder responder); `mapas.mjs` los toma de `HAB`, `CAD` y `REAC`. Perfil «celular»: esquiva el 50 %,
+toca cada 0,3 s y reacciona en 0,3 s. 12 partidas por mapa. `modelo_niveles.js` ya conoce al pejelagarto (fallaba desde la
+etapa 25).
+
+| Mapa (nivel del jugador) | Bot de antes | Celular, antes | Celular, después |
+|---|---|---|---|
+| Selva (1) | 22 % | 40 % | 38 % |
+| 1-1, el tutorial (1) | 40 % | **40-49 %, el más difícil** | 33 % |
+| 1-3 (2) | — | 25 % | 29 % |
+| 2-2 / 2-4 (3 / 4) | 22 % / 25 % | 21-24 % / 35 % | 25 % / 46 % |
+| 3-2 / 3-4 (4) | 8 % / 20 % | 15-20 % / 33 % | 42 % / 32 % |
+
+Caídas: 1 de cada 12 partidas en los peores mapas, antes y después. La curva iba al revés: el tutorial era lo más duro y
+el piso 3 lo más fácil, porque el jugador sube de nivel y los niveles no apretaban.
+
+**Cambios:**
+- **Aviso de la mordida del espíritu** de 0,4 a **0,55 s** (`ESPIRITU_MORDIDA`, `js/actores.js`): era el aviso más corto del
+  juego (los demás, 0,55 s o más) y con el tiempo de reacción del celular casi no daba para esquivar.
+- **Presupuesto de los niveles generados** (`PRESUPUESTO`, `js/niveles.js`): piso 2, de 14-20 a **16-22**; piso 3, de 16-23 a
+  **19-26**. El piso 1 no cambia.
+
+**Sin probar:** los jefes con el perfil «celular» (`bot_jefe.js` aún no tiene `cadencia` ni `reaccion`); con el bot de
+antes, el Guardián gana 4-5 de 6 llegando al 70 % de la vida. Los números varían ±10 % entre tandas.
+
 ## Etapa 31 (2026-11-17): menos botones y más llamativos (análisis de controles tipo Soul Knight)
 
 El usuario dejó una captura de los controles de Soul Knight (`Ejemplo de controles/`). Lo que hace que se jueguen fácil:

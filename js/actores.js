@@ -286,7 +286,8 @@ function esquivarSaltando(e) {
   return true;
 }
 
-const ESPIRITU_MORDIDA = { aviso: 0.4, radio: 0.75, espera: 1.0 };
+const ESPIRITU_MORDIDA = { aviso: 0.55, // 0,4 hasta la etapa 32: el aviso más corto del juego, justo para reaccionar en el celular
+  radio: 0.75, espera: 1.0 };
 function nuevoEspiritu(x, y, alMorir) {
   return { tipo: 'espiritu', x, y, casa: { x, y }, vida: vidaComun(ENEMIGO.espiritu.vida), max: vidaComun(ENEMIGO.espiritu.vida), r: ENEMIGO.espiritu.r,
     fx: -1, kx: 0, ky: 0, cdGolpe: 0, alerta: false, destello: 0, muriendo: 0, t: Math.random() * 3, alMorir,

@@ -24,7 +24,7 @@ const SALA = { ancho: [7, 10], alto: [5, 7], pasillo: [2, 4], arena: [13, 9] };
 // sus salas, y cada tipo cuesta según lo peligroso que es (una manada de pecaríes cuesta como un tapir). Presupuesto por piso
 // y nivel (X-1 a X-4; el 1-1 es el piso 1 de Unity). En el X-3 hay un santuario de Vida.
 const COSTE = { Serpiente: 2, Murcielago: 2, Avispa: 2, Guacamaya: 2, armadillo: 2, espiritu: 3, Cocodrilo: 3, Mono: 3, ocelote: 4, aullador: 4, pejelagarto: 4, pecari: 6, tapir: 6 };
-const PRESUPUESTO = { 1: [0, 11, 13, 15], 2: [14, 16, 18, 20], 3: [16, 18, 20, 23] };
+const PRESUPUESTO = { 1: [0, 11, 13, 15], 2: [16, 18, 20, 22], 3: [19, 21, 23, 26] }; // pisos 2 y 3 subidos en la etapa 32 (curva creciente)
 // Nivel con santuario de Vida en cada piso: el X-3, a mitad de piso. Al 2-1 se llega con las semillas de la nauyaca y al 3-1,
 // con el santuario del 2-5.
 const VIDA_NIVEL = { 1: 3, 2: 3, 3: 3 };

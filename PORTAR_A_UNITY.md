@@ -382,3 +382,8 @@ de texto (los trazos están en `index.html`), Usar con icono «seguir» en diál
 En táctil, el botón de ataque cambia de icono y de acción: Usar si `PlayerInteractor` tiene un objetivo y no hay enemigo a menos
 de 3 m (mantener = acción de senda), Seguir en un diálogo. Sin botones de Usar ni de Fijar en táctil. Estilo: círculo oscuro
 con borde y sombra, icono relleno con brillo del color de su función (ver `index.html`, `.tbtn`). En diálogo, ocultar el resto.
+
+## 18. Dificultad para el celular (etapa 32)
+
+- Mordida avisada del espíritu corrompido: aviso de **0,55 s** (antes 0,4).
+- Presupuesto de amenaza de los niveles generados: piso 2 = 16, 18, 20, 22; piso 3 = 19, 21, 23, 26 (X-1 a X-4).

@@ -1,14 +1,15 @@
 // Jugador automático contra un grupo: siempre va a por el enemigo vivo más cercano. Mismo bucle a mano que bot.js.
-// window.GRUPO(enemigos, { habilidad, maxSeg, orilla }) → { limpio, seg, dano, golpes, vida }  (no toca nivel ni vida del jugador)
+// window.GRUPO(enemigos, { habilidad, maxSeg, orilla, cadencia, reaccion })  cadencia: s entre toques de Atacar (0 = cada cuadro; celular ≈ 0,3);
+// reaccion: s desde que aparece un aviso hasta poder responder (0 = al instante; persona con celular ≈ 0,3) → { limpio, seg, dano, golpes, vida }  (no toca nivel ni vida del jugador)
 window.GRUPO = function (grupo, o) {
   const j = juego.jugador;
   juego.pausa = true;
-  const dt = 1 / 60, decididas = new Map(); let t = 0, dano = 0, golpes = 0, antes = j.vida, rnd = Math.random;
+  const dt = 1 / 60, decididas = new Map(), visto = new Map(); let t = 0, toque = 0, dano = 0, golpes = 0, antes = j.vida, rnd = Math.random;
   const vivos = () => grupo.filter((e) => e.vida > 0 && juego.enemigos.includes(e));
   while (t < (o.maxSeg || 120) && j.vida > 0 && vivos().length) {
     const vs = vivos(), b = vs.reduce((a, e) => (dist(e, j) < dist(a, j) ? e : a), vs[0]), alcance = 1.0 + (b.r || 0.4);
     let huye = null;
-    for (const m of juego.marcas) { if (!enMarca(m, j)) continue; if (!decididas.has(m)) decididas.set(m, rnd() < o.habilidad); if (decididas.get(m) && m.t < 0.45) { huye = m; break; } }
+    for (const m of juego.marcas) { if (!enMarca(m, j)) continue; if (!decididas.has(m)) { decididas.set(m, rnd() < o.habilidad); visto.set(m, t); } if (decididas.get(m) && m.t < 0.45 && t - visto.get(m) >= (o.reaccion || 0)) { huye = m; break; } }
     for (const s of juego.disparos) { const d = Math.hypot(s.x - j.x, s.y - j.y), hacia = ((j.x - s.x) * s.vx + (j.y - s.y) * s.vy) > 0; if (d < 1.6 && hacia) { if (!decididas.has(s)) decididas.set(s, rnd() < o.habilidad); if (decididas.get(s)) { huye = { forma: 'proyectil', s }; break; } } }
     // Contacto sin aviso (espíritu, cocodrilo, carga…): se aparta del que se le echa encima con la misma probabilidad.
     if (!huye) for (const e of vs) if (dist(e, j) < (e.r || 0.4) + 0.6 && (e.estado === 'golpe' || e.estado === 'carga' || e.ataca > 0)) { if (!decididas.has(e.estado + e.t.toFixed?.(1))) decididas.set(e.estado + e.t.toFixed?.(1), rnd() < o.habilidad * 0.6); if (decididas.get(e.estado + e.t.toFixed?.(1))) huye = { forma: 'circulo', x: e.x, y: e.y, t: 0.1 }; }
@@ -25,7 +26,7 @@ window.GRUPO = function (grupo, o) {
       const d = dist(b, j), aviso = juego.marcas.find((m) => enMarca(m, j));
       if (aviso && aviso.forma !== 'anillo') { const dd = Math.hypot(j.x - aviso.x, j.y - aviso.y) || 1; vx = (j.x - aviso.x) / dd; vy = (j.y - aviso.y) / dd; }
       else if (d > alcance) { vx = (b.x - j.x) / d; vy = (b.y - j.y) / d; if (o.orilla && enAgua(j.x + vx * 0.35, j.y + vy * 0.35)) { vx = vy = 0; } } // o.orilla: no se mete al agua (etapa 25)
-      else if (b.golpeable !== false && (b.z || 0) + (b.alto || 0) < 1.4) { j.fx = (b.x - j.x) / d; j.fy = (b.y - j.y) / d; entrada.cuadroPrevio = performance.now() - 1; pedir('atacar'); }
+      else if (b.golpeable !== false && (b.z || 0) + (b.alto || 0) < 1.4 && t >= toque) { toque = t + (o.cadencia || 0); j.fx = (b.x - j.x) / d; j.fy = (b.y - j.y) / d; entrada.cuadroPrevio = performance.now() - 1; pedir('atacar'); }
       else if (b.golpeable === false) { vx = (j.x - b.x) / (d || 1) * 0.3; vy = (j.y - b.y) / (d || 1) * 0.3; } // bajo tierra: espera
       if (j.vida < j.max * 0.35 && tiene('semilla_preparada') > 0) usarObjeto('semilla_preparada');
     }
