@@ -1,5 +1,5 @@
 // Jugador automático contra un grupo: siempre va a por el enemigo vivo más cercano. Mismo bucle a mano que bot.js.
-// window.GRUPO(enemigos, { habilidad, maxSeg }) → { limpio, seg, dano, golpes, vida }  (no toca nivel ni vida del jugador)
+// window.GRUPO(enemigos, { habilidad, maxSeg, orilla }) → { limpio, seg, dano, golpes, vida }  (no toca nivel ni vida del jugador)
 window.GRUPO = function (grupo, o) {
   const j = juego.jugador;
   juego.pausa = true;
@@ -24,7 +24,7 @@ window.GRUPO = function (grupo, o) {
     } else {
       const d = dist(b, j), aviso = juego.marcas.find((m) => enMarca(m, j));
       if (aviso && aviso.forma !== 'anillo') { const dd = Math.hypot(j.x - aviso.x, j.y - aviso.y) || 1; vx = (j.x - aviso.x) / dd; vy = (j.y - aviso.y) / dd; }
-      else if (d > alcance) { vx = (b.x - j.x) / d; vy = (b.y - j.y) / d; }
+      else if (d > alcance) { vx = (b.x - j.x) / d; vy = (b.y - j.y) / d; if (o.orilla && enAgua(j.x + vx * 0.35, j.y + vy * 0.35)) { vx = vy = 0; } } // o.orilla: no se mete al agua (etapa 25)
       else if (b.golpeable !== false && (b.z || 0) + (b.alto || 0) < 1.4) { j.fx = (b.x - j.x) / d; j.fy = (b.y - j.y) / d; entrada.cuadroPrevio = performance.now() - 1; pedir('atacar'); }
       else if (b.golpeable === false) { vx = (j.x - b.x) / (d || 1) * 0.3; vy = (j.y - b.y) / (d || 1) * 0.3; } // bajo tierra: espera
       if (j.vida < j.max * 0.35 && tiene('semilla_preparada') > 0) usarObjeto('semilla_preparada');
