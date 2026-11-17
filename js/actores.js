@@ -13,7 +13,7 @@ const VIDA_COMUN = 1.5, vidaComun = (v) => Math.round(v * VIDA_COMUN);
 const ENEMIGO = {
   espiritu: { vida: 30, contacto: 10, vel: 2.4, r: 0.35 },
   eco: { vida: 30, disparo: 10, r: 0.35 }, // vida: 20 en Unity; aquí, para que llegue a disparar (README, etapa 24)
-  jaguar: { vida: 420, zarpazo: 20, salto: 20, rugido: 10, r: 0.6, nombre: 'Espíritu del Jaguar' }, // vida: 160 en Unity (ver README, etapa 23)
+  jaguar: { vida: 540, zarpazo: 20, salto: 20, rugido: 10, r: 0.6, nombre: 'Espíritu del Jaguar' }, // vida: 160 en Unity (README, etapas 23 y 33)
 };
 const dano = (golpe, defensa) => Math.max(1, golpe - defensa); // Health.cs
 

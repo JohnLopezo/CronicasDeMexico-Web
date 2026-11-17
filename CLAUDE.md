@@ -5,12 +5,12 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
-- **Última etapa:** 32 (2026-11-17), dificultad para el celular: bot con `cadencia`/`reaccion` (perfil celular: `HAB=0.5 CAD=0.3
-  REAC=0.3`), aviso del espíritu 0,55 s, presupuesto de pisos 2-3 subido (curva creciente). 30-31: controles táctiles tipo
-  Soul Knight (Atacar contextual). Falta probar 31-32 en celular. 26-29: efectos de golpe y animación por partes (`js/efectos.js`, `js/cuadros.js`).
+- **Última etapa:** 33 (2026-11-17), jefes con el perfil celular (`jefes.mjs`: `HABS='[0.5]' CAD=0.3 REAC=0.3`); jaguar de 420 a 540
+  de vida. 32: mapas con ese perfil (`mapas.mjs`: `HAB=0.5 CAD=0.3 REAC=0.3`), aviso del espíritu 0,55 s, pisos 2-3 con más
+  presupuesto. 30-31: controles táctiles tipo Soul Knight. Falta probar 31-33 en celular. 26-29: efectos de golpe y animación por partes (`js/efectos.js`, `js/cuadros.js`).
 - **Animación:** el plan de animación está cubierto. Quedan opcionales: partes para `Caminar`/`Correr` (patas) y para el
   rugido (`Especial`) de Xolotl.
-- **Siguiente propuesta:** que el usuario confirme en el celular controles y dificultad; jefes con el perfil celular; luego música (estilo lo decide el
+- **Siguiente propuesta:** que el usuario confirme en el celular controles y dificultad; luego música (estilo lo decide el
   autor); pasar a Unity según `PORTAR_A_UNITY.md`.
 - **Deseo pendiente del usuario:** mejor animación para los enemigos actuales; más animales de Veracruz/Tabasco.
 - **Deudas:** `/ponytail-debt` lista los `shortcut:` del código.

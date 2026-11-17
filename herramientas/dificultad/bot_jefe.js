@@ -1,12 +1,12 @@
 // Jugador automático contra un jefe, con el bucle del juego avanzado a mano (1/60 s por paso, sin dibujar).
-// window.PELEA(jefe, { nivel, vida, habilidad, semillas, maxSeg }) → { gana, seg, danoRecibido, golpes, vidaFinal, fase }
+// window.PELEA(jefe, { nivel, vida, habilidad, semillas, maxSeg, cadencia, reaccion })  cadencia y reaccion: como en bot_grupo.js → { gana, seg, danoRecibido, golpes, vidaFinal, fase }
 window.PELEA = function (jefe, o) {
   const j = juego.jugador;
   prog().nivel = o.nivel; prog().xp = 0; aplicarEstadisticas(true);
   j.max = estadisticas().vida; j.vida = Math.round(o.vida * j.max); j.inv = 0;
   prog().bolsa.semilla_preparada = o.semillas || 0; if (o.semillas && !prog().orden.includes('semilla_preparada')) prog().orden.push('semilla_preparada');
   juego.pausa = true; // el bucle real no actualiza; lo hacemos aquí
-  const dt = 1 / 60, decididas = new Map(); let t = 0, danoRecibido = 0, golpes = 0, vidaAntes = j.vida, rnd = window.RND_BOT || Math.random;
+  const dt = 1 / 60, decididas = new Map(), visto = new Map(); let toque = 0, t = 0, danoRecibido = 0, golpes = 0, vidaAntes = j.vida, rnd = window.RND_BOT || Math.random;
   const vivo = () => jefe.vida > 0 && !['liberado'].includes(jefe.estado);
   const alcance = 1.0 + (jefe.r || 0.5);
   while (t < (o.maxSeg || 180) && j.vida > 0 && vivo()) {
@@ -14,8 +14,8 @@ window.PELEA = function (jefe, o) {
     let huye = null;
     for (const m of juego.marcas) {
       if (!enMarca(m, j)) continue;
-      if (!decididas.has(m)) decididas.set(m, rnd() < o.habilidad);
-      if (decididas.get(m) && m.t < 0.45) { huye = m; break; }
+      if (!decididas.has(m)) { decididas.set(m, rnd() < o.habilidad); visto.set(m, t); }
+      if (decididas.get(m) && m.t < 0.45 && t - visto.get(m) >= (o.reaccion || 0)) { huye = m; break; }
     }
     for (const s of juego.disparos) {
       const d = Math.hypot(s.x - j.x, s.y - j.y), hacia = ((j.x - s.x) * s.vx + (j.y - s.y) * s.vy) > 0;
@@ -36,7 +36,7 @@ window.PELEA = function (jefe, o) {
       const aviso = juego.marcas.find((m) => enMarca(m, j));
       if (aviso && aviso.forma !== 'anillo') { const dd = Math.hypot(j.x - aviso.x, j.y - aviso.y) || 1; vx = (j.x - aviso.x) / dd; vy = (j.y - aviso.y) / dd; }
       else if (d > alcance) { vx = (jefe.x - j.x) / d; vy = (jefe.y - j.y) / d; }
-      else if (jefe.golpeable !== false && (jefe.z || 0) < 0.6) { j.fx = (jefe.x - j.x) / d; j.fy = (jefe.y - j.y) / d; entrada.cuadroPrevio = performance.now() - 1; pedir('atacar'); }
+      else if (jefe.golpeable !== false && (jefe.z || 0) < 0.6 && t >= toque) { toque = t + (o.cadencia || 0); j.fx = (jefe.x - j.x) / d; j.fy = (jefe.y - j.y) / d; entrada.cuadroPrevio = performance.now() - 1; pedir('atacar'); }
       if (j.vida < j.max * 0.35 && tiene('semilla_preparada') > 0 && !juego.dialogo) usarObjeto('semilla_preparada');
     }
     entrada.tx = vx; entrada.ty = -vy;

@@ -52,6 +52,22 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 33 (2026-11-17): los jefes con el perfil del celular
+
+`bot_jefe.js` admite ahora `cadencia` y `reaccion` como `bot_grupo.js`, y `jefes.mjs` toma `HABS` (lista de habilidades), `CAD` y
+`REAC`. Perfil celular (`HABS='[0.5]' CAD=0.3 REAC=0.3`), con una semilla preparada y la vida con la que se llega a cada jefe; 10
+peleas por jefe:
+
+| Jefe | Celular, antes | Celular, después |
+|---|---|---|
+| Nauyaca (1-5, nv 2, llega al 70 %) | gana 10/10 · 14 s · pierde 44 % de su vida | igual |
+| **Jaguar (2-5, nv 3, al 100 %)** | gana 10/10 · **11 s · 32 %, un solo golpe**: más fácil que la nauyaca | gana 10/10 · 16 s · 49 % |
+| Guardián (3-5, nv 4, llega al 70 %) | gana 8/10 · 28 s · 44 de 63 | igual |
+
+**Cambio:** vida del Espíritu del Jaguar de 420 a **540** (`ENEMIGO.jaguar`, `js/actores.js`), para que la curva de jefes suba.
+Con el bot de antes (habilidad 0,65 / 0,85) gana 10/10 en 15-16 s perdiendo un 25-42 %. La nauyaca y el Guardián se quedan:
+el Guardián ya pierde 2 de cada 10 llegando al 70 % y gana al segundo intento con la vida llena.
+
 ## Etapa 32 (2026-11-17): dificultad para jugar en el celular
 
 **Revisión.** Los bots de las etapas 22-24 juegan mejor que una persona con el celular: pegan en cada cuadro y responden a un

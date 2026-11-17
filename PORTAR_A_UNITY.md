@@ -320,7 +320,7 @@ desplazamiento local:
 ## 10. Dificultad de los jefes
 
 Valores revisados con un jugador automático (README, etapa 23):
-- **Vida:** nauyaca 380; jaguar 420 (en Unity, `StoneJaguar`, 160); Guardián 700 (en Unity, `StoneGuardian`, 400). Las fases del
+- **Vida:** nauyaca 380; jaguar 540 desde la etapa 33 (en Unity, `StoneJaguar`, 160); Guardián 700 (en Unity, `StoneGuardian`, 400). Las fases del
   Guardián siguen al 60 % y al 25 %.
 - **Contraataque:** si un jefe recibe 6 golpes en 2,5 s, `TelegraphMarker` en círculo de 2,2 m alrededor durante 0,4 s; quita 8
   con empuje 2,2; espera de 4 s. En Unity puede contarse en `Health` (un evento por golpe del jugador) y lanzarse desde cada jefe.
@@ -387,3 +387,7 @@ con borde y sombra, icono relleno con brillo del color de su función (ver `inde
 
 - Mordida avisada del espíritu corrompido: aviso de **0,55 s** (antes 0,4).
 - Presupuesto de amenaza de los niveles generados: piso 2 = 16, 18, 20, 22; piso 3 = 19, 21, 23, 26 (X-1 a X-4).
+
+## 19. Vida del Espíritu del Jaguar (etapa 33)
+
+Vida **540** (420 desde la etapa 23; 160 en Unity), para que dure más que la nauyaca con un jugador de celular.
