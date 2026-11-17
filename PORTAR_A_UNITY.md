@@ -341,3 +341,11 @@ Valores revisados con el jugador automático (README, etapa 24):
 - **Aviso de girar el celular y escala por el lado corto:** solo hacen falta en el navegador. Unity ya fija el horizontal
   (`ProjectSettings`: sin retrato).
 - **Rejilla de colisión** (`js/mundo.js`): es la optimización de la versión HTML; Unity usa su física.
+
+## 12. Efectos de golpe y ataque (etapa 26, `js/efectos.js`)
+
+Valores en `EF`. En Unity: un `HitFeedback` con `ParticleSystem` para chispas (7 al golpear, 14 al morir; 0,32 s; gravedad 9),
+un sprite de estrella + 3 trazos (`LineRenderer`) de 0,22 s en el jugador al recibir daño, una pausa `TimeDilation` de 0,05 s, un
+icono «!» sobre la cabeza al empezar `TelegraphMarker`/aviso (0,55 s), polvo al correr > 3 m/s y un `TrailRenderer` o copias del
+sprite (4, cada 0,035 s, 0,18 s de vida) a > 5,5 m/s. La estocada de `Ataque`: curva de escala que sale en 0,07 s, se pasa un 20 % y
+se asienta con exp(-12 t).

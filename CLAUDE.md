@@ -3,6 +3,28 @@
 Port por etapas del RPG de Unity (`C:\Users\Usuario\Documents\CronicasDeMexico`) a HTML + JavaScript sin dependencias.
 El detalle de cada etapa está en `README.md` (largo): **lee solo la sección que necesites** (`grep -n "^## " README.md`).
 
+## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
+
+- **Última etapa:** 26 (2026-11-17), efectos de golpe y ataque para todos los enemigos (`js/efectos.js`). Sin probar a mano.
+- **Ideas siguientes de animación:** cuadros nuevos de ataque para la fauna de la lámina (hoy un solo cuadro), anillo de onda al
+  aterrizar los jefes, número de daño que rebota, pelusa al morir según el animal.
+- **Siguiente propuesta:** probar en un celular real y ajustar dificultad (esquivas); luego música (estilo lo decide el
+  autor); pasar a Unity según `PORTAR_A_UNITY.md`.
+- **Deseo pendiente del usuario:** mejor animación para los enemigos actuales; más animales de Veracruz/Tabasco.
+- **Deudas:** `/ponytail-debt` lista los `shortcut:` del código.
+
+## Flujo de una etapa (para gastar pocos tokens)
+
+1. Retomar: este archivo ya basta. `git log --oneline -5` para confirmar. **No leer el README entero.**
+2. Si la etapa toca un sistema ya hecho: `grep -n "^## " README.md` y leer solo esa sección con `sed -n A,Bp`.
+   Del código, `grep -n` a la función y leer solo ese tramo.
+3. Implementar en modo **ponytail** (cambio mínimo y completo; atajos con comentario `shortcut:`).
+4. Probar con `herramientas/dificultad/prueba.mjs` y un guion; revisar el cambio con `/ponytail-review`
+   (o `/code-review` si es grande).
+5. Cerrar: sección `## Etapa N` arriba del README, `PORTAR_A_UNITY.md` si aplica, y **reescribir «Estado»** aquí.
+6. Commit/push solo cuando el usuario lo pida (un commit por etapa: `git log` sirve de índice).
+7. Plugin o skill nuevo: escanearlo antes con `skillspector` (MCP `scan_skill`).
+
 ## Reglas
 
 - Responder siempre en **español**.
@@ -21,6 +43,7 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 | `js/actores.js` | Jugador, `herirEnemigo`, `herirJugador`, `marca`/`enMarca` (avisos), espíritus, jaguar |
 | `js/animales.js` | Animales dibujados por código: nauyaca, pecarí, tapir, ocelote, aullador, armadillo, pejelagarto |
 | `js/fauna.js` · `js/guardian.js` · `js/trampas.js` | Fauna de la lámina · Guardián · trampas |
+| `js/efectos.js` | Jugosidad: `chispas`, `impacto`, `alerta`, `polvo`, estela (`rastroEnemigos`); valores en `EF` |
 | `js/niveles.js` | Niveles 1-1…3-5, `generarNivel`, `POBLACION`/`COSTE`/`PRESUPUESTO`, enlace de prueba `?nivel=` |
 | `js/juego.js` | Banderas, misiones, `cargarRegion`, guardado, bucle `actualizar` |
 | `js/recompensas.js` · `js/sonido.js` · `js/senda.js` · `js/movimiento.js` | Progresión · sonido · senda · movimiento de sprites |

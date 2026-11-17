@@ -385,6 +385,7 @@ function actualizar(dt) {
   j.actualizar(j, dt);
   for (const o of juego.otros) o.actualizar(o, dt);
   if (!juego.dialogo) for (const e of juego.enemigos) if (e.vida > 0) e.actualizar(e, dt);
+  rastroEnemigos(dt); // polvo y estela (js/efectos.js)
   revisarNivel();
   for (const e of juego.enemigos) {
     if (e.vida > 0) recuperarRuptura(e, dt);
@@ -448,7 +449,7 @@ function dibujarTodo() {
   for (const o of mundo.objetos) if (o.techo) o.ordenAhora = Math.abs(j.x - o.x) < o.techo[0] && Math.abs(j.y - o.y) < o.techo[1] ? -Infinity : o.orden;
   const clave = (o) => o.ordenAhora ?? o.orden ?? profundidad(o.y, o.z || 0);
   const capa = mundo.objetos.concat(juego.otros, juego.enemigos, [j]).sort((a, b) => clave(b) - clave(a));
-  for (const o of capa) o.dibujar(o);
+  for (const o of capa) { if (o.estela) dibujarEstela(o); o.dibujar(o); }
   dibujarMira();
   dibujarAnilloSenda();
   for (const s of juego.disparos) elipse(s.x, s.y, s.color ? 0.18 : 0.14, s.color || '#c9a8ff', '#fff', s.z || 0.9);
@@ -457,6 +458,7 @@ function dibujarTodo() {
     if (f.tipo === 'num') texto(f.txt, f.x, f.y, 1.6 + (0.8 - f.t), f.color, Math.min(1, f.t * 2));
     if (f.tipo === 'tajo') elipse(f.x, f.y, ATAQUE.radio * (f.remate ? 1.15 : 1), `rgba(255,240,200,${f.t * 3})`, null, 0.5);
     if (f.tipo === 'destello') elipse(f.x, f.y, 0.8 * (1 - f.t / 0.3), null, '#c9a8ff');
+    dibujarEfecto(f); // los de js/efectos.js
   }
 }
 

@@ -22,6 +22,10 @@ const seno = (t) => Math.sin(2 * Math.PI * t);
 // Devuelve { sx, sy, giro, dx, dy } para dibujarEn. pose: 'Reposo' | 'Caminar' | 'Correr' | 'Volar' | 'Aviso' | 'Ataque' |
 // 'Defensa' | 'Dano' | 'Muerte'. progreso (0-1) de la pose cuando la tiene (aviso y muerte).
 function movimiento(e, estilo, pose, progreso = 0) {
+  if (juego.dibujandoEstela && e.mv?.ultimo) return e.mv.ultimo; // la estela (js/efectos.js) repite la última pose sin avanzar
+  return (e.mv ? e.mv : {}).ultimo = calcularMovimiento(e, estilo, pose, progreso);
+}
+function calcularMovimiento(e, estilo, pose, progreso) {
   const E = ESTILOS[estilo] || ESTILOS.espiritu, m = e.mv || (e.mv = { fase: Math.random(), t: juego.t, signo: Math.sign(e.fx) || 1, giroT: 0, z: e.z || 0, aterriza: 0, dano: 0 });
   const dt = Math.min(0.1, Math.max(0, juego.t - m.t)); m.t = juego.t;
   const t = juego.t + m.fase * 10, o = { sx: 1, sy: 1, giro: 0, dx: 0, dy: 0 };
@@ -36,6 +40,8 @@ function movimiento(e, estilo, pose, progreso = 0) {
   // Golpe recibido: el destello marca el instante.
   if (e.destello > 0.08 && m.dano <= 0) m.dano = 0.22;
   m.dano = Math.max(0, m.dano - dt);
+  // Inicio de cada pose: «!» al empezar el aviso, polvo al lanzar el ataque (js/efectos.js).
+  if (pose !== m.pose) { m.pose = pose; m.desde = juego.t; if (pose === 'Aviso') alerta(e); if (pose === 'Ataque' && !(e.alto > 0)) polvo(e.x - (e.fx || 0) * 0.3, e.y, 0.3); }
 
   if (pose === 'Muerte') { // se vuelca hacia atrás y se hunde
     const p = Math.min(1, progreso);
@@ -63,8 +69,9 @@ function movimiento(e, estilo, pose, progreso = 0) {
     const p = Math.min(1, progreso);
     o.sx *= 1 - 0.08 * p; o.sy *= 1 + 0.06 * p; o.giro += 0.14 * p; o.dx -= 2 * p;
     if (p > 0.7) o.dx += (Math.random() - 0.5) * 1.2;
-  } else if (pose === 'Ataque') { // estocada: se estira hacia delante
-    o.sx *= 1.16; o.sy *= 0.9; o.giro -= 0.1; o.dx += 3;
+  } else if (pose === 'Ataque') { // estocada: sale en 0,07 s, se pasa un 20 % y se asienta (seguimiento del golpe)
+    const a = juego.t - m.desde, k = Math.min(1, a / 0.07) * (0.75 + 0.45 * (a > 0.07 ? Math.exp(-(a - 0.07) * 12) : 1));
+    o.sx *= 1 + 0.2 * k; o.sy *= 1 - 0.13 * k; o.giro -= 0.14 * k; o.dx += 4.5 * k;
   } else if (pose === 'Defensa') { o.sx *= 1.06; o.sy *= 0.9; o.dy += 1; }
   else if (pose === 'Flotar') { o.dy -= seno(t * 0.5) * (E.flota || 1.5); } // el reposo de los que vuelan
   if (m.dano > 0) { const k = m.dano / 0.22; o.giro += 0.22 * k; o.sx *= 1 - 0.1 * k; o.sy *= 1 + 0.08 * k; o.dx += (Math.random() - 0.5) * 2 * k - 2 * k; }

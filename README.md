@@ -38,6 +38,7 @@ mismos números (escala ×10).
 | `js/guardian.js` | Guardián de la Piedra Viva: fases, ataques y avisos |
 | `js/fauna.js` | Fauna hostil (`WildEnemy`) y vasijas rompibles |
 | `js/trampas.js` | Pinchos, placas de presión, braseros, cristales, esteras y cabezas de piedra |
+| `js/efectos.js` | Chispas, estrella de impacto, «!» de aviso, polvo y estela de los enemigos rápidos |
 | `js/movimiento.js` | Movimiento por código (respirar, botar, aletear, anticipar, estocada…) de los enemigos de un solo cuadro |
 | `js/animales.js` | Animales de Veracruz y Tabasco: nauyaca real, pecarí de collar, tapir, ocelote, mono aullador, armadillo y pejelagarto |
 | `herramientas/animales.mjs` | Dibuja por código los animales y sus animaciones (`arte/Animales`, `datos/animales.js`) |
@@ -49,6 +50,26 @@ mismos números (escala ×10).
 | `js/juego.js` | Banderas, misiones, diálogos por ramas, contenido de cada región, guardado, HUD y bucle |
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
+
+## Etapa 26 (2026-11-17): efectos de golpe y ataque (`js/efectos.js`)
+
+Para que los ataques se lean mejor, al estilo de los juegos de acción de vista cenital para celular y de los RPG de bolsillo (solo
+técnicas del género; ningún arte ajeno). Afecta a **todos** los enemigos sin tocar su arte:
+
+- **«!» de aviso** sobre el enemigo al empezar su aviso (pose `Aviso` de `movimiento`, o cualquier `marca` con `dueno`); da un brinco
+  y dura 0,55 s, como mucho uno cada 0,55 s por enemigo.
+- **Estocada con rebote:** la pose `Ataque` sale en 0,07 s, se pasa un 20 % y se asienta (antes era una pose fija). Polvo al lanzarla.
+- **Golpe al jugador:** estrella de 8 puntas que se abre, tres zarpazos en la dirección del golpe, chispas rojas y una pausa de impacto
+  de 0,05 s (`EF.pausaHerido`). No cambia el daño ni los tiempos de la dificultad.
+- **Golpe del jugador:** chispas que salen en la dirección del golpe (doradas si el enemigo está roto). **Muerte:** 14 chispas
+  violetas y una nube de polvo.
+- **Polvo** al correr por el suelo a más de 3 m/s y **estela** (hasta 4 copias translúcidas) a más de 5,5 m/s: embestidas, saltos y
+  retrocesos. Un salto de más de 2 m en un cuadro (aparecer, sumergirse) no deja estela.
+- Valores en `EF`; autocomprobaciones al cargar (chispas y estela).
+
+**Pruebas** (`prueba.mjs` con un guion de 5 s por enemigo, el jugador quieto): espíritu, tapir, ocelote, mono y cocodrilo muestran
+«!», impacto, chispas y polvo; estela en ocelote, mono y cocodrilo; golpear da chispas y matar, el estallido; 62 FPS; sin `[assert]` ni
+excepciones. **Sin probar a mano ni en el celular.**
 
 ## Etapa 25 (2026-11-17): el pejelagarto, enemigo de la charca
 
@@ -710,10 +731,7 @@ En Unity sigue siendo un sprite provisional que está siempre en la orilla. Aqu�
 
 ## Siguientes etapas propuestas
 
-1. Probar en un celular real (sonido, vibración, pulsación larga) y ajustar la dificultad jugando, sobre todo las esquivas.
-2. Pasar a Unity lo que solo existe aquí, en el orden de `PORTAR_A_UNITY.md`.
-3. Música, cuando el autor decida el estilo.
-4. El siguiente capítulo, cuando exista en Unity.
+Están en la sección «Estado» de `CLAUDE.md`, que se actualiza al cerrar cada etapa.
 
 ## Pruebas hechas
 

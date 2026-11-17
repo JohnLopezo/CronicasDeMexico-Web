@@ -185,7 +185,8 @@ function herirJugador(golpe, desde, empuje = 0.8) {
   }
   const d = Math.ceil(dano(golpe, estadisticas().defensa) * (j.defiende ? DEFENSA.factor : 1));
   j.vida = Math.max(0, j.vida - d); j.inv = 1; j.herido = 0.25; vista.temblor = 0.15;
-  const l = dist(j, desde) || 1;
+  const l = dist(j, desde) || 1, ang = Math.atan2(-(j.y - desde.y), j.x - desde.x); // en pantalla la y crece hacia abajo
+  impacto(j.x, j.y, 0.7, ang); chispas(j.x, j.y, 0.7, '#ff8a7a', Math.atan2(j.y - desde.y, j.x - desde.x)); juego.pausaGolpe = Math.max(juego.pausaGolpe, EF.pausaHerido);
   mover(j, ((j.x - desde.x) / l) * empuje, ((j.y - desde.y) / l) * empuje);
   numero(j.x, j.y, `-${d}`, '#ff8a7a');
   sonar(j.defiende ? 'escudo' : 'herido'); vibrar(40);
@@ -203,8 +204,9 @@ function herirEnemigo(e, cant, desde, afinidad) {
   if (e.vida > 0) e.alHerir?.(e);
   if (e.jefe && e.vida > 0 && desde === juego.jugador) contraataque(e);
   numero(e.x, e.y, `${cant}`, '#fff2c4'); sonar('golpe');
+  chispas(e.x, e.y, (e.z || 0) + (e.alto || 0) + 0.5, e.roto > 0 ? '#ffd23a' : '#fff6d8', Math.atan2(e.y - desde.y, e.x - desde.x)); // js/efectos.js
   if (!e.jefe && !e.pesado) { const l = dist(e, desde) || 1; e.kx = ((e.x - desde.x) / l) * 6; e.ky = ((e.y - desde.y) / l) * 6; } // el tapir no retrocede
-  if (e.vida <= 0) { e.vida = 0; e.muriendo = 0.6; sonar('muerte'); recompensaEnemigo(e); e.alMorir?.(e); }
+  if (e.vida <= 0) { e.vida = 0; e.muriendo = 0.6; sonar('muerte'); chispas(e.x, e.y, (e.z || 0) + (e.alto || 0) + 0.5, '#c9a8ff', null, 14, 2.4); polvo(e.x, e.y, 0.5); recompensaEnemigo(e); e.alMorir?.(e); }
   if (desde === juego.jugador) e.vida > 0 ? golpeConAfinidad(e, afinidad) : mostrarRuptura(e); // primero el daño, como TryDamage
 }
 
@@ -386,7 +388,7 @@ function nuevoJaguar(x, y, alMorir) {
     r: ENEMIGO.jaguar.r, escala: 2, estado: 'dormido', cuenta: 0, actualizar: actualizarJaguar, dibujar: dibujarJaguar });
 }
 // Avisos en el suelo (TelegraphMarker): círculo, anillo (desde la mitad del radio hacia fuera) y franja (o = {dx, dy, largo}; r es el ancho).
-function marca(forma, x, y, r, dur, alFin, o = {}) { const m = { forma, x, y, r, t: dur, dur, alFin, ...o }; juego.marcas.push(m); sonar('aviso'); return m; }
+function marca(forma, x, y, r, dur, alFin, o = {}) { const m = { forma, x, y, r, t: dur, dur, alFin, ...o }; juego.marcas.push(m); sonar('aviso'); if (o.dueno) alerta(o.dueno); return m; }
 function enMarca(m, a) {
   const d = Math.hypot(a.x - m.x, a.y - m.y);
   if (m.forma === 'anillo') return d <= m.r + 0.2 && d >= m.r * 0.5 - 0.2;
