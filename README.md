@@ -51,6 +51,22 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 27 (2026-11-17): onda al aterrizar, números que botan y restos por animal (`js/efectos.js`)
+
+- **Onda al aterrizar:** un jefe o un enemigo pesado (tapir) que cae de más de 0,3 m (`EF.onda`) hace un anillo que se abre hasta
+  2,2 m, 8 nubes de polvo alrededor, sacude la cámara 0,2 s y suena el impacto. Los demás levantan 3 nubecillas. Es solo visual: no
+  hace daño (el daño sigue en las `marca` de cada ataque).
+- **Números de daño:** salen a 11 px y bajan a 8 en 0,12 s, botan 0,6 m, rebotan 0,15 y suben despacio mientras se apagan; cada uno
+  se aparta un poco hacia un lado para que no se tapen. También los avisos «¡Bloqueo!» y «¡Perfecta!». `texto()` acepta ahora el tamaño.
+- **Restos al morir** según el animal (`RESTOS`): plumas rojas, azules y amarillas de la guacamaya y oscuras del murciélago, que
+  frenan y caen meciéndose (duran el triple); escamas de la serpiente, el cocodrilo, la nauyaca y el pejelagarto; pelo de los
+  mamíferos con su color (pecarí gris, ocelote dorado y negro, jaguar…); placas del armadillo; piedra y jade del Guardián. Los
+  espíritus y ecos, chispas violetas como antes.
+
+**Pruebas** (`prueba.mjs`): restos de guacamaya (10, flotan), cocodrilo (12), tapir (16) y espíritu (14) con sus colores; el
+Guardián que cae de 1,5 m hace la onda; la altura del número 1,6 → 2,2 → 1,6 → 1,75 → 1,6 → sube; 61 FPS; autocomprobaciones de la
+onda y los restos sin `[assert]`. **Sin probar a mano ni en el celular.**
+
 ## Etapa 26 (2026-11-17): efectos de golpe y ataque (`js/efectos.js`)
 
 Para que los ataques se lean mejor, al estilo de los juegos de acción de vista cenital para celular y de los RPG de bolsillo (solo

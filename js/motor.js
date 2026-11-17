@@ -77,9 +77,9 @@ function elipse(x, y, r, relleno, borde, z = 0) {
   if (relleno) { ctx.fillStyle = relleno; ctx.fill(); }
   if (borde) { ctx.strokeStyle = borde; ctx.lineWidth = 1; ctx.stroke(); }
 }
-function texto(txt, x, y, z, color, alfa = 1) {
+function texto(txt, x, y, z, color, alfa = 1, tam = 8) {
   const [sx, sy] = pantalla(x, y, z);
-  ctx.globalAlpha = alfa; ctx.font = 'bold 8px monospace'; ctx.textAlign = 'center';
+  ctx.globalAlpha = alfa; ctx.font = `bold ${tam}px monospace`; ctx.textAlign = 'center';
   ctx.fillStyle = '#000'; ctx.fillText(txt, Math.round(sx - vista.cx) + 1, Math.round(sy - vista.cy) + 1);
   ctx.fillStyle = color; ctx.fillText(txt, Math.round(sx - vista.cx), Math.round(sy - vista.cy));
   ctx.globalAlpha = 1;

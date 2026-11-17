@@ -5,9 +5,9 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
-- **Última etapa:** 26 (2026-11-17), efectos de golpe y ataque para todos los enemigos (`js/efectos.js`). Sin probar a mano.
-- **Ideas siguientes de animación:** cuadros nuevos de ataque para la fauna de la lámina (hoy un solo cuadro), anillo de onda al
-  aterrizar los jefes, número de daño que rebota, pelusa al morir según el animal.
+- **Última etapa:** 27 (2026-11-17), onda al aterrizar, números que botan y restos por animal (`js/efectos.js`). 26: chispas,
+  impacto, «!», polvo y estela. Sin probar a mano.
+- **Idea siguiente de animación:** cuadros nuevos de ataque para la fauna de la lámina (hoy un solo cuadro).
 - **Siguiente propuesta:** probar en un celular real y ajustar dificultad (esquivas); luego música (estilo lo decide el
   autor); pasar a Unity según `PORTAR_A_UNITY.md`.
 - **Deseo pendiente del usuario:** mejor animación para los enemigos actuales; más animales de Veracruz/Tabasco.
@@ -43,7 +43,7 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 | `js/actores.js` | Jugador, `herirEnemigo`, `herirJugador`, `marca`/`enMarca` (avisos), espíritus, jaguar |
 | `js/animales.js` | Animales dibujados por código: nauyaca, pecarí, tapir, ocelote, aullador, armadillo, pejelagarto |
 | `js/fauna.js` · `js/guardian.js` · `js/trampas.js` | Fauna de la lámina · Guardián · trampas |
-| `js/efectos.js` | Jugosidad: `chispas`, `impacto`, `alerta`, `polvo`, estela (`rastroEnemigos`); valores en `EF` |
+| `js/efectos.js` | Jugosidad: `chispas`, `impacto`, `alerta`, `polvo`, estela y aterrizaje (`rastroEnemigos`), `dibujarNumero`, `RESTOS`; valores en `EF` |
 | `js/niveles.js` | Niveles 1-1…3-5, `generarNivel`, `POBLACION`/`COSTE`/`PRESUPUESTO`, enlace de prueba `?nivel=` |
 | `js/juego.js` | Banderas, misiones, `cargarRegion`, guardado, bucle `actualizar` |
 | `js/recompensas.js` · `js/sonido.js` · `js/senda.js` · `js/movimiento.js` | Progresión · sonido · senda · movimiento de sprites |

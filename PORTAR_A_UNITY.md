@@ -349,3 +349,11 @@ un sprite de estrella + 3 trazos (`LineRenderer`) de 0,22 s en el jugador al rec
 icono «!» sobre la cabeza al empezar `TelegraphMarker`/aviso (0,55 s), polvo al correr > 3 m/s y un `TrailRenderer` o copias del
 sprite (4, cada 0,035 s, 0,18 s de vida) a > 5,5 m/s. La estocada de `Ataque`: curva de escala que sale en 0,07 s, se pasa un 20 % y
 se asienta con exp(-12 t).
+
+## 13. Onda al aterrizar, números que botan y restos (etapa 27, `js/efectos.js`)
+
+- Onda: al tocar suelo tras caer > 0,3 m, jefes y `pesado`: anillo 0,45 s hasta 2,2 m, 8 polvos, temblor 0,2 s (en Unity, en el
+  `OnLanded` del controlador del enemigo; un `ParticleSystem` con forma de anillo).
+- Número de daño: escala 11/8 → 1 en 0,12 s, bote parabólico de 0,6 m en 0,3 s, rebote de 0,15 en 0,2 s, deriva lateral ±0,3 m
+  (en Unity, en el prefab del número flotante con una `AnimationCurve`).
+- Restos por especie (`RESTOS`: colores, cantidad, gravedad, tamaño, si planean): un campo `deathDebris` en `EnemyDefinition`.

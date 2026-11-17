@@ -68,7 +68,7 @@ function contraataque(e) {
   }, { dueno: e });
 }
 
-function numero(x, y, txt, color) { juego.efectos.push({ tipo: 'num', x, y, t: 0.8, txt, color }); }
+function numero(x, y, txt, color) { juego.efectos.push({ tipo: 'num', x, y, t: 0.8, txt, color, dx: (Math.random() - 0.5) * 0.6 }); }
 
 // ---------- Jugador ----------
 function nuevoJugador(x, y, vida) {
@@ -206,7 +206,7 @@ function herirEnemigo(e, cant, desde, afinidad) {
   numero(e.x, e.y, `${cant}`, '#fff2c4'); sonar('golpe');
   chispas(e.x, e.y, (e.z || 0) + (e.alto || 0) + 0.5, e.roto > 0 ? '#ffd23a' : '#fff6d8', Math.atan2(e.y - desde.y, e.x - desde.x)); // js/efectos.js
   if (!e.jefe && !e.pesado) { const l = dist(e, desde) || 1; e.kx = ((e.x - desde.x) / l) * 6; e.ky = ((e.y - desde.y) / l) * 6; } // el tapir no retrocede
-  if (e.vida <= 0) { e.vida = 0; e.muriendo = 0.6; sonar('muerte'); chispas(e.x, e.y, (e.z || 0) + (e.alto || 0) + 0.5, '#c9a8ff', null, 14, 2.4); polvo(e.x, e.y, 0.5); recompensaEnemigo(e); e.alMorir?.(e); }
+  if (e.vida <= 0) { e.vida = 0; e.muriendo = 0.6; sonar('muerte'); restos(e); /* js/efectos.js: plumas, escamas, pelo o piedra */ recompensaEnemigo(e); e.alMorir?.(e); }
   if (desde === juego.jugador) e.vida > 0 ? golpeConAfinidad(e, afinidad) : mostrarRuptura(e); // primero el daño, como TryDamage
 }
 

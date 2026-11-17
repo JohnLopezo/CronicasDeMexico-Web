@@ -455,7 +455,7 @@ function dibujarTodo() {
   for (const s of juego.disparos) elipse(s.x, s.y, s.color ? 0.18 : 0.14, s.color || '#c9a8ff', '#fff', s.z || 0.9);
   for (const f of juego.efectos) {
     if (f.tipo === 'tierra') elipse(f.x, f.y, TIERRA.radio * (1.2 - f.t), `rgba(224,162,58,${f.t * 1.5})`, '#e0a23a');
-    if (f.tipo === 'num') texto(f.txt, f.x, f.y, 1.6 + (0.8 - f.t), f.color, Math.min(1, f.t * 2));
+    if (f.tipo === 'num') dibujarNumero(f); // js/efectos.js
     if (f.tipo === 'tajo') elipse(f.x, f.y, ATAQUE.radio * (f.remate ? 1.15 : 1), `rgba(255,240,200,${f.t * 3})`, null, 0.5);
     if (f.tipo === 'destello') elipse(f.x, f.y, 0.8 * (1 - f.t / 0.3), null, '#c9a8ff');
     dibujarEfecto(f); // los de js/efectos.js
