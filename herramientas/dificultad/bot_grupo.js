@@ -25,6 +25,9 @@ window.GRUPO = function (grupo, o) {
     } else {
       const d = dist(b, j), aviso = juego.marcas.find((m) => enMarca(m, j));
       if (aviso && aviso.forma !== 'anillo') { const dd = Math.hypot(j.x - aviso.x, j.y - aviso.y) || 1; vx = (j.x - aviso.x) / dd; vy = (j.y - aviso.y) / dd; }
+      // o.especial: usa el especial del arma con el enemigo a menos de 2,2 m; o.dispara: con arma a distancia, tira quieto desde lejos (etapa 37)
+      else if (o.especial && especialDe() && !(juego.esperaEspecial > 0) && prog().energia >= ESPECIAL.coste && d < 2.2 && j.espera <= 0) { j.fx = (b.x - j.x) / d; j.fy = (b.y - j.y) / d; entrada.cuadroPrevio = performance.now() - 1; pedir('especial'); }
+      else if (o.dispara && datosDe('lejos') && municion() > 0 && d > TIRO.cerca && d <= alcanceTiro(datosDe('lejos')) && !vs.some((e) => dist(e, j) < TIRO.cerca)) { if (t >= toque) { toque = t + (o.cadencia || 0); entrada.cuadroPrevio = performance.now() - 1; pedir('atacar'); } }
       else if (d > alcance) { vx = (b.x - j.x) / d; vy = (b.y - j.y) / d; if (o.orilla && enAgua(j.x + vx * 0.35, j.y + vy * 0.35)) { vx = vy = 0; } } // o.orilla: no se mete al agua (etapa 25)
       else if (b.golpeable !== false && (b.z || 0) + (b.alto || 0) < 1.4 && t >= toque) { toque = t + (o.cadencia || 0); j.fx = (b.x - j.x) / d; j.fy = (b.y - j.y) / d; entrada.cuadroPrevio = performance.now() - 1; pedir('atacar'); }
       else if (b.golpeable === false) { vx = (j.x - b.x) / (d || 1) * 0.3; vy = (j.y - b.y) / (d || 1) * 0.3; } // bajo tierra: espera
@@ -33,6 +36,7 @@ window.GRUPO = function (grupo, o) {
     entrada.tx = vx; entrada.ty = -vy;
     let escala = 1;
     if (juego.pausaGolpe > 0) { juego.pausaGolpe -= dt; escala = 0.05; } else if (juego.lento > 0) { juego.lento -= dt; escala = MOV.lentoEscala; }
+    juego.esperaEspecial = Math.max(0, (juego.esperaEspecial || 0) - dt); // como bucle() (js/juego.js)
     actualizar(dt * escala);
     if (juego.dialogo) juego.dialogo = null;
     for (const t2 of juego.portales) t2.armado = false; // que el bot no cruce portales

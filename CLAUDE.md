@@ -5,7 +5,11 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
-- **Dónde nos quedamos (2026-11-18):** etapas 35 y 36 **subidas a GitHub** (dos commits: «Etapa 35: … pisos 2 y 3» y
+- **Etapa 37 (2026-11-18, sin commit todavía):** dos ranuras libres con Cambiar arma (R / `#bArma`), calidad ★-★★★ por piso
+  (`CALIDAD`, ★ ×0,6 tras medir con el bot) y especial de cada arma con cualquier Guardián (`ESPECIAL_ARMA`; el de Balam se
+  quitó). Dificultad medida (README, etapa 37): sin armas ~38 %, con la del armero ~30 %, con mejores ~20 %. Pendiente: que el
+  usuario la pruebe en el celular (posición del botón `#bArma`) y que pida el commit.
+- **Antes (2026-11-18):** etapas 35 y 36 **subidas a GitHub** (dos commits: «Etapa 35: … pisos 2 y 3» y
   «Etapa 36: armas olmecas…»). Etapa 35: HUD compacto, salas que serpentean, fondo por piso y suelo y muros de diseño propio en
   los pisos 2 («cámaras inundadas») y 3 («templo olmeca»), pintados por código (`js/pisos.js`, también 2-5 y 3-5). Etapa 36
   (`js/armas.js`): 9 armas olmecas en estrados (X-2 cerca, X-4 distancia, X-1 de pisos 2-3 escudo) con mecánicas propias,
@@ -79,6 +83,7 @@ Patrón de un enemigo nuevo: constantes en mayúsculas, `nuevoX(x, y)` con `actu
 ## Trampas conocidas
 
 - No hay Python: ediciones exactas con Edit o un script de node pequeño.
+- `prueba.mjs` usa el puerto fijo 9333: nunca dos pruebas a la vez (se pisan en el mismo Chrome).
 - En Bash, nunca `cat > archivo` sin heredoc (se cuelga); a los scripts de node, `</dev/null`. Los heredoc largos pueden
   fallar: mejor Edit.
 - `uv` y `skillspector` están en `C:\Users\Usuario\.local\bin` (en Bash: `export PATH="/c/Users/Usuario/.local/bin:$PATH"`).

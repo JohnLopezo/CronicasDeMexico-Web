@@ -10,7 +10,9 @@
 // 3-5) también pueden traer un arma. Nunca el escudo en un cofre: ese sale solo en su estrado, para la defensa.
 // Armero de la aldea (licencia del juego: no hay constancia de armeros olmecas): eliges un arma de las 8 y sales con ella a
 // cada incursión.
-// Se lleva una de cada clase: tomar otra de la misma clase la cambia; la misma recarga su munición o sus usos.
+// Etapa 37: dos ranuras libres (cualquier clase; el escudo cuenta y protege desde cualquiera de las dos). Cambiar arma (R o el
+// botón de las flechas) elige la de la mano, que es la que golpea, dispara y hace su especial (la estrella). Una tercera
+// sustituye a la de la mano; la misma recarga su munición o sus usos. Calidad por piso (CALIDAD): ★ floja, ★★★ fuerte.
 // Armas de la cultura olmeca (no de los mexicas: el macuahuitl es posterior). La macana (garrote de madera en forma de remo
 // con puntas) sale en monumentos de San Lorenzo y Chalcatzingo; el átlatl, en monumentos olmecas en manos de guerreros; de
 // la honda quedan piedras de honda en sitios olmecas (Hassig: arma olmeca desde al menos el 900 a. C.); el escudo
@@ -30,10 +32,18 @@ const TIRO = { cerca: 2.2, radio: 0.3 }; // a distancia: nadie a menos de 2,2 m 
 const SANGRADO = { seg: 2, cada: 0.5, parte: 0.15 }; // crítico del cuchillo: 4 tics de un 15 % del golpe
 // Qué clase de arma da cada nivel (X-n) y desde qué piso.
 const NIVEL_ARMA = { 1: { clase: 'escudo', desde: 2 }, 2: { clase: 'cerca', desde: 1 }, 4: { clase: 'lejos', desde: 1 } };
-const armaDe = (clase) => juego.flags[`incursion.${clase}`] || null; // id del arma llevada de esa clase
+// Ranuras: [{ id, nv (calidad 1-3), mun, usos }], hasta RANURAS; `incursion.mano` es el índice de la de la mano.
+const RANURAS = 2;
+const CALIDAD = { 1: 0.6, 2: 1, 3: 1.35 }; // ★ piso 1 y armero · ★★ piso 2 · ★★★ piso 3 (multiplica el daño)
+const ranuras = () => (juego.flags['incursion.ranuras'] ||= []);
+const enMano = () => ranuras()[juego.flags['incursion.mano'] || 0] || null;
+const armaDe = (clase) => { const r = enMano(); return r && ARMAS[r.id].clase === clase ? r.id : null; }; // id del arma en la mano si es de esa clase
 const datosDe = (clase) => ARMAS[armaDe(clase)] || null;
-const municion = () => juego.flags['incursion.municion'] || 0;
-const tieneEscudo = () => !!armaDe('escudo');
+const municion = () => enMano()?.mun || 0;
+const tieneEscudo = () => ranuras().some((r) => r.id === 'escudo');
+const estrellas = (nv) => '★'.repeat(nv || 1);
+const nombreArma = (r) => `${ARMAS[r.id].nombre} ${estrellas(r.nv)}`;
+const nuevaRanura = (id, nv) => ({ id, nv, mun: ARMAS[id].municion ? ARMAS[id].municion + (maestria().municion || 0) : 0, usos: ARMAS[id].usos || 0 });
 
 // Maestría: cuánto rinde cada clase de arma según el Guardián (multiplica su daño), por lo que dice de él GUARDIANES:
 // los de combate cercano pegan más de cerca; los de distancia y precisión, de lejos (con más alcance y munición).
@@ -47,11 +57,11 @@ const MAESTRIA = {
   aguila:   { cerca: 0.8, lejos: 1.35, alcance: 2, municion: 5, por: 'precisión' }, // Itzel
 };
 const maestria = () => MAESTRIA[guardianActual().id] || { cerca: 1, lejos: 1 };
-const danoArma = (id) => ARMAS[id].dano * (maestria()[ARMAS[id].clase] ?? 1);
+const danoArma = (id, nv) => (ARMAS[id].dano ?? 1) * (CALIDAD[nv] ?? 1) * (maestria()[ARMAS[id].clase] ?? 1);
 const alcanceTiro = (A) => A.alcance + (maestria().alcance || 0);
 // «Balam domina las armas de cerca (combate cercano): daño ×2,0» o «A Itzel le cuestan…».
-function textoMaestria(id) {
-  const A = ARMAS[id], m = maestria()[A.clase], g = guardianActual(), x = danoArma(id).toFixed(1).replace('.', ','), cual = A.clase === 'cerca' ? 'las armas de cerca' : 'las armas a distancia';
+function textoMaestria(id, nv) {
+  const A = ARMAS[id], m = maestria()[A.clase], g = guardianActual(), x = danoArma(id, nv).toFixed(1).replace('.', ','), cual = A.clase === 'cerca' ? 'las armas de cerca' : 'las armas a distancia';
   return m > 1 ? `${g.nombre} domina ${cual} (${maestria().por}): daño ×${x}` : m < 1 ? `A ${g.nombre} le cuestan ${cual}: daño ×${x}` : `Daño ×${x}`;
 }
 const QUE_HACE = {
@@ -71,25 +81,34 @@ function armaDelNivel(id) {
 
 // El estrado: objeto que se dibuja encima y se toma con Usar (o Atacar junto a él).
 function ponerArma(id, punto) {
-  const clave = `incursion.arma_${id}`, tipo = armaDelNivel(id);
+  const clave = `incursion.arma_${id}`, tipo = armaDelNivel(id), nv = +id[1] || 1;
   if (!punto || !tipo || bandera(clave)) return;
   const A = ARMAS[tipo], o = { tipo: 'arma', arma: tipo, x: punto.x, y: punto.y, z: 0, t: 0, actualizar(a, dt) { a.t += dt; }, dibujar: dibujarArmaSuelta };
   juego.otros.push(o);
-  const it = { x: punto.x, y: punto.y - 0.6, r: 1.4, texto: `Tomar ${A.nombre.toLowerCase()}`, usar() {
+  const it = { x: punto.x, y: punto.y - 0.6, r: 1.4, texto: `Tomar ${A.nombre.toLowerCase()} ${estrellas(nv)}`, usar() {
     if (bandera(clave)) return;
     poner(clave); juego.otros = juego.otros.filter((x) => x !== o); juego.interactuables = juego.interactuables.filter((x) => x !== it);
-    sonar('premio'); tomarArma(tipo);
+    sonar('premio'); tomarArma(tipo, nv);
   } };
   juego.interactuables.push(it);
 }
-// Llevar un arma (del estrado o de un cofre): cambia la de su clase o recarga la misma, y lo avisa.
-function tomarArma(tipo) {
-  const A = ARMAS[tipo], antes = armaDe(A.clase);
-  juego.flags[`incursion.${A.clase}`] = tipo;
-  if (A.municion) juego.flags['incursion.municion'] = (antes === tipo ? municion() : 0) + A.municion + (maestria().municion || 0);
-  if (A.usos) juego.flags['incursion.usos'] = A.usos;
-  const cambio = antes && antes !== tipo ? ` (dejas ${ARMAS[antes].nombre.toLowerCase()})` : '';
-  toast(`${A.nombre}${cambio}: ${QUE_HACE[tipo]}.${A.clase === 'escudo' ? '' : ' ' + textoMaestria(tipo)}`, 6);
+// Llevar un arma (del estrado, un cofre o el armero): la misma recarga (y sube de calidad si la nueva es mejor); si no, ocupa la
+// ranura libre o sustituye a la de la mano. Queda en la mano y lo avisa.
+function tomarArma(tipo, nv = 1) {
+  const A = ARMAS[tipo], R = ranuras();
+  let r = R.find((x) => x.id === tipo), cambio = '';
+  if (r) { r.nv = Math.max(r.nv, nv); if (A.municion) r.mun += nuevaRanura(tipo, nv).mun; if (A.usos) r.usos = A.usos; }
+  else if (R.length < RANURAS) R.push((r = nuevaRanura(tipo, nv)));
+  else { const m = juego.flags['incursion.mano'] || 0; cambio = ` (dejas ${nombreArma(R[m]).toLowerCase()})`; R[m] = r = nuevaRanura(tipo, nv); }
+  juego.flags['incursion.mano'] = R.indexOf(r);
+  toast(`${nombreArma(r)}${cambio}: ${QUE_HACE[tipo]}. Especial: ${ESPECIAL_ARMA[tipo].nombre.toLowerCase()}.${A.clase === 'escudo' ? '' : ' ' + textoMaestria(tipo, r.nv)}`, 6);
+}
+// Cambiar arma (R o el botón): la otra ranura pasa a la mano.
+function cambiarArma() {
+  const R = ranuras();
+  if (R.length < 2) return toast(R.length ? 'Solo llevas un arma' : 'No llevas armas', 2);
+  juego.flags['incursion.mano'] = 1 - (juego.flags['incursion.mano'] || 0);
+  sonar('clic'); toast(`En la mano: ${nombreArma(enMano())}`, 2);
 }
 // Arma al azar para un cofre (de cerca o a distancia, nunca el escudo), con la semilla de la incursión y el id del cofre.
 const ARMAS_COFRE = Object.keys(ARMAS).filter((k) => ARMAS[k].clase !== 'escudo');
@@ -126,9 +145,9 @@ function aparecerCofre(id) {
       objetos.push({ id: o, n: a + Math.floor(rnd() * (b - a + 1)) });
     }
     entregar({ xp: 10 * piso, objetos }, `premio.${id}.${semillaIncursion()}`);
-    const t = rnd(), L = datosDe('lejos');
-    if (t < COFRE.arma) tomarArma(ARMAS_COFRE[Math.floor(rnd() * ARMAS_COFRE.length)]);
-    else if (t < COFRE.arma + COFRE.municion && L) { const n = Math.ceil(L.municion / 2); juego.flags['incursion.municion'] = municion() + n; toast(`+${n} de munición para ${L.nombre.toLowerCase()}`, 4); }
+    const t = rnd(), L = ranuras().find((r) => ARMAS[r.id].clase === 'lejos');
+    if (t < COFRE.arma) tomarArma(ARMAS_COFRE[Math.floor(rnd() * ARMAS_COFRE.length)], piso);
+    else if (t < COFRE.arma + COFRE.municion && L) { const n = Math.ceil(ARMAS[L.id].municion / 2); L.mun += n; toast(`+${n} de munición para ${ARMAS[L.id].nombre.toLowerCase()}`, 4); }
   } });
 }
 // Se llama cada cuadro (revisarNivel, js/niveles.js): en el 1-1 y en el 2-5 (tras el jaguar), al no quedar enemigos.
@@ -153,36 +172,35 @@ function poblarArmero(O, I) {
 // Pestaña del armero (pintarMenu en js/recompensas.js).
 function menuArmero() {
   const elegida = juego.flags['armero.eleccion'];
-  return '<p>El armero de la aldea te presta un arma para la selva y la mazmorra: sales con ella en cada incursión y en la mazmorra puedes cambiarla por otra de su clase. Elige una.</p>' +
+  return '<p>El armero de la aldea te presta un arma sencilla (★) para la selva y la mazmorra: sales con ella en cada incursión. En la mazmorra hay mejores (★★ en el piso 2, ★★★ en el 3). Llevas dos: Cambiar arma elige la de la mano, y la estrella hace su especial. Elige una.</p>' +
     ARMAS_COFRE.map((id) => { const A = ARMAS[id];
-      return `<div class="fila"><img src="${iconoArma(id)}" alt=""><div><b>${A.nombre}</b><small>${A.clase === 'cerca' ? 'Cuerpo a cuerpo' : 'A distancia'}</small><div>${QUE_HACE[id]}.</div><small>${textoMaestria(id)}</small></div><button data-armero="${id}" ${elegida === id ? 'disabled' : ''}>${elegida === id ? 'Elegida' : 'Elegir'}</button></div>`;
+      return `<div class="fila"><img src="${iconoArma(id)}" alt=""><div><b>${A.nombre} ★</b><small>${A.clase === 'cerca' ? 'Cuerpo a cuerpo' : 'A distancia'}</small><div>${QUE_HACE[id]}. Especial: ${ESPECIAL_ARMA[id].nombre.toLowerCase()}.</div><small>${textoMaestria(id, 1)}</small></div><button data-armero="${id}" ${elegida === id ? 'disabled' : ''}>${elegida === id ? 'Elegida' : 'Elegir'}</button></div>`;
     }).join('');
 }
 function elegirArmero(id) {
-  const antes = juego.flags['armero.eleccion'];
-  if (antes && ARMAS[antes].clase !== ARMAS[id].clase) juego.flags[`incursion.${ARMAS[antes].clase}`] = null; // solo una del armero
-  juego.flags['armero.eleccion'] = id; tomarArma(id);
+  const antes = juego.flags['armero.eleccion'], R = ranuras(), k = R.findIndex((r) => r.id === antes);
+  if (k >= 0 && antes !== id) { R.splice(k, 1); juego.flags['incursion.mano'] = 0; } // solo una del armero
+  juego.flags['armero.eleccion'] = id; tomarArma(id, 1);
 }
-// Al empezar la incursión (al entrar a la selva, tras IncursionReset): se sale con la del armero.
+// Al empezar la incursión (al entrar a la selva, tras IncursionReset): se sale con la del armero, de calidad ★.
 function darArmaDelArmero() {
   const id = juego.flags['armero.eleccion'];
   if (!ARMAS[id]) return;
-  juego.flags[`incursion.${ARMAS[id].clase}`] = id;
-  if (ARMAS[id].municion) juego.flags['incursion.municion'] = ARMAS[id].municion + (maestria().municion || 0);
-  if (ARMAS[id].usos) juego.flags['incursion.usos'] = ARMAS[id].usos;
+  juego.flags['incursion.ranuras'] = [nuevaRanura(id, 1)]; juego.flags['incursion.mano'] = 0;
 }
 // Ofrenda de Unity: además de su premio, a veces un arma (el texto que se añade al mensaje de la ofrenda, o '').
 function armaEnOfrenda(id) {
   const tipo = id !== 'p3_final' && armaDeCofre(`ofrenda_${id}`, COFRE.ofrenda);
   if (!tipo) return '';
-  tomarArma(tipo);
-  return ` y ${ARMAS[tipo].nombre.toLowerCase()}`;
+  const nv = +(id.match(/\d/) || [1])[0];
+  tomarArma(tipo, nv);
+  return ` y ${ARMAS[tipo].nombre.toLowerCase()} ${estrellas(nv)}`;
 }
 
 // ---------- Cuerpo a cuerpo: lo llama golpear() (js/actores.js) ----------
 // Daño de un golpe con el arma de cerca: el cuchillo puede hacer crítico (×2) y abrir sangrado.
 function danoGolpe(A, id, e, base) {
-  let cant = Math.round(base * (A ? danoArma(id) : 1));
+  let cant = Math.round(base * (A ? danoArma(id, enMano().nv) : 1));
   if (A?.critico && Math.random() < A.critico) { cant *= 2; numero(e.x, e.y + 0.3, '¡Crítico!', '#ff6a5a'); e.sangra = { t: SANGRADO.seg, tic: SANGRADO.cada, cant: Math.max(1, Math.round(cant * SANGRADO.parte)) }; }
   return cant;
 }
@@ -195,8 +213,9 @@ function trasGolpe(A, e, remate) {
 // Tras cada golpe (entre o no): el cuchillo se gasta y el hacha rompe el basalto agrietado que tenga delante.
 function trasBlandir(A, cx, cy) {
   if (!A) return;
-  if (A.usos && (juego.flags['incursion.usos'] = (juego.flags['incursion.usos'] || 0) - 1) <= 0) {
-    juego.flags['incursion.cerca'] = null; sonar('rompe'); toast(`El ${A.nombre.toLowerCase()} se rompe: la obsidiana es frágil`, 3);
+  const r = enMano();
+  if (A.usos && r && --r.usos <= 0) {
+    ranuras().splice(ranuras().indexOf(r), 1); juego.flags['incursion.mano'] = 0; sonar('rompe'); toast(`El ${A.nombre.toLowerCase()} se rompe: la obsidiana es frágil`, 3);
   }
   if (A.rompe) for (const r of juego.rompibles) if (!bandera(r.bandera) && Math.hypot(r.x - cx, r.y - cy) < 1.6) r.romper();
 }
@@ -211,12 +230,51 @@ function lanzarDardo(j) {
   if (!obj || cerca || dist(obj, j) < TIRO.cerca) return false;
   const d = dist(obj, j) || 1, ux = (obj.x - j.x) / d, uy = (obj.y - j.y) / d;
   j.fx = ux; j.fy = uy; j.espera = A.espera; j.golpe = 0.1;
-  juego.flags['incursion.municion'] = municion() - 1;
-  juego.dardos.push({ id, x: j.x + ux * 0.4, y: j.y + uy * 0.4, ux, uy, t: alcanceTiro(A) / A.vel, quedan: A.atraviesa || 1, tocados: [] });
+  const r = enMano(); r.mun--;
+  soltarDardo(j, id, ux, uy, Math.round(estadisticas().ataque * danoArma(id, r.nv)), A.atraviesa || 1);
   sonar('disparo');
   if (!municion()) toast(`Sin munición para ${id === 'honda' ? 'la honda' : id === 'jabalina' ? 'las jabalinas' : 'el átlatl'}: espera al siguiente estrado`, 3);
   return true;
 }
+const soltarDardo = (j, id, ux, uy, dano, quedan) => juego.dardos.push({ id, x: j.x + ux * 0.4, y: j.y + uy * 0.4, ux, uy, t: alcanceTiro(ARMAS[id]) / ARMAS[id].vel, quedan, tocados: [], dano });
+
+// ---------- Especial de cada arma (etapa 37): la estrella (F) hace el del arma en la mano, con cualquier Guardián ----------
+// Golpe: zona de radio `radio` con centro a `alcance` delante (con `largo`, una franja desde el jugador hasta esa distancia).
+// Tiro: `tiro` proyectiles en abanico (`abre` grados entre ellos) hacia el fijado o el más cercano a tiro; no gasta munición.
+// Daño = ataque × mult × calidad × maestría (coste y espera en ESPECIAL, js/actores.js).
+const ESPECIAL_ARMA = {
+  macana:   { nombre: 'Remolino', alcance: 0, radio: 1.7, mult: 2.2 },
+  mazo:     { nombre: 'Golpe al suelo', alcance: 0.6, radio: 1.8, mult: 2, aturde: 1 },
+  lanza:    { nombre: 'Estocada', largo: 3, radio: 0.6, mult: 2.5 },
+  cuchillo: { nombre: 'Tajo certero', alcance: 1, radio: 1, mult: 2.5, sangra: true },
+  hacha:    { nombre: 'Tajo pesado', alcance: 1.2, radio: 1.2, mult: 3, rompe: true },
+  escudo:   { nombre: 'Embestida', alcance: 1, radio: 1.3, mult: 1, aturde: 1.2 },
+  atlatl:   { nombre: 'Tres dardos', tiro: 3, abre: 16, mult: 1.5 },
+  jabalina: { nombre: 'Jabalina imparable', tiro: 1, mult: 3, atraviesa: 99 },
+  honda:    { nombre: 'Lluvia de piedras', tiro: 5, abre: 12, mult: 1 },
+};
+function especialArma(j) {
+  const r = enMano(), A = ARMAS[r.id], E = ESPECIAL_ARMA[r.id];
+  const dano = Math.round(estadisticas().ataque * E.mult * (CALIDAD[r.nv] ?? 1) * (maestria()[A.clase] ?? 1));
+  const vivos = juego.enemigos.filter((e) => e.vida > 0 && e.golpeable !== false);
+  if (E.tiro) {
+    const obj = fijadoValido() ? juego.fijado : vivos.filter((e) => dist(e, j) <= alcanceTiro(A)).sort((a, b) => dist(a, j) - dist(b, j))[0];
+    if (obj) { const d = dist(obj, j) || 1; j.fx = (obj.x - j.x) / d; j.fy = (obj.y - j.y) / d; }
+    for (let k = 0; k < E.tiro; k++) { const [ux, uy] = girar(j.fx, j.fy, (k - (E.tiro - 1) / 2) * (E.abre || 0)); soltarDardo(j, r.id, ux, uy, dano, E.atraviesa || A.atraviesa || 1); }
+    return sonar('disparo');
+  }
+  const cx = j.x + j.fx * (E.largo ? E.largo / 2 : E.alcance), cy = j.y + j.fy * (E.largo ? E.largo / 2 : E.alcance);
+  juego.efectos.push({ tipo: 'tajo', x: cx, y: cy, t: 0.2, remate: true });
+  for (const e of vivos) {
+    const t = Math.max(0, Math.min(E.largo || 0, (e.x - j.x) * j.fx + (e.y - j.y) * j.fy)); // franja: punto más cercano del segmento
+    const l = E.largo ? Math.hypot(e.x - j.x - j.fx * t, e.y - j.y - j.fy * t) : Math.hypot(e.x - cx, e.y - cy);
+    if (l >= E.radio + e.r || herirEnemigo(e, dano, j, afinidadJugador()) === false || e.vida <= 0) continue;
+    if (E.aturde) aturdir(e, E.aturde);
+    if (E.sangra) e.sangra = { t: SANGRADO.seg, tic: SANGRADO.cada, cant: Math.max(1, Math.round(dano * SANGRADO.parte)) };
+  }
+  if (E.rompe) trasBlandir({ rompe: true }, cx, cy); // el mismo rompe-basalto del golpe
+}
+
 // Proyectiles del jugador y sangrado del cuchillo (cada cuadro, desde actualizar en js/juego.js).
 function actualizarArmas(dt) {
   const j = juego.jugador;
@@ -225,7 +283,7 @@ function actualizarArmas(dt) {
     s.x += s.ux * A.vel * dt; s.y += s.uy * A.vel * dt; s.t -= dt;
     if (bloqueado(s.x, s.y, 0.05)) { s.t = 0; continue; } // muro o vacío
     const e = juego.enemigos.find((e) => e.vida > 0 && e.golpeable !== false && !s.tocados.includes(e) && Math.hypot(e.x - s.x, e.y - s.y) < TIRO.radio + e.r);
-    if (e) { s.tocados.push(e); if (--s.quedan <= 0) s.t = 0; herirEnemigo(e, Math.round(estadisticas().ataque * danoArma(s.id)), j, afinidadJugador()); }
+    if (e) { s.tocados.push(e); if (--s.quedan <= 0) s.t = 0; herirEnemigo(e, s.dano, j, afinidadJugador()); }
   }
   juego.dardos = juego.dardos.filter((s) => s.t > 0);
   for (const e of juego.enemigos) {
@@ -242,9 +300,8 @@ function factorDefensa(j, desde) {
   return tieneEscudo() && frente ? ARMAS.escudo.defensa : DEFENSA.factor;
 }
 const lentoEscudo = () => (tieneEscudo() ? ARMAS.escudo.lento : 1);
-// Texto corto del HUD: «Mazo · Honda 25 · Escudo».
-const textoArmas = () => [armaDe('cerca') && `${ARMAS[armaDe('cerca')].corto}${ARMAS[armaDe('cerca')].usos ? ' ' + (juego.flags['incursion.usos'] || 0) : ''}`,
-  armaDe('lejos') && `${ARMAS[armaDe('lejos')].corto} ${municion()}`, tieneEscudo() && 'Escudo'].filter(Boolean).join(' · ');
+// Texto corto del HUD: «▸Mazo★★ · Honda★ 25» (▸ = la de la mano, si llevas dos; con munición o usos).
+const textoArmas = () => ranuras().map((r) => `${r === enMano() && ranuras().length > 1 ? '▸' : ''}${ARMAS[r.id].corto}${estrellas(r.nv)}${ARMAS[r.id].municion ? ' ' + r.mun : ARMAS[r.id].usos ? ' ' + r.usos : ''}`).join(' · ');
 
 // ---------- Dibujo ----------
 // Proyectiles: dardo (asta clara y punta de obsidiana), jabalina (más larga y gruesa) y piedra de honda.
@@ -285,5 +342,7 @@ console.assert(Object.entries(ARMAS).every(([k, A]) => ['cerca', 'lejos', 'escud
 console.assert(Object.values(BOTIN_COFRE).flat().every(([o]) => OBJETOS[o]), 'Armas: botín con objetos que existen');
 console.assert(!ARMAS_COFRE.includes('escudo') && ARMAS_COFRE.length === 8, 'Armas: el escudo no sale en cofres');
 console.assert(GUARDIANES.every((g) => MAESTRIA[g.id]), 'Armas: maestría de cada Guardián');
+console.assert(Object.keys(ARMAS).every((k) => ESPECIAL_ARMA[k]?.nombre && ESPECIAL_ARMA[k].mult > 0 && (ESPECIAL_ARMA[k].tiro ? ARMAS[k].clase === 'lejos' : ARMAS[k].clase !== 'lejos')), 'Armas: especial de cada arma');
+console.assert(CALIDAD[1] < CALIDAD[2] && CALIDAD[2] < CALIDAD[3], 'Armas: calidad sube con el piso');
 console.assert(Object.keys(NIVEL_ARMA).every((n) => +n >= 1 && +n <= 4 && +n !== 3), 'Armas: niveles');
 console.assert(Object.values(ARMAS).filter((A) => A.clase === 'lejos').every((L) => L.alcance > TIRO.cerca + Math.max(...Object.values(ARMAS).filter((A) => A.clase === 'cerca').map((A) => A.alcance))), 'Armas: alcances');

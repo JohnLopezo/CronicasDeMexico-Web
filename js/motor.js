@@ -105,7 +105,7 @@ function ejes() {
   const l = Math.hypot(x, y);
   return l > 1 ? [x / l, y / l] : [x, y];
 }
-const TECLAS = { tab: 'fijar', j: 'atacar', k: 'saltar', ' ': 'esquivar', e: 'usar', enter: 'usar', escape: 'pausa', c: 'tierra', i: 'bolsa', 1: 'rapido', f: 'especial' };
+const TECLAS = { tab: 'fijar', j: 'atacar', k: 'saltar', ' ': 'esquivar', e: 'usar', enter: 'usar', escape: 'pausa', c: 'tierra', i: 'bolsa', 1: 'rapido', f: 'especial', r: 'cambiar' };
 addEventListener('keydown', (e) => {
   const k = e.key.toLowerCase();
   if ([' ', 'tab', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k) && !e.target.closest?.('.capa:not(.oculto)')) e.preventDefault(); // en los menús, Tab recorre los botones

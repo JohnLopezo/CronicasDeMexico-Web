@@ -53,6 +53,57 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 37 (2026-11-18): dos armas a elegir, calidad por piso y especial de cada arma (`js/armas.js`)
+
+Pedido del usuario tras probar la 36: que la habilidad especial afecte a los enemigos con un arma, que las armas se elijan,
+llevar solo 2, y que haya armas de poco y de mucho daño según el nivel.
+
+- **Dos ranuras libres** (`incursion.ranuras`, `RANURAS` = 2): cualquier clase; el escudo cuenta y protege desde las dos. La de
+  la mano (`incursion.mano`) golpea, dispara y hace el especial. **Cambiar arma**: tecla R o el botón de flechas cruzadas
+  (`#bArma`, solo con dos armas). Una tercera sustituye a la de la mano; la misma recarga y se queda con la mejor calidad.
+  HUD: «▸Macana★ · Honda★★★ 30» (▸ = en la mano).
+- **Calidad** (`CALIDAD`, multiplica el daño): ★ ×0,6 (piso 1 y armero; era ×0,75, bajado tras medir con el bot), ★★ ×1 (piso 2), ★★★ ×1,35 (piso 3). Estrados,
+  cofres y ofrendas dan la de su piso.
+- **Especial de cada arma** (`ESPECIAL_ARMA`; F o la estrella, 25 de energía y 5 s, con **cualquier Guardián**; sin arma, no
+  hay): daño = ataque × mult × calidad × maestría. Los tiros del especial no gastan munición. El especial antiguo de Balam
+  (×2,5 enfrente) desaparece: lo sustituye el del arma.
+
+| Arma | Especial | Qué hace |
+|---|---|---|
+| Macana | Remolino | ×2,2 alrededor (radio 1,7) |
+| Mazo | Golpe al suelo | ×2, radio 1,8, aturde 1 s |
+| Lanza | Estocada | ×2,5 en una franja de 3 m |
+| Cuchillo | Tajo certero | ×2,5 enfrente y sangrado |
+| Hacha | Tajo pesado | ×3 enfrente (radio 1,2), rompe basalto |
+| Escudo | Embestida | ×1 enfrente, aturde 1,2 s |
+| Átlatl | Tres dardos | 3 × 1,5 en abanico (16°) |
+| Jabalina | Jabalina imparable | ×3, atraviesa a todos |
+| Honda | Lluvia de piedras | 5 × 1 en abanico (12°) |
+
+Pruebas (Chrome sin ventana, Balam nv 1): sin arma, sin especial; macana ★ + honda ★★★ → «Macana★ · ▸Honda★★★ 30»; el mazo
+como tercera sustituye a la honda; R pasa la macana a la mano; golpe con macana ★ 14 y ★★★ 32; los 9 especiales contra 4
+espíritus (a 1 m delante, 1 m detrás, 2,5 m y 4 m): macana 33/33/0/0, mazo 30/30/30 y aturde, lanza 38 y 38 a 2,5 m,
+cuchillo 44, hacha 45/45, átlatl 45, jabalina 31 a los tres de delante, honda 50, escudo 12 y aturde; −25 de energía y
+munición intacta. Sin `[assert]` ni excepciones. Guion: `herramientas/dificultad/armas.mjs`.
+
+**Dificultad con armas** (`mapas.mjs`, perfil celular `HAB=0.5 CAD=0.3 REAC=0.3`, 12 partidas por mapa; opciones nuevas:
+`ARMAS='["macana"]'` da armas con la calidad del piso, o la de `NV`, y energía llena; `ESP=1` usa el especial; `DISP=1` dispara
+desde lejos. Las tres, apagadas por defecto). Porcentaje medio de la vida perdida:
+
+| Mapa (nv) | Sin armas | Macana (★ ×0,75) | + especial | Honda + especial | Macana + especial (★ ×0,6) | Solo la del armero ★ ×0,6 |
+|---|---|---|---|---|---|---|
+| 1-1 (1) | 35 % | 25 % | 28 % | 38 % | 32 % | 35 % |
+| 1-3 (2) | 40 % | 17 % | 19 % | 41 % | 13 % | 28 % |
+| 2-2 (3) | 27 % | 30 % | 16 % | 24 % | 29 % | 16 % |
+| 2-4 (4) | 44 % | 19 % | 25 % | 29 % | 19 % | 24 % |
+| 3-2 (4) | 39 % | 15 % | 15 % | 21 % | 9 % | 29 % |
+| 3-4 (4) | 42 % | 20 % | 32 % | 56 % | 28 % | 48 % |
+
+Con un arma de cerca el daño recibido bajaba casi a la mitad (de ~38 % a ~21 %); el especial apenas cambia (la energía solo
+da para 2-3 por mapa); la honda sola ayuda poco (de cerca, golpe sin arma). Por eso, a petición del usuario, **★ pasó de ×0,75
+a ×0,6**: con solo la del armero se queda en ~30 %, y las ★★/★★★ que se encuentran siguen ayudando. Ruido entre tandas: ±10 %.
+Ojo: `prueba.mjs` usa el puerto fijo 9333, así que **no** se pueden correr dos tandas a la vez.
+
 ## Etapa 36 (2026-11-18): armas olmecas de la mazmorra (`js/armas.js`)
 
 Para que atacar sea más fácil, en la primera sala de algunos niveles generados hay un **estrado de ofrenda**

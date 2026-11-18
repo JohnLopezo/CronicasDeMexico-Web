@@ -337,6 +337,7 @@ entrada.alPulsar = (acc) => {
   if (acc === 'tierra') return golpeDeTierra();
   if (acc === 'fijar') return alternarFijar();
   if (acc === 'especial') return; // la recoge el jugador con consumir()
+  if (acc === 'cambiar') return cambiarArma(); // js/armas.js
   if (acc === 'rapido') return usoRapido();
   if (juego.dialogo && (acc === 'usar' || acc === 'atacar')) { delete entrada.pedidos[acc]; avanzarDialogo(); return; }
   if (acc === 'usar') { delete entrada.pedidos.usar; pulsarUsar(cercano()); }
@@ -351,7 +352,7 @@ const esTactil = () => document.body.classList.contains('es-tactil');
 function alternarPausa() {
   juego.pausa = !juego.pausa;
   $('pausa').classList.toggle('oculto', !juego.pausa);
-  $('pausaAyuda').textContent = esTactil() ? 'Joystick: mover · Espada: atacar (junto a algo, la mano: usar; mantener: acción de senda) · Escudo (mantener): defender · Flechas: esquivar · Flecha arriba: saltar · Montaña: tierra · Estrella: especial · Bolsa · Con arma a distancia, Espada con el enemigo lejos: dispara' : 'WASD o flechas: mover · J o clic: atacar · Q o clic derecho (mantener): defender · Espacio: esquivar · K: saltar · E: usar · Tab: fijar objetivo · C: tierra · F: especial (Balam) · 1: uso rápido · I: bolsa · Esc: pausa · Con arma a distancia, J con el enemigo lejos: dispara';
+  $('pausaAyuda').textContent = esTactil() ? 'Joystick: mover · Espada: atacar (junto a algo, la mano: usar; mantener: acción de senda) · Escudo (mantener): defender · Flechas: esquivar · Flecha arriba: saltar · Montaña: tierra · Estrella: especial del arma · Flechas cruzadas: cambiar arma · Bolsa · Con arma a distancia, Espada con el enemigo lejos: dispara' : 'WASD o flechas: mover · J o clic: atacar · Q o clic derecho (mantener): defender · Espacio: esquivar · K: saltar · E: usar · Tab: fijar objetivo · C: tierra · F: especial del arma · R: cambiar arma · 1: uso rápido · I: bolsa · Esc: pausa · Con arma a distancia, J con el enemigo lejos: dispara';
   if (juego.pausa) $('reanudar').focus();
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden && juego.activo && !juego.pausa) alternarPausa(); });
@@ -487,6 +488,7 @@ function hud(dtReal) {
   $('bTierra').classList.toggle('apagado', juego.esperaTierra > 0 || p.energia < (BENDICIONES.tierra?.coste || 0));
   $('bEspecial').classList.toggle('oculto', !especialDe());
   $('bEspecial').classList.toggle('apagado', juego.esperaEspecial > 0 || p.energia < (especialDe()?.coste || 0));
+  $('bArma').classList.toggle('oculto', ranuras().length < 2);
   $('bTierra').dataset.espera = juego.esperaTierra > 0 ? juego.esperaTierra.toFixed(1) : '';
   const nivel = nombreNivel(juego.region), quedan = esGenerado(juego.region) ? vivos().length : 0;
   $('esqTxt').textContent = '◆'.repeat(j.cargas) + '◇'.repeat(MOV.cargas - j.cargas) + (textoArmas() ? '  ' + textoArmas() : ''); // armas (js/armas.js)

@@ -155,19 +155,18 @@ function golpear(j) {
   if (acierto) { if (remate) sonar('remate'); juego.pausaGolpe = ATAQUE.pausa * (remate ? 1.6 : 1); vista.temblor = remate ? 0.12 : 0.06; }
 }
 
-// Habilidad especial (PlayerSpecial): F, 25 de energía, 5 s de espera y 2,5 × ataque enfrente. De momento, solo Balam.
-const ESPECIAL = { jaguar: { coste: 25, espera: 5, multiplicador: 2.5, alcance: 1.2, radio: 1.1 } };
-const especialDe = () => ESPECIAL[guardianActual().id];
+// Habilidad especial (PlayerSpecial): F, 25 de energía y 5 s de espera. Etapa 37: la hace el arma en la mano, con cualquier
+// Guardián (ESPECIAL_ARMA en js/armas.js); sin arma, no hay especial.
+const ESPECIAL = { coste: 25, espera: 5 };
+const especialDe = () => enMano() && ESPECIAL;
 function habilidadEspecial(j) {
   const h = especialDe(), p = prog();
-  if (!h) return;
+  if (!h) return avisoRecompensa('Toma un arma para usar su especial');
   if ((juego.esperaEspecial || 0) > 0) return avisoRecompensa(`Especial: espera ${juego.esperaEspecial.toFixed(1)} s`);
   if (p.energia < h.coste) return avisoRecompensa('Sin energía');
   p.energia -= h.coste; juego.esperaEspecial = h.espera; j.especial = 0.35; j.espera = 0.35;
-  const cx = j.x + j.fx * h.alcance, cy = j.y + j.fy * h.alcance;
-  juego.efectos.push({ tipo: 'tajo', x: cx, y: cy, t: 0.2, remate: true });
   vista.temblor = 0.15; sonar('especial');
-  for (const e of juego.enemigos) if (e.vida > 0 && e.golpeable !== false && Math.hypot(e.x - cx, e.y - cy) < h.radio + e.r) herirEnemigo(e, Math.round(estadisticas().ataque * h.multiplicador), j, afinidadJugador());
+  especialArma(j);
 }
 
 function herirJugador(golpe, desde, empuje = 0.8) {

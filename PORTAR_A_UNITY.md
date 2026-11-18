@@ -431,3 +431,12 @@ NPC con menú de las 8 armas; la elegida se guarda y se da al empezar cada incur
 
 `DefeatReturn`: en vez del santuario de la mazmorra, siempre a la escena de la aldea, punto de inicio, con la vida llena.
 Fauna de la selva y espíritus incursores de la aldea: solo con `olm.guardian_liberado`; los espíritus de MP_OLM_03 se quedan.
+
+## 25. Dos armas, calidad por piso y especial de cada arma (etapa 37)
+
+Inventario de incursión con 2 ranuras de `WeaponData` (cualquier clase) más el índice de la mano, y una acción nueva
+`SwitchWeapon` (tecla R, botón táctil). `PlayerAttack`, el disparo y `PlayerSpecial` usan la de la mano; `PlayerDefense` mira
+el escudo en cualquiera de las dos. Calidad (1-3) por instancia: ×0,6 / ×1 / ×1,35 según el piso (armero: 1). `PlayerSpecial`
+deja de ser solo de Balam: cada `WeaponData` lleva su especial (área delante con radio y alcance, franja o abanico de
+proyectiles; aturdir, sangrado, romper basalto), con el mismo coste (25) y la misma espera (5 s). Valores en `ESPECIAL_ARMA` y
+`CALIDAD` (`js/armas.js`).

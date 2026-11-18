@@ -95,6 +95,7 @@
   #bDefender { --c: #6aa8ff; right: calc(var(--d) + 15px); bottom: 151px; }
   #bTierra { --c: #e6b94a; right: calc(var(--d) + 189px); bottom: 106px; }
   #bEspecial { --c: #c58cff; right: calc(var(--d) + 107px); bottom: 203px; }
+  #bArma { --c: #e8d49a; right: calc(var(--d) + 185px); bottom: 190px; width: 52px; height: 52px; }
   #bBolsa { --c: #e6b94a; top: 10px; right: calc(max(12px, env(safe-area-inset-right)) + 54px); width: 44px; height: 44px; border-radius: 10px; }
   /* En un celular en vertical: pedir que se gire (el juego se pausa al girarlo, ver juego.js). */
   #girar { position: fixed; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
@@ -161,6 +162,7 @@
 <button id="bEsquivar" class="tbtn oculto" data-acc="esquivar" aria-label="Esquivar"><svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M13 5l7 7-7 7"/></svg></button>
 <button id="bTierra" class="tbtn oculto" data-acc="tierra" aria-label="Tierra"><svg viewBox="0 0 24 24"><path d="M3 20l6-10 4 6 3-4 5 8z"/></svg></button>
 <button id="bEspecial" class="tbtn oculto" data-acc="especial" aria-label="Especial"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg></button>
+<button id="bArma" class="tbtn oculto" data-acc="cambiar" aria-label="Cambiar arma"><svg viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg></button>
 <button id="bDefender" class="tbtn oculto" data-acc="defender" aria-label="Defender"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></button>
 <button id="bBolsa" class="tbtn oculto" data-acc="bolsa" aria-label="Bolsa"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/></svg></button>
 <button id="bSaltar" class="tbtn oculto" data-acc="saltar" aria-label="Saltar"><svg viewBox="0 0 24 24"><path d="M12 18V5M6 11l6-6 6 6M4 21h16"/></svg></button>
