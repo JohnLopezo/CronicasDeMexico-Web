@@ -8,6 +8,11 @@ aprobación; leer la última entrada de `Docs/Bitacora.md` y añadir una al term
 todo estático nuevo se limpia con `[RuntimeInitializeOnLoadMethod(SubsystemRegistration)]`. Las clases y líneas citadas
 son del repositorio a fecha 2026-11-13: comprobarlas antes de cambiarlas.
 
+**Ya en Unity** (rama `feature/port-html` del repositorio de Unity; las 25 secciones se agruparon en etapas U1-U9, ver su
+`Docs/Bitacora.md`): **U1 = §1 y §2** (2026-11-18). Diferencias con este documento: el salto va a 5,8 m/s y no a 6
+(en Unity la física continua daría 0,9 m), y para no subir terrazas en el aire hizo falta más que el `stepOffset`: una
+esfera bajo el destino del paso y la altura de despegue medida con un rayo (ver el `CLAUDE.md` de Unity).
+
 **Orden recomendado** (cada paso se apoya en el anterior):
 
 1. Esquiva saltando de los enemigos (gancho en `Health`).

@@ -5,6 +5,11 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Paso a Unity en marcha (2026-11-18):** en el repositorio de Unity, rama `feature/port-html`, subida (commit `0fae1d4`). Hecha la etapa
+  **U1** (§1 esquiva saltando de los enemigos y §2 salto del jugador); el plan U1-U9 y qué falta están en la última entrada
+  de `Docs/Bitacora.md` de Unity, que es lo que hay que leer para seguir allí. Este repositorio solo cambió en
+  `PORTAR_A_UNITY.md` (nota «Ya en Unity»).
+
 - **Etapa 37 (2026-11-18, subida a GitHub: `8de39d6` y el ajuste del Guardián):** dos ranuras libres con Cambiar arma (R / `#bArma`), calidad ★-★★★ por piso
   (`CALIDAD`, ★ ×0,6 tras medir con el bot) y especial de cada arma con cualquier Guardián (`ESPECIAL_ARMA`; el de Balam se
   quitó). Dificultad medida (README, etapa 37): sin armas ~38 %, con la del armero ~30 %, con mejores ~20 %. Pendiente: que el
