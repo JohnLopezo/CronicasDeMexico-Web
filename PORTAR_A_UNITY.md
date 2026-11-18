@@ -415,3 +415,19 @@ musgo; tule y nenúfar; rocas y escombros de basalto) y diseño propio de suelo 
 barro con cruz olmeca + sillares con greca): en Unity, un juego de tiles y de prefabs de muro por piso (referencia:
 `js/pisos.js`, colores en `PALETA`).
 
+## 23. Armas olmecas de la mazmorra (etapa 36)
+
+Estrado (`Estrado_Ofrenda_01` + pickup) en la primera sala: X-2 un arma de cerca al azar (macana, mazo, lanza corta, cuchillo de
+obsidiana, hacha), X-4 una a distancia (átlatl, jabalina, honda), X-1 de los pisos 2 y 3 el escudo rectangular. Duran la
+incursión (`IncursionReset`), una por clase. De cerca: multiplicadores en `PlayerAttack` (daño, alcance, radio, espera); mazo
+con desgaste de guardia y aturdir en el remate; cuchillo con crítico, sangrado y 40 usos; hacha que rompe `BreakableBasalt`.
+A distancia: proyectil del jugador con autoapuntado (ninguno a < 2,2 m para no robar el golpe), munición, jabalina que atraviesa
+2. Escudo: en `PlayerDefense`, factor 0,15 de frente y velocidad ×0,85. Maestría por Guardián (`MAESTRIA`: multiplica el daño
+por clase; Itzel y Yaret con más alcance): un campo por clase en el GuardianData. Cofre de recompensas al limpiar un nivel (1-1, 2-5 tras el jaguar, generados): botín al azar por piso (`BOTIN_COFRE`), 35 % arma y
+30 % munición; el 50 % de las `RewardChest` de Unity añaden un arma; el escudo nunca sale en cofres. Armero en la aldea:
+NPC con menú de las 8 armas; la elegida se guarda y se da al empezar cada incursión. Valores en `ARMAS` y `COFRE` (`js/armas.js`).
+
+## 24. Al caer, a la aldea; fuera, sin monstruos hasta completar la mazmorra (etapa 36)
+
+`DefeatReturn`: en vez del santuario de la mazmorra, siempre a la escena de la aldea, punto de inicio, con la vida llena.
+Fauna de la selva y espíritus incursores de la aldea: solo con `olm.guardian_liberado`; los espíritus de MP_OLM_03 se quedan.

@@ -53,6 +53,80 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 36 (2026-11-18): armas olmecas de la mazmorra (`js/armas.js`)
+
+Para que atacar sea más fácil, en la primera sala de algunos niveles generados hay un **estrado de ofrenda**
+(`Estrado_Ofrenda_01`) con un arma que flota y brilla, al azar con la semilla de la incursión; se toma con Usar (o Atacar junto
+a él). Duran la incursión (se pierden al salir a la selva). Se lleva **una de cada clase**: otra de la misma clase cambia la
+que llevas; la misma recarga su munición o sus usos.
+
+| Dónde | Clase | Arma | Mecánica (× = daño sobre el ataque, antes de la maestría) |
+|---|---|---|---|
+| X-2 de cada piso | Cuerpo a cuerpo | **Macana olmeca** | ×1,6, alcance 1,1 m, radio 0,95 |
+| | | **Mazo de madera** | ×1,9, lento (espera ×1,4); cada golpe quita un rombo de la guardia y el remate aturde 0,6 s |
+| | | **Lanza corta** | ×1,3, alcance 1,7 m (radio 0,6), rápida (×0,85) |
+| | | **Cuchillo de obsidiana** | ×1,1, muy rápido (×0,6); 25 % de crítico ×2 con sangrado (4 tics del 15 % en 2 s); se rompe tras 40 golpes |
+| | | **Hacha de piedra pulida** | ×1,4 (espera ×1,1); también rompe el basalto agrietado que tenga delante (abre caminos) |
+| X-4 de cada piso | A distancia | **Átlatl** | 15 dardos, ×1,2, 9 m, 13 m/s |
+| | | **Jabalina** | 6, ×2,2, 7 m, atraviesa a 2 enemigos |
+| | | **Honda** | 30 piedras, ×0,8, 11 m, 15 m/s, espera 0,35 s |
+| X-1 de los pisos 2 y 3 | Defensa | **Escudo rectangular** | Al defender, lo que llega de frente entra al 15 % (sin escudo, 50 %; de espaldas, igual que sin él); siempre vas al 85 % de velocidad |
+
+**Cofre de recompensas** (`aparecerCofre`, `BOTIN_COFRE`): al vencer a todos los enemigos de un nivel (el 1-1, el 2-5 tras el
+jaguar y todos los generados) aparece un cofre junto al jugador (`Ofrenda_01` con un brillo; abierto, `Ofrenda_02`; no es
+sólido), una vez por incursión. Botín al azar con la semilla de la incursión: 10 de experiencia por piso, dos tiradas de la
+tabla del piso (semillas, fibras, arcilla, maíz, cacao, jade, pescado, obsidiana, basalto, esencia de energía, ecos) y además un
+arma de las 8 (35 %) o munición para tu arma a distancia (30 %). Las ofrendas de Unity (1-1, 2-5, 3-5, menos la final) traen
+además un arma el 50 % de las veces. **El escudo nunca sale en un cofre**: solo en su estrado, para la defensa.
+
+**Armero de la aldea** (`poblarArmero`, `menuArmero`; licencia del juego, no hay constancia de armeros olmecas): un guerrero
+en la plaza (17,5; 1,5); «Armero» abre la pestaña con las 8 armas (icono, clase, qué hace y la maestría de tu Guardián). La
+elegida (`armero.eleccion`, se guarda) se lleva al momento y al empezar cada incursión (al entrar a la selva, con munición o
+usos llenos); en la mazmorra se puede cambiar por otra de su clase. Una sola: elegir otra de otra clase quita la anterior.
+
+Pruebas (Chrome sin ventana, partida nueva): «Armero» en la plaza, menú con 8 armas; elegir honda (30) y luego lanza (la honda
+se quita); en la selva, tras reiniciar la incursión, se sale con la lanza; 1-1 con 5 enemigos vencidos → cofre a 1,1 m con
+cacao ×1 y ecos ×6; 1-2 limpio → cofre; abierto otra vez, «vacío».
+
+**Al caer, a la aldea** (`actualizar` en `js/juego.js`; antes, DefeatReturn al santuario de la mazmorra): caigas donde caigas,
+despiertas en la aldea, en la orilla del despertar (`inicio`), con la vida llena y el aviso «Caíste. Despiertas en la aldea,
+junto al agua». Lo ganado se queda; la incursión (armas, niveles limpios) se pierde al volver a pasar por la selva. En el
+enlace de prueba (`?nivel=`) te levantas en el sitio. El santuario de Memoria ya no dice que volverás a él.
+
+**Fuera de la mazmorra, sin monstruos hasta completarla** (`afueraConMonstruos` = `olm.guardian_liberado`): ni la fauna de la
+selva (serpiente, guacamaya, mono, avispas) ni los dos espíritus que marchan hacia la aldea tras «Rastros en la selva».
+Se quedan los espíritus de los claros de esa misión, que hacen falta para abrir la mazmorra. Al liberar al Guardián vuelven.
+Pruebas: caer en el 1-1, el 1-2 (con mazo) y la selva lleva a la aldea (17,4; 22,8) con 50/50; selva y aldea sin fauna ni
+incursores antes y con ellos después.
+
+**A distancia sin botón nuevo:** con un enemigo a tiro (o el fijado) y ninguno a menos de 2,2 m, Atacar dispara solo hacia él;
+si no, golpe normal. El HUD muestra junto a las esquivas lo que llevas («Mazo · Honda 25 · Escudo»; el cuchillo, con sus usos).
+
+**Maestría por Guardián** (`MAESTRIA`): multiplica el daño de cada clase según quién la lleva, por lo que dice de cada uno
+`GUARDIANES`. Al tomar el arma, el aviso lo dice («Balam domina las armas de cerca (combate cercano): daño ×2,0»).
+
+| Guardián | Cerca | Distancia | Extra a distancia |
+|---|---|---|---|
+| Balam (jaguar, combate cercano) | ×1,25 | ×0,85 | |
+| Naira (lobo, combate sostenido) | ×1,15 | ×0,9 | |
+| Ocel (xolo, protección) | ×1,1 | ×0,95 | |
+| Xali (ajolote, resistencia) | ×1,05 | ×1 | |
+| Ameyali (mariposa, evasión) | ×0,85 | ×1,15 | |
+| Yaret (quetzal, distancia) | ×0,85 | ×1,25 | alcance +1 m |
+| Itzel (águila, precisión) | ×0,8 | ×1,35 | alcance +2 m, +5 de munición |
+
+**Armas olmecas, no mexicas:** el macuahuitl (primera versión de esta etapa) es posterior, de los mexicas; se cambió por la
+**macana**, garrote de madera en forma de remo con puntas que aparece en monumentos de San Lorenzo y Chalcatzingo. El átlatl
+sale en monumentos olmecas en manos de guerreros y de la élite; de la honda se han hallado piedras de honda en sitios olmecas
+(Ross Hassig la considera arma olmeca desde al menos el 900 a. C.); el escudo rectangular, hacia el 400 a. C. La lista de armas
+y sus mecánicas las dio el usuario.
+
+**Pruebas** (guion en Chrome sin ventana, Balam con ataque 16, contra espíritus quietos): macana 32, mazo 38 (guardia 3 → 2;
+remate aturde 0,6 s), lanza 26 a 1,5 m, cuchillo 22 (espera 0,21 s; se rompe a los 40 golpes; sangrado de 3 × 4 = 12), hacha 28
+y rompe un basalto delante; átlatl 16, jabalina 30 + 30 (atraviesa), honda 11; escudo 0,15 de frente y 0,5 de espaldas,
+velocidad ×0,85. Reparto con 6 semillas: el 2-1 y el 3-1 dan escudo, los X-2 cuatro armas de cerca distintas y los X-4 las tres
+a distancia. Foto de las nueve sobre sus estrados. Sin `[assert]` ni excepciones.
+
 ## Etapa 35 (2026-11-17): pantalla de juego más clara en el celular y mazmorra con forma y aspecto por piso
 
 **Mapa de los niveles generados** (`generarNivel`, `js/niveles.js`): las salas ya no van en fila. Desde la tercera, cada

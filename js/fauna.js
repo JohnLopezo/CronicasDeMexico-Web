@@ -237,7 +237,7 @@ const entre = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t
 const mas = (a, dx, dy) => ({ x: a.x + dx, y: a.y + dy });
 // Selva (OlmecaJungleGenerator.BuildFauna): reaparece. Pisos 1 y 2 (OlmecaDungeonGenerator.BuildFauna): no.
 function poblarFauna(id, P) {
-  if (id === 'selva' && P.claros?.length >= 3 && P.entrada) {
+  if (id === 'selva' && P.claros?.length >= 3 && P.entrada && afueraConMonstruos()) { // hasta completar la mazmorra, no (js/juego.js)
     const [c1, c2, c3] = P.claros, nido = entre(c3, P.entrada, 0.5);
     ponerFauna('Serpiente', entre(c1, c2, 0.5), c2, true);
     ponerFauna('Guacamaya', entre(c1, c2, 0.75), c2, true);

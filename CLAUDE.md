@@ -5,15 +5,21 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
-- **Última etapa:** 35 (2026-11-17), HUD compacto: panel con retrato (marca del Guardián), vida y energía con números,
-  esquivas ◆◇, ficha del nivel arriba al centro, misión en una línea. Y mazmorra: salas que serpentean (pasillos al norte/sur,
-  esquinas rotas) y aspecto por piso sin fondo negro (`ESTILO`, `patronFondo` en `js/niveles.js`). 34: música prehispánica por código (`js/musica.js`): explorar/pelear, caracol al empezar la
-  pelea, volumen «Música» en Opciones. Falta oírla en el celular. 33: jefes con el perfil celular (`jefes.mjs`: `HABS='[0.5]' CAD=0.3 REAC=0.3`); jaguar de 420 a 540
-  de vida. 32: mapas con ese perfil (`mapas.mjs`: `HAB=0.5 CAD=0.3 REAC=0.3`), aviso del espíritu 0,55 s, pisos 2-3 con más
-  presupuesto. 30-31: controles táctiles tipo Soul Knight. Falta probar 31-33 en celular. 26-29: efectos de golpe y animación por partes (`js/efectos.js`, `js/cuadros.js`).
-- **Animación:** el plan de animación está cubierto. Quedan opcionales: partes para `Caminar`/`Correr` (patas) y para el
-  rugido (`Especial`) de Xolotl.
-- **Siguiente propuesta:** que el usuario confirme en el celular controles y dificultad; pasar a Unity según `PORTAR_A_UNITY.md`.
+- **Dónde nos quedamos (2026-11-18):** etapas 35 y 36 **subidas a GitHub** (dos commits: «Etapa 35: … pisos 2 y 3» y
+  «Etapa 36: armas olmecas…»). Etapa 35: HUD compacto, salas que serpentean, fondo por piso y suelo y muros de diseño propio en
+  los pisos 2 («cámaras inundadas») y 3 («templo olmeca»), pintados por código (`js/pisos.js`, también 2-5 y 3-5). Etapa 36
+  (`js/armas.js`): 9 armas olmecas en estrados (X-2 cerca, X-4 distancia, X-1 de pisos 2-3 escudo) con mecánicas propias,
+  maestría por Guardián (`MAESTRIA`), cofre de recompensas al limpiar un nivel (`BOTIN_COFRE`), armas en ofrendas de Unity,
+  armero en la aldea (17,5; 1,5), al caer siempre a la aldea, y fuera de la mazmorra sin monstruos hasta liberar al Guardián
+  (`afueraConMonstruos`). `Ejemplo de controles/` (captura de referencia del usuario) no se sube.
+- **Pendiente de probar en el celular:** diseño de pisos 2-3, armas, cofres, armero, caer a la aldea (31-34 ya los vio: bien
+  y fluido). **Pendiente de medir con el bot:** dificultad con armas (hay armas casi siempre: armero + estrados + cofres).
+- **Ideas abiertas que se le ofrecieron:** que el armero cobre ecos; que caer en los pisos 1-2 lleve a la aldea y en el 3 al
+  santuario; teñir los objetos de Unity del piso 3; sigilo del cuchillo y recolectar madera con el hacha (no existen esas
+  mecánicas). Armas siempre de la cultura olmeca (el usuario lo pidió; ver README etapa 36).
+- **Etapas anteriores:** 34 música prehispánica (`js/musica.js`); 32-33 dificultad con perfil celular (`mapas.mjs`,
+  `jefes.mjs`); 30-31 controles táctiles tipo Soul Knight; 26-29 efectos de golpe y animación por partes.
+- **Siguiente propuesta:** que el usuario confirme en el celular; pasar a Unity según `PORTAR_A_UNITY.md` (secciones 21-24 nuevas).
 - **Deseo pendiente del usuario:** mejor animación para los enemigos actuales; más animales de Veracruz/Tabasco.
 - **Deudas:** `/ponytail-debt` lista los `shortcut:` del código.
 
@@ -49,7 +55,8 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 | `js/fauna.js` · `js/guardian.js` · `js/trampas.js` | Fauna de la lámina · Guardián · trampas |
 | `js/efectos.js` | Jugosidad: `chispas`, `impacto`, `alerta`, `polvo`, estela y aterrizaje (`rastroEnemigos`), `dibujarNumero`, `RESTOS`; valores en `EF` |
 | `js/cuadros.js` | Cuadros por partes: `PARTES` por sprite (rect, pivote, aviso/golpe/aleteo, `sinHueco`), `conPartes`, `cuadroAtaque` |
-| `js/niveles.js` | Niveles 1-1…3-5, `generarNivel`, `POBLACION`/`COSTE`/`PRESUPUESTO`, enlace de prueba `?nivel=` |
+| `js/niveles.js` | Niveles 1-1…3-5, `generarNivel`, `POBLACION`/`COSTE`/`PRESUPUESTO`, `ESTILO` por piso, enlace de prueba `?nivel=` |
+| `js/armas.js` | Armas de la mazmorra: `ARMAS`, `NIVEL_ARMA`, estrado (`ponerArma`), dardos del disparo (`lanzarDardo`), golpe (`danoGolpe`, `trasGolpe`, `trasBlandir`), escudo (`factorDefensa`), `MAESTRIA`, cofre de recompensas (`aparecerCofre`), armero (`menuArmero`) |
 | `js/pisos.js` | Suelo (`pintarLosa`) y muros (`pintarMuro`) de los pisos 2 y 3 pintados por código; colores en `PALETA` |
 | `js/juego.js` | Banderas, misiones, `cargarRegion`, guardado, bucle `actualizar` |
 | `js/musica.js` | Música prehispánica: instrumentos, `MUSICA` (patrones por modo), `modoMusica`, secuenciador |

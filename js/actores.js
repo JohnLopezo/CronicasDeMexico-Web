@@ -109,7 +109,7 @@ function actualizarJugador(j, dt) {
   } else if (j.defiende) {
     j.vx = j.vy = 0;
   } else {
-    const lento = (enAgua(j.x, j.y) ? 0.55 : 1) * (j.freno > 0 ? j.frenoF : 1); // el escupitajo y el chillido frenan
+    const lento = (enAgua(j.x, j.y) ? 0.55 : 1) * (j.freno > 0 ? j.frenoF : 1) * lentoEscudo(); // el escupitajo y el chillido frenan
     const tx = j.golpe > 0 ? 0 : mx * MOV.vel * lento, ty = j.golpe > 0 ? 0 : my * MOV.vel * lento, a = MOV.acel * dt;
     j.vx += clamp(tx - j.vx, -a, a); j.vy += clamp(ty - j.vy, -a, a);
   }
@@ -131,9 +131,11 @@ function actualizarJugador(j, dt) {
 }
 
 function golpear(j) {
+  if (lanzarDardo(j)) return; // arma a distancia con el enemigo lejos (js/armas.js)
+  const id = armaDe('cerca'), arma = datosDe('cerca'), alcance = arma?.alcance ?? ATAQUE.alcance, radio = arma?.radio ?? ATAQUE.radio;
   j.combo = j.ventana > 0 ? (j.combo % ATAQUE.combo) + 1 : 1;
   const remate = j.combo === ATAQUE.combo;
-  j.espera = remate ? ATAQUE.recuperacion : ATAQUE.espera; j.ventana = j.espera + ATAQUE.ventana; j.golpe = 0.12;
+  j.espera = (remate ? ATAQUE.recuperacion : ATAQUE.espera) * (arma?.espera ?? 1); j.ventana = j.espera + ATAQUE.ventana; j.golpe = 0.12;
   // Apuntado asistido: gira hacia el enemigo más cercano dentro del cono.
   const cos = Math.cos(ATAQUE.angulo * Math.PI / 180);
   const obj = juego.enemigos.filter((e) => e.vida > 0 && e.golpeable !== false).map((e) => [e, dist(e, j)])
@@ -141,13 +143,14 @@ function golpear(j) {
     .sort((a, b) => a[1] - b[1])[0];
   const fijo = fijadoValido() ? [juego.fijado, dist(juego.fijado, j)] : obj; // con un objetivo fijado se apunta siempre a él
   if (fijo) { const d = fijo[1] || 1; j.fx = (fijo[0].x - j.x) / d; j.fy = (fijo[0].y - j.y) / d; }
-  const cx = j.x + j.fx * ATAQUE.alcance, cy = j.y + j.fy * ATAQUE.alcance;
+  const cx = j.x + j.fx * alcance, cy = j.y + j.fy * alcance;
   let acierto = false;
   for (const e of juego.enemigos) {
     if (e.vida <= 0 || e.golpeable === false) continue;
-    if (Math.hypot(e.x - cx, e.y - cy) < ATAQUE.radio + e.r) { if (herirEnemigo(e, Math.round(estadisticas().ataque * (remate ? ATAQUE.remate : 1)), j, afinidadJugador()) !== false) acierto = true; }
+    if (Math.hypot(e.x - cx, e.y - cy) < radio + e.r && herirEnemigo(e, danoGolpe(arma, id, e, estadisticas().ataque * (remate ? ATAQUE.remate : 1)), j, afinidadJugador()) !== false) { acierto = true; trasGolpe(arma, e, remate); }
   }
-  juego.efectos.push({ tipo: 'tajo', x: cx, y: cy, t: 0.12, remate });
+  juego.efectos.push({ tipo: 'tajo', x: cx, y: cy, t: 0.12, remate, radio });
+  trasBlandir(arma, cx, cy); // el cuchillo se gasta, el hacha rompe basalto (js/armas.js)
   sonar('tajo');
   if (acierto) { if (remate) sonar('remate'); juego.pausaGolpe = ATAQUE.pausa * (remate ? 1.6 : 1); vista.temblor = remate ? 0.12 : 0.06; }
 }
@@ -183,7 +186,7 @@ function herirJugador(golpe, desde, empuje = 0.8) {
     numero(j.x, j.y, '¡Bloqueo!', '#9fd4ff'); sonar('bloqueo');
     return false;
   }
-  const d = Math.ceil(dano(golpe, estadisticas().defensa) * (j.defiende ? DEFENSA.factor : 1));
+  const d = Math.ceil(dano(golpe, estadisticas().defensa) * (j.defiende ? factorDefensa(j, desde) : 1)); // con escudo, de frente casi nada (js/armas.js)
   j.vida = Math.max(0, j.vida - d); j.inv = 1; j.herido = 0.25; vista.temblor = 0.15;
   const l = dist(j, desde) || 1, ang = Math.atan2(-(j.y - desde.y), j.x - desde.x); // en pantalla la y crece hacia abajo
   impacto(j.x, j.y, 0.7, ang); chispas(j.x, j.y, 0.7, '#ff8a7a', Math.atan2(j.y - desde.y, j.x - desde.x)); juego.pausaGolpe = Math.max(juego.pausaGolpe, EF.pausaHerido);

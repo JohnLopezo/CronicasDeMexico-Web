@@ -1,7 +1,7 @@
 'use strict';
 // Juego: estado, misiones, contenido de cada región, diálogos, guardado, HUD y bucle principal.
 
-const juego = { region: null, jugador: null, enemigos: [], otros: [], interactuables: [], portales: [], disparos: [], marcas: [],
+const juego = { region: null, jugador: null, enemigos: [], otros: [], interactuables: [], portales: [], disparos: [], dardos: [], marcas: [],
   efectos: [], flags: {}, misiones: {}, ordenMisiones: [], dialogo: null, pausa: false, viajando: false, activo: false, jefe: null,
   pausaGolpe: 0, lento: 0, t: 0, prog: null, rompibles: [], alAparecer: [], menuAbierto: false, esperaTierra: 0, defensaExtra: null };
 const bandera = (k) => !!juego.flags[k];
@@ -127,6 +127,9 @@ const HABITANTES = [
   ['nino_4', 'Nino4', [[13.0, -8.0], [14.0, -8.0]]], ['nina_4', 'Nina4', [[13.5, -10.0], [13.5, -11.2]]], ['nino_5', 'Nino5', [[12.0, -12.0], [13.2, -12.0]]],
 ];
 // Tras «Rastros en la selva», dos espíritus corrompidos marchan hacia la aldea y los guardias la defienden.
+// Fuera de la mazmorra no hay monstruos hasta completarla (etapa 36): ni estos incursores ni la fauna de la selva. Solo se
+// quedan los espíritus de los claros de «Rastros en la selva», que hacen falta para abrir la mazmorra.
+const afueraConMonstruos = () => bandera('olm.guardian_liberado');
 const INCURSORES = [[[-19.0, 1.5], [-8.0, 3.5]], [[-21.2, 1.1], [-10.2, 3.1]]];
 const CIUDAD = { inicio: { x: 17.4, y: 22.8 }, reflejo: { x: 19.3, y: 22.6 }, figura: { x: 18.6, y: 23.6 } };
 Object.assign(REGIONES.ciudad.puntos, { inicio: CIUDAD.inicio, desde_selva: REGIONES.ciudad.puntos.llegada_selva });
@@ -162,9 +165,10 @@ function poblarCiudad(P, E, O, I, T) {
       mensaje(txt, () => avisar(altar ? 'examinar:altar_trono' : 'examinar:estela'));
     } });
   }
-  if (bandera('mision.MP_OLM_03.completada')) {
+  if (bandera('mision.MP_OLM_03.completada') && afueraConMonstruos()) {
     for (const [[x, y], [mx, my]] of INCURSORES) { const e = nuevoEspiritu(x, y); e.casa = { x: mx, y: my }; E.push(e); }
   }
+  poblarArmero(O, I); // js/armas.js
   for (const [x, y, texto, est] of [[14.0, 1.7, 'Fabricar', 'artesano'], [19.0, -4.3, 'Comerciar', 'comerciante'], [14.0, 6.9, 'Cocinar', 'cocina']])
     I.push({ x, y, r: 0.9, texto, usar: () => abrirMenu(est, est) });
   T.push({ ...P.salida_selva, a: 'selva', punto: 'llegada' });
@@ -211,11 +215,12 @@ function poblar(id) {
   const santuarioMemoria = () => I.push({ x: P.memoria_llegada.x, y: P.memoria_llegada.y, r: 1.4, texto: 'Recordar (guardar)', usar() {
     prog().energia = estadisticas().energia;
     // Al cerrar el mensaje se abre el Museo de la Memoria (MemoryShrine.End).
-    guardar() ? mensaje('El santuario de Memoria guarda lo que has vivido. Si caes en la mazmorra, volverás aquí.', () => abrirMenu('museo', 'museo')) : mensaje('No se pudo guardar en este navegador.');
+    guardar() ? mensaje('El santuario de Memoria guarda lo que has vivido. Si caes, despertarás en la aldea.', () => abrirMenu('museo', 'museo')) : mensaje('No se pudo guardar en este navegador.');
   } });
   if (id === 'ciudad') poblarCiudad(P, E, O, I, T);
   if (id === 'selva') {
     for (const k of Object.keys(juego.flags)) if (k.startsWith('incursion.')) delete juego.flags[k]; // IncursionReset
+    darArmaDelArmero(); // sales con el arma del armero (js/armas.js)
     // Los espíritus y sus fragmentos salen con «Rastros en la selva».
     if (bandera('mision.MP_OLM_03.activa') || bandera('mision.MP_OLM_03.completada')) P.claros.forEach((c, i) => {
       const n = i + 1, f = P.fragmentos[i];
@@ -289,7 +294,7 @@ async function cargarRegion(id, punto, vida) {
   await new Promise((ok) => setTimeout(ok, 260));
   if (esGenerado(id)) REGIONES[id] = generarNivel(id); // js/niveles.js
   mundo = construirMundo(id);
-  Object.assign(juego, { region: id, enemigos: [], otros: [], interactuables: [], portales: [], disparos: [], marcas: [], efectos: [], jefe: null, dialogo: null, inundado: false, ruptura: null, fijado: null, inclina: { x: 0, y: 0 } });
+  Object.assign(juego, { region: id, enemigos: [], otros: [], interactuables: [], portales: [], disparos: [], dardos: [], marcas: [], efectos: [], jefe: null, dialogo: null, inundado: false, ruptura: null, fijado: null, inclina: { x: 0, y: 0 } });
   const p = REGIONES[id].puntos[punto];
   juego.jugador = nuevoJugador(p.x, p.y, vida);
   juego.jugador.z = alturaEn(p.x, p.y);
@@ -346,7 +351,7 @@ const esTactil = () => document.body.classList.contains('es-tactil');
 function alternarPausa() {
   juego.pausa = !juego.pausa;
   $('pausa').classList.toggle('oculto', !juego.pausa);
-  $('pausaAyuda').textContent = esTactil() ? 'Joystick: mover · Espada: atacar (junto a algo, la mano: usar; mantener: acción de senda) · Escudo (mantener): defender · Flechas: esquivar · Flecha arriba: saltar · Montaña: tierra · Estrella: especial · Bolsa' : 'WASD o flechas: mover · J o clic: atacar · Q o clic derecho (mantener): defender · Espacio: esquivar · K: saltar · E: usar · Tab: fijar objetivo · C: tierra · F: especial (Balam) · 1: uso rápido · I: bolsa · Esc: pausa';
+  $('pausaAyuda').textContent = esTactil() ? 'Joystick: mover · Espada: atacar (junto a algo, la mano: usar; mantener: acción de senda) · Escudo (mantener): defender · Flechas: esquivar · Flecha arriba: saltar · Montaña: tierra · Estrella: especial · Bolsa · Con arma a distancia, Espada con el enemigo lejos: dispara' : 'WASD o flechas: mover · J o clic: atacar · Q o clic derecho (mantener): defender · Espacio: esquivar · K: saltar · E: usar · Tab: fijar objetivo · C: tierra · F: especial (Balam) · 1: uso rápido · I: bolsa · Esc: pausa · Con arma a distancia, J con el enemigo lejos: dispara';
   if (juego.pausa) $('reanudar').focus();
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden && juego.activo && !juego.pausa) alternarPausa(); });
@@ -401,6 +406,7 @@ function actualizar(dt) {
     if (Math.hypot(s.x - j.x, s.y - j.y) < 0.45 && herirJugador(s.golpe, s)) { s.t = 0; s.alAcertar?.(); }
   }
   juego.disparos = juego.disparos.filter((s) => s.t > 0);
+  actualizarArmas(dt); // proyectiles del jugador y sangrado (js/armas.js)
   actualizarTrampas(dt);
   for (const m of juego.marcas) if ((m.t -= dt) <= 0) { sonar('impacto'); m.alFin?.(m); }
   juego.marcas = juego.marcas.filter((m) => m.t > 0);
@@ -416,11 +422,13 @@ function actualizar(dt) {
     if (!t.avisado) { t.avisado = true; mensaje(t.cerrado); }
   }
 
-  // Derrota: en la mazmorra, con punto de control, se vuelve al santuario (DefeatReturn); si no, se reaparece en el sitio.
+  // Derrota (etapa 36, solo HTML; antes, DefeatReturn al santuario de la mazmorra): caigas donde caigas, despiertas en la aldea,
+  // en la orilla del despertar y con la vida llena. Lo ganado se queda; la incursión (armas, niveles limpios) se pierde al
+  // volver a pasar por la selva. En el enlace de prueba (?nivel=) te levantas en el sitio.
   if (j.vida <= 0 && j.muerto <= 0) {
-    const p = leerPartida();
-    if (juego.region !== 'selva' && p && !juego.prueba) { juego.flags = { ...p.flags, ...juego.flags }; poner('incursion.caido'); cargarRegion(p.region, 'memoria_llegada', estadisticas().vida); }
-    else { j.vida = j.max; j.inv = 2; toast('Te levantas de nuevo.'); }
+    if (juego.prueba) { j.vida = j.max; j.inv = 2; toast('Te levantas de nuevo.'); return; }
+    if (juego.region !== 'ciudad' && juego.region !== 'selva') poner('incursion.caido');
+    cargarRegion('ciudad', 'inicio', estadisticas().vida).then(() => toast('Caíste. Despiertas en la aldea, junto al agua.', 4));
   }
 }
 
@@ -453,10 +461,11 @@ function dibujarTodo() {
   dibujarMira();
   dibujarAnilloSenda();
   for (const s of juego.disparos) elipse(s.x, s.y, s.color ? 0.18 : 0.14, s.color || '#c9a8ff', '#fff', s.z || 0.9);
+  dibujarDardos();
   for (const f of juego.efectos) {
     if (f.tipo === 'tierra') elipse(f.x, f.y, TIERRA.radio * (1.2 - f.t), `rgba(224,162,58,${f.t * 1.5})`, '#e0a23a');
     if (f.tipo === 'num') dibujarNumero(f); // js/efectos.js
-    if (f.tipo === 'tajo') elipse(f.x, f.y, ATAQUE.radio * (f.remate ? 1.15 : 1), `rgba(255,240,200,${f.t * 3})`, null, 0.5);
+    if (f.tipo === 'tajo') elipse(f.x, f.y, (f.radio ?? ATAQUE.radio) * (f.remate ? 1.15 : 1), `rgba(255,240,200,${f.t * 3})`, null, 0.5);
     if (f.tipo === 'destello') elipse(f.x, f.y, 0.8 * (1 - f.t / 0.3), null, '#c9a8ff');
     dibujarEfecto(f); // los de js/efectos.js
   }
@@ -480,7 +489,7 @@ function hud(dtReal) {
   $('bEspecial').classList.toggle('apagado', juego.esperaEspecial > 0 || p.energia < (especialDe()?.coste || 0));
   $('bTierra').dataset.espera = juego.esperaTierra > 0 ? juego.esperaTierra.toFixed(1) : '';
   const nivel = nombreNivel(juego.region), quedan = esGenerado(juego.region) ? vivos().length : 0;
-  $('esqTxt').textContent = '◆'.repeat(j.cargas) + '◇'.repeat(MOV.cargas - j.cargas);
+  $('esqTxt').textContent = '◆'.repeat(j.cargas) + '◇'.repeat(MOV.cargas - j.cargas) + (textoArmas() ? '  ' + textoArmas() : ''); // armas (js/armas.js)
   $('zona').classList.toggle('oculto', !nivel);
   if (nivel) $('zona').textContent = `Nivel ${nivel}${quedan ? ` · quedan ${quedan}` : ''}`;
   $('objetivo').textContent = objetivo();

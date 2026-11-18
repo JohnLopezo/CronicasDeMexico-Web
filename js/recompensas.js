@@ -174,7 +174,8 @@ function ofrenda(id, punto, vasija, requiere, alAbrir) {
   juego.interactuables.push({ x: punto.x, y: punto.y - 0.2, r: 0.9, texto: 'Abrir la ofrenda', activo: visible, usar() {
     if (bandera(bandera_)) return mensaje('La ofrenda ya está vacía.');
     const lineas = entregar(id === 'p3_final' ? 'REC_ofrenda_final' : `REC_ofrenda_${id}`, bandera_) || [];
-    mensaje(`Abres la ofrenda. Encuentras: ${lineas.join(', ') || 'nada'}.`, () => { poner(bandera_); alAbrir?.(); });
+    const arma = armaEnOfrenda(id); // a veces un arma (js/armas.js)
+    mensaje(`Abres la ofrenda. Encuentras: ${lineas.join(', ') || 'nada'}${arma}.`, () => { poner(bandera_); alAbrir?.(); });
   } });
 }
 function basaltoAgrietado(id, punto) {
@@ -183,7 +184,7 @@ function basaltoAgrietado(id, punto) {
   const obj = { x: punto.x, y: punto.y, z: 0, orden: profundidad(punto.y, 0), dibujar() { dibujar('Basalto_Agrietado_01', punto.x, punto.y); } };
   const bloqueo = caja(punto.x, punto.y, 1, 2);
   mundo.objetos.push(obj); mundo.cajas.push(bloqueo);
-  const it = { x: punto.x, y: punto.y, r: 1.6, texto: 'Examinar', usar: () => mensaje(prog().principal === 'tierra' ? TXT_GRIETA + '\n\n(Usa el golpe de tierra.)' : TXT_GRIETA) };
+  const it = { x: punto.x, y: punto.y, r: 1.6, texto: 'Examinar', usar: () => mensaje(prog().principal === 'tierra' ? TXT_GRIETA + '\n\n(Usa el golpe de tierra.)' : armaDe('cerca') === 'hacha' ? TXT_GRIETA + '\n\n(Prueba con el hacha.)' : TXT_GRIETA) };
   juego.interactuables.push(it);
   juego.rompibles.push({ x: punto.x, y: punto.y, bandera: bandera_, romper() {
     poner(bandera_); mundo.objetos.splice(mundo.objetos.indexOf(obj), 1); mundo.cajas = mundo.cajas.filter((c) => c !== bloqueo);
@@ -253,7 +254,7 @@ const fila = (id, extra) => { const o = OBJETOS[id];
 const desbloqueada = (bandera_) => !bandera_ || bandera(bandera_);
 function pintarMenu() {
   const p = prog(), s = estadisticas();
-  const tabs = [['bolsa', 'Bolsa'], ['bendiciones', 'Bendiciones'], ['guardian', 'Guardián'], ['codice', 'Códice'], ...(estacion ? [[estacion, { artesano: 'Fabricar', cocina: 'Cocinar', comerciante: 'Comerciar', museo: 'Museo de la Memoria' }[estacion]]] : [])];
+  const tabs = [['bolsa', 'Bolsa'], ['bendiciones', 'Bendiciones'], ['guardian', 'Guardián'], ['codice', 'Códice'], ...(estacion ? [[estacion, { artesano: 'Fabricar', cocina: 'Cocinar', comerciante: 'Comerciar', museo: 'Museo de la Memoria', armero: 'Armero' }[estacion]]] : [])];
   const linea = (titulo, texto, color) => `<div class="fila"><span class="ico"></span><div><b${color ? ` style="color:${color}"` : ''}>${titulo}</b><div class="texto">${texto}</div></div></div>`;
   const seccion = (t) => `<p class="resumen">${t}</p>`;
   let cuerpo = '';
@@ -284,6 +285,8 @@ function pintarMenu() {
       objetos('Reliquias', 2) + seccion('Bendiciones') +
       (bendiciones.map(([id, r]) => linea(`${BENDICIONES[id].nombre} (${r})`, BENDICIONES[id].desc, COLOR_RAREZA[3])).join('') || '<p>Ninguna todavía.</p>') +
       objetos('Fragmentos de memoria y objetos de la historia', 4) + objetos('Coleccionables', 3);
+  } else if (pestana === 'armero') {
+    cuerpo = menuArmero(); // js/armas.js
   } else if (pestana === 'comerciante') {
     cuerpo = `<p class="resumen">Ecos ${tiene('ecos')}</p>` + Object.entries(OFERTAS).filter(([, o]) => desbloqueada(o.bandera)).map(([k, o]) =>
       fila(o.objeto, `<span class="cuenta">×${o.n} por ${o.coste} ${nombreObjeto(o.precio)}</span><button data-oferta="${k}" ${tiene(o.precio) >= o.coste && tiene(o.objeto) < OBJETOS[o.objeto].tope ? '' : 'disabled'}>Cambiar</button>`)).join('') +
@@ -306,6 +309,7 @@ function pintarMenu() {
     if (d.equipar) { p.reliquias = p.reliquias.includes(d.equipar) ? p.reliquias.filter((x) => x !== d.equipar) : [...p.reliquias, d.equipar]; aplicarEstadisticas(); }
     if (d.receta) { const r = RECETAS[d.receta]; r.ingredientes.forEach((i) => quitarObjeto(i.id, i.n)); darObjeto(r.resultado, r.n); avisoRecompensa(`${nombreObjeto(r.resultado)} ×${r.n}`); }
     if (d.vender) vender(d.vender);
+    if (d.armero) elegirArmero(d.armero);
     if (d.oferta) { const o = OFERTAS[d.oferta]; quitarObjeto(o.precio, o.coste); darObjeto(o.objeto, o.n); avisoRecompensa(`${nombreObjeto(o.objeto)} ×${o.n}`); }
     pintarMenu();
   };

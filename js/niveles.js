@@ -254,6 +254,7 @@ function generarNivel(id) {
   // Santuario de Vida (LifeShrine) en la primera sala del X-3: cura la mitad de la vida, una vez por incursión.
   if (n === VIDA_NIVEL[piso]) { const v = { x: s0.x1 - 2, y: s0.y1 - 0.6 }; objetos.push({ sprite: 'Santuario_Vida_01', x: v.x, y: v.y, z: 0 }); puntos.vida = { x: v.x, y: v.y - 0.9 }; }
   if (arena) puntos.subjefe = { x: sf.cx + 2, y: sf.cy };
+  if (NIVEL_ARMA[n] && !arena) puntos.arma = { x: s0.x1 - 2.5, y: s0.y1 - 1.2 }; // estrado del arma (js/armas.js)
   // Decorado del piso en el vacío, lejos del suelo (más lejos por delante, para que no tape a nadie).
   const deco = ESTILO[piso].deco, cerca = (a, b) => { for (let u = -2; u <= 2; u++) for (let v = -2; v <= 3; v++) if (es(a + u, b + v)) return true; return false; };
   for (let a = lim[0] - 4; a <= lim[1] + 4; a++) for (let b = lim[2] - 4; b <= lim[3] + 4; b++)
@@ -313,6 +314,7 @@ function poblarNivel(id, P, E, I, T) {
       numero(j.x, j.y, `+${cura}`, '#7fe0b0'); sonar('cura'); mensaje('El agua del santuario te devuelve fuerzas.');
     } });
   }
+  ponerArma(id, P.arma); // js/armas.js
   T.push({ ...P.subida, a: anterior(id), punto: 'llegada_abajo' });
   T.push({ ...P.bajada, a: siguiente(id), punto: 'llegada_arriba', abierto: () => bandera(`incursion.limpio.${id}`) && (id !== 'n1_5' || bandera('olm.subjefe_1_vencido')),
     cerrado: id === 'n1_5' ? 'Algo grande vigila esta sala. La bajada no se abrirá mientras siga en pie.' : 'Una reja de piedra tapa la bajada. Aún quedan enemigos en el nivel.' });
@@ -320,8 +322,10 @@ function poblarNivel(id, P, E, I, T) {
 // Al vencer al último enemigo de un nivel generado se abre su bajada, con un premio pequeño.
 function revisarNivel() {
   const id = juego.region;
+  revisarCofreUnity(id); // 1-1 y 2-5 (js/armas.js)
   if (!esGenerado(id) || bandera(`incursion.limpio.${id}`) || vivos().length) return;
   poner(`incursion.limpio.${id}`);
+  aparecerCofre(id); // cofre de recompensas (js/armas.js)
   const piso = +id[1], n = +id[3];
   sonar('premio'); toast(`Nivel ${nombreNivel(id)} superado: la bajada está abierta`);
   // Experiencia (más que antes: el jugador sube algo más en la mazmorra) y, en los niveles lejos de un santuario (X-2 y X-4),
