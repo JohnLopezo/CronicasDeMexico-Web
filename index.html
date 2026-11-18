@@ -120,6 +120,7 @@
   .lista { display: grid; gap: 6px; }
   .fila { display: grid; grid-template-columns: 32px 1fr auto auto; gap: 10px; align-items: center; border-bottom: 1px solid #ffffff14; padding: 4px 0; }
   .fila img, .fila .ico { width: 32px; height: 32px; image-rendering: pixelated; }
+  .fila.arma { grid-template-columns: 48px 1fr auto auto; } .fila.arma img { width: 48px; height: 48px; } /* armero: iconos que se vean */
   .fila small { opacity: .7; display: block; }
   .fila button { padding: 6px 12px; }
   .fila button:disabled { opacity: .35; cursor: default; }
@@ -172,7 +173,7 @@
 <div id="inicio" class="capa">
   <div class="caja">
     <h1>Crónicas de México</h1>
-    <p>Arco I · La Venta (versión HTML, etapa 24)</p>
+    <p>Arco I · La Venta</p>
     <div class="botones">
       <button id="continuar" class="oculto">Continuar</button>
       <button id="nueva">Nueva partida</button>

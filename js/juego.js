@@ -178,6 +178,7 @@ function poblarCiudad(P, E, O, I, T) {
 function poblarPiso3(P, E, O, I, T, santuarioMemoria) {
   empezarMision('MP_OLM_05'); // StartQuestOnLoad en la arena
   santuarioMemoria();
+  santuarioVidaP3();
   // Dos espíritus jaguar en la antesala, entre la llegada y el santuario (BuildFauna).
   const a = P.llegada_arriba, s = P.memoria_llegada, entre = (k) => ({ x: a.x + (s.x - a.x) * k, y: a.y + (s.y - a.y) * k });
   for (const k of [0.35, 0.7]) { const p = entre(k); E.push(nuevoEspiritu(p.x, p.y)); }
@@ -261,14 +262,7 @@ function poblar(id) {
     ofrenda('p2_guardian', P.ofrenda_guardian, false, 'olm.jaguar_piedra_vencido');
     for (const p of P.enemigos) E.push(nuevoEspiritu(p.x, p.y));
     for (let i = 0; i < 2; i++) E.push(nuevoEco(P.ecos, i * 3));
-    const vida = mundo.objetos.find((o) => o.sprite.startsWith('Santuario_Vida'));
-    if (bandera('incursion.vida_p2') && vida) vida.sprite = 'Santuario_Vida_02';
-    I.push({ x: P.vida.x, y: P.vida.y, r: 1.4, texto: 'Santuario de Vida', usar() {
-      if (bandera('incursion.vida_p2')) return mensaje('El santuario está apagado. Volverá a encenderse cuando salgas a la selva.');
-      const j = juego.jugador, cura = Math.min(j.max - j.vida, Math.round(j.max / 2)); // LifeShrine: la mitad de la vida, una vez por incursión
-      j.vida += cura; poner('incursion.vida_p2'); if (vida) vida.sprite = 'Santuario_Vida_02';
-      numero(j.x, j.y, `+${cura}`, '#7fe0b0'); sonar('cura'); mensaje('El agua del santuario te devuelve fuerzas.');
-    } });
+    santuarioVida('incursion.vida_p2', P.vida, mundo.objetos.find((o) => o.sprite.startsWith('Santuario_Vida')));
     if (!bandera('olm.jaguar_piedra_vencido')) {
       E.push(nuevoJaguar(P.jaguar.x, P.jaguar.y, (e) => {
         poner('olm.jaguar_piedra_vencido'); juego.jefe = null;
@@ -288,6 +282,37 @@ function poblar(id) {
 const LLEGAR = { selva: 'llegar:selva', p1: 'llegar:mazmorra_piso1', p2: 'llegar:mazmorra_piso2', p3: 'llegar:mazmorra_piso3' };
 
 // ---------- Viaje entre regiones ----------
+// Santuario de Vida (LifeShrine): cura la mitad de la vida, una vez por incursión. obj: su sprite, que se apaga al usarlo.
+function santuarioVida(clave, punto, obj) {
+  if (bandera(clave) && obj) obj.sprite = 'Santuario_Vida_02';
+  juego.interactuables.push({ x: punto.x, y: punto.y, r: 1.4, texto: 'Santuario de Vida', usar() {
+    if (bandera(clave)) return mensaje('El santuario está apagado. Volverá a encenderse cuando salgas a la selva.');
+    const j = juego.jugador, cura = Math.min(j.max - j.vida, Math.round(j.max / 2));
+    j.vida += cura; poner(clave); if (obj) obj.sprite = 'Santuario_Vida_02';
+    numero(j.x, j.y, `+${cura}`, '#7fe0b0'); sonar('cura'); mensaje('El agua del santuario te devuelve fuerzas.');
+  } });
+}
+// Santuario de Vida nuevo en la antesala del 3-5, junto al de Memoria (etapa 38, solo HTML; el único hueco libre de la
+// antesala): en una campaña simulada se llegaba al Guardián con el 37 % de la vida y perdía casi siempre; el 2-5 ya tenía el suyo.
+const VIDA_P3 = { x: 2.75, y: 2.25 };
+function santuarioVidaP3() {
+  console.assert(!bloqueado(VIDA_P3.x, VIDA_P3.y, 0.4) && !bloqueado(VIDA_P3.x, VIDA_P3.y - 0.9, 0.3), 'Santuario de Vida del 3-5 en un sitio libre');
+  const obj = { sprite: 'Santuario_Vida_01', x: VIDA_P3.x, y: VIDA_P3.y, z: 0, orden: profundidad(VIDA_P3.y, 0), dibujar() { dibujar(this.sprite, this.x, this.y, this.z); } };
+  mundo.objetos.push(obj); mundo.cajas.push(caja(VIDA_P3.x, VIDA_P3.y, 0.8, 0.8));
+  santuarioVida('incursion.vida_p3', { x: VIDA_P3.x, y: VIDA_P3.y - 0.9 }, obj);
+}
+
+// Enemigo que aparece dentro de un muro (un punto de los mapas de Unity sobre los muros nuevos de la etapa 35, como un
+// espíritu del 3-5): al hueco libre más cercano, y su casa con él, para que no se quede atascado (etapa 38).
+function desatascar(e) {
+  const r = (e.r || 0.3) * 0.8;
+  if (e.tipo === 'vasija' || !bloqueado(e.x, e.y, r)) return;
+  for (let d = 0.25; d <= 3; d += 0.25) for (let a = 0; a < 16; a++) {
+    const x = e.x + Math.cos((a * Math.PI) / 8) * d, y = e.y + Math.sin((a * Math.PI) / 8) * d;
+    if (!bloqueado(x, y, r)) { e.x = x; e.y = y; if (e.casa) e.casa = { x, y }; return; }
+  }
+}
+
 async function cargarRegion(id, punto, vida) {
   juego.viajando = true; sonar('portal');
   $('fundido').style.opacity = 1;
@@ -301,9 +326,9 @@ async function cargarRegion(id, punto, vida) {
   Object.assign(juego, { rompibles: [], alAparecer: [] });
   mostrarDialogo();
   poblar(id);
+  juego.enemigos.forEach(desatascar);
   ambiente(id);
-  if (LLEGAR[id]) avisar(LLEGAR[id]);
-  if (nombreNivel(id)) toast(`Nivel ${nombreNivel(id)}`);
+  if (LLEGAR[id]) avisar(LLEGAR[id]); // el nombre del nivel ya lo dice el marcador de arriba (#zona): sin aviso repetido
   juego.enemigos.forEach((e, i) => { e.clave = `${id}:${e.tipo}:${i}`; }); // para no dar lo mismo cada vez que reaparece
   if (/^p\d$/.test(id)) entregar(`REC_descubrir_piso${id[1]}`, `descubrir.mazmorra_piso${id[1]}`);
   for (const t of juego.portales) t.armado = false; // no se activa hasta salir de él (se aparece cerca)

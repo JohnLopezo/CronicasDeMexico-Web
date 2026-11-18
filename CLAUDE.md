@@ -5,6 +5,13 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 38 (2026-11-18, subida a GitHub):** simulación completa del juego y 8 arreglos (README, etapa 38): enemigos a ≥ 4 m de la
+  llegada (`LIBRE_LLEGADA`), armas de cofres u ofrendas al suelo con las manos llenas (`ofrecerArma`), santuario de Vida en la
+  antesala del 3-5 (`santuarioVidaP3`), `desatascar` enemigos en muros, arma a distancia sin munición se suelta, sin aviso
+  repetido del nivel, inicio sin «etapa 24», iconos del armero más grandes. Campaña simulada: 0 caídas del 1-1 al 3-5.
+  Guiones nuevos: `recorrido.mjs`, `entradas.mjs`, `campana.mjs` (repetirlos tras cada cambio grande). Pendiente: que el
+  usuario lo pruebe en el celular.
+
 - **Paso a Unity en marcha (2026-11-18):** en el repositorio de Unity, rama `feature/port-html`, subida (commit `0fae1d4`). Hecha la etapa
   **U1** (§1 esquiva saltando de los enemigos y §2 salto del jugador); el plan U1-U9 y qué falta están en la última entrada
   de `Docs/Bitacora.md` de Unity, que es lo que hay que leer para seguir allí. Este repositorio solo cambió en
@@ -85,6 +92,7 @@ Patrón de un enemigo nuevo: constantes en mayúsculas, `nuevoX(x, y)` con `actu
 - Arte o mapas cambiados en Unity: `node sincronizar.mjs`.
 - Pruebas sin ventana (Chrome por DevTools): `node herramientas/dificultad/prueba.mjs "file:///…/index.html" <salida> <guion.mjs>`.
   Guiones de ejemplo en `herramientas/dificultad/`; bots `bot_grupo.js` (`GRUPO`, opción `orilla`) y `bot_jefe.js` (`PELEA`).
+  Revisión general: `recorrido.mjs` (mapas), `entradas.mjs` (enemigos junto a la llegada), `campana.mjs` (campaña entera, ~8 min).
   Las autocomprobaciones (`console.assert`) salen en la consola: sin líneas `[assert]` = todo bien.
 
 ## Trampas conocidas

@@ -445,3 +445,15 @@ el escudo en cualquiera de las dos. Calidad (1-3) por instancia: ×0,6 / ×1 / �
 deja de ser solo de Balam: cada `WeaponData` lleva su especial (área delante con radio y alcance, franja o abanico de
 proyectiles; aturdir, sangrado, romper basalto), con el mismo coste (25) y la misma espera (5 s). Valores en `ESPECIAL_ARMA` y
 `CALIDAD` (`js/armas.js`).
+
+## 26. Arreglos de la simulación (etapa 38)
+
+- **Llegada libre:** al generar un nivel (`DungeonLevelGenerator` o equivalente), ningún enemigo a menos de 4 m del punto de
+  llegada (`LIBRE_LLEGADA`); la charca del pejelagarto, solo en una sala de en medio.
+- **Arma de cofre u ofrenda** (`RewardChest`): con una ranura libre o la misma arma, se toma; con las manos llenas, pickup en
+  el suelo junto al cofre en vez de cambiar la de la mano.
+- **Arma a distancia sin munición:** se quita del inventario y la otra pasa a la mano.
+- **Santuario de Vida en la antesala del 3-5** (`LifeShrine` en `Olmeca_Mazmorra_P3`, junto al de Memoria): en la campaña
+  simulada se llegaba al Guardián con el 37 % de la vida.
+- **Enemigo dentro de un muro al aparecer:** moverlo al hueco libre más cercano (en Unity, un `Physics.CheckCapsule` al
+  aparecer, o revisar los puntos de los espíritus del piso 3 en el generador).

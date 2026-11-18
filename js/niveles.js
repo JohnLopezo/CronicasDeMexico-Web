@@ -25,6 +25,7 @@ const SALA = { ancho: [7, 10], alto: [5, 7], pasillo: [2, 4], arena: [13, 9] };
 // y nivel (X-1 a X-4; el 1-1 es el piso 1 de Unity). En el X-3 hay un santuario de Vida.
 const COSTE = { Serpiente: 2, Murcielago: 2, Avispa: 2, Guacamaya: 2, armadillo: 2, espiritu: 3, Cocodrilo: 3, Mono: 3, ocelote: 4, aullador: 4, pejelagarto: 4, pecari: 6, tapir: 6 };
 const PRESUPUESTO = { 1: [0, 11, 13, 15], 2: [16, 18, 20, 22], 3: [19, 21, 23, 26] }; // pisos 2 y 3 subidos en la etapa 32 (curva creciente)
+const LIBRE_LLEGADA = 4; // m sin enemigos alrededor de la llegada (etapa 38)
 // Nivel con santuario de Vida en cada piso: el X-3, a mitad de piso. Al 2-1 se llega con las semillas de la nauyaca y al 3-1,
 // con el santuario del 2-5.
 const VIDA_NIVEL = { 1: 3, 2: 3, 3: 3 };
@@ -205,12 +206,24 @@ function generarNivel(id) {
 
   // Enemigos por presupuesto: se reparte entre las salas (la primera del X-1 queda vacía, la arena es del sub-jefe) y cada
   // sala se llena con tipos de su piso que quepan en lo que le queda.
-  let pob = POBLACION[piso]; const enemigos = [], sitio = (s) => ({ x: s.x0 + 1.5 + rnd() * (s.x1 - s.x0 - 3), y: s.y0 + 1 + rnd() * (s.y1 - s.y0 - 2) });
+  // Etapa 38: nadie a menos de LIBRE_LLEGADA de la llegada (antes, en el 50-80 % de los niveles había un enemigo a menos de
+  // 2 m, a veces encima del jugador). Se sortea hasta 12 veces y, si la sala es pequeña, se queda el sitio más lejano.
+  const llega = puntos.llegada_arriba, aLlegada = (p) => Math.hypot(p.x - llega.x, p.y - llega.y);
+  const sitio = (s) => {
+    let mejor = null;
+    for (let k = 0; k < 12 && !(mejor && aLlegada(mejor) >= LIBRE_LLEGADA); k++) {
+      const p = { x: s.x0 + 1.5 + rnd() * (s.x1 - s.x0 - 3), y: s.y0 + 1 + rnd() * (s.y1 - s.y0 - 2) };
+      if (!mejor || aLlegada(p) > aLlegada(mejor)) mejor = p;
+    }
+    return mejor;
+  };
+  let pob = POBLACION[piso]; const enemigos = [];
   const conSitio = salas.filter((s, i) => !(arena && i === salas.length - 1) && !(i === 0 && n === 1));
   let presupuesto = arena ? 2 : PRESUPUESTO[piso][n - 1]; // antes de la nauyaca, casi nada
   // Un tapir (élite pesado) en la sala más grande, desde el 2-3 y en el piso 3, si cabe en el presupuesto.
   if (!arena && (piso === 3 || (piso === 2 && n >= 3)) && presupuesto >= 12 && rnd() < 0.85) {
-    const s = conSitio.slice().sort((a, b) => (b.x1 - b.x0) * (b.y1 - b.y0) - (a.x1 - a.x0) * (a.y1 - a.y0))[0];
+    const grandes = conSitio.slice().sort((a, b) => (b.x1 - b.x0) * (b.y1 - b.y0) - (a.x1 - a.x0) * (a.y1 - a.y0));
+    const s = grandes.find((g) => aLlegada({ x: g.cx + 0.5, y: g.cy }) >= LIBRE_LLEGADA) || grandes[0];
     if (s) { enemigos.push({ tipo: 'tapir', x: s.cx + 0.5, y: s.cy, sala: s }); presupuesto -= COSTE.tapir; }
   }
   // Se eligen los grupos con el presupuesto de todo el nivel (así caben las manadas) y se reparten: cada uno a la sala que
@@ -229,8 +242,9 @@ function generarNivel(id) {
   // allí se abre su charca, de 5 × 3 m sin las esquinas, en agua que se vadea como la del piso 2 de Unity.
   const agua = [];
   if (elegidos.includes('pejelagarto')) {
-    const libres = conSitio.filter((s) => !enemigos.some((e) => e.sala === s)), medio = libres.filter((s) => s !== s0 && s !== sf);
-    const s = (medio.length ? medio : libres)[0];
+    // Solo en una sala de en medio (etapa 38): en la primera o la última la charca podía tapar una escalera; si no hay
+    // ninguna libre, este nivel va sin pejelagarto.
+    const s = conSitio.find((r) => r !== s0 && r !== sf && !enemigos.some((e) => e.sala === r));
     if (s) {
       for (let a = -2; a <= 2; a++) for (let b = -1; b <= 1; b++) if (Math.abs(a) < 2 || !b) agua.push({ x: s.cx + a, y: s.cy + b });
       enemigos.push({ tipo: 'pejelagarto', x: s.cx, y: s.cy, sala: s }); carga.set(s, carga.get(s) + COSTE.pejelagarto);
@@ -238,9 +252,15 @@ function generarNivel(id) {
     elegidos.splice(elegidos.indexOf('pejelagarto'), 1);
   }
   for (const t of elegidos.sort((a, b) => COSTE[b] - COSTE[a])) {
-    const s = conSitio.slice().sort((a, b) => carga.get(a) / area(a) - carga.get(b) / area(b))[0];
+    // La sala que menos carga lleva; si en ella no cabe lejos de la llegada (la primera, si es pequeña), la siguiente.
+    let s = null, p = null;
+    for (const r of conSitio.slice().sort((a, b) => carga.get(a) / area(a) - carga.get(b) / area(b))) {
+      const q = sitio(r);
+      if (!p || aLlegada(q) > aLlegada(p)) { s = r; p = q; }
+      if (aLlegada(q) >= LIBRE_LLEGADA) break;
+    }
     if (!s) break;
-    enemigos.push({ tipo: t, ...sitio(s) }); carga.set(s, carga.get(s) + COSTE[t]);
+    enemigos.push({ tipo: t, ...p }); carga.set(s, carga.get(s) + COSTE[t]);
   }
   for (const e of enemigos) delete e.sala;
 
@@ -304,16 +324,7 @@ function poblarNivel(id, P, E, I, T) {
     entregar({ objetos: [{ id: 'semilla_preparada', n: 2 }] }, 'jefe.nauyaca'); // para llegar al piso 2 con algo de vida
     mensaje('La nauyaca real se desliza entre las losas rotas y desaparece. La bajada al segundo piso queda libre.');
   })); // js/animales.js
-  if (P.vida) {
-    const clave = `incursion.vida_${id}`, obj = mundo.objetos.find((o) => o.sprite.startsWith('Santuario_Vida'));
-    if (bandera(clave) && obj) obj.sprite = 'Santuario_Vida_02';
-    I.push({ x: P.vida.x, y: P.vida.y, r: 1.4, texto: 'Santuario de Vida', usar() {
-      if (bandera(clave)) return mensaje('El santuario está apagado. Volverá a encenderse cuando salgas a la selva.');
-      const j = juego.jugador, cura = Math.min(j.max - j.vida, Math.round(j.max / 2)); // LifeShrine: la mitad, una vez por incursión
-      j.vida += cura; poner(clave); if (obj) obj.sprite = 'Santuario_Vida_02';
-      numero(j.x, j.y, `+${cura}`, '#7fe0b0'); sonar('cura'); mensaje('El agua del santuario te devuelve fuerzas.');
-    } });
-  }
+  if (P.vida) santuarioVida(`incursion.vida_${id}`, P.vida, mundo.objetos.find((o) => o.sprite.startsWith('Santuario_Vida'))); // js/juego.js
   ponerArma(id, P.arma); // js/armas.js
   T.push({ ...P.subida, a: anterior(id), punto: 'llegada_abajo' });
   T.push({ ...P.bajada, a: siguiente(id), punto: 'llegada_arriba', abierto: () => bandera(`incursion.limpio.${id}`) && (id !== 'n1_5' || bandera('olm.subjefe_1_vencido')),

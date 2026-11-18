@@ -25,6 +25,21 @@ export default async ({ ev, espera, log }) => {
       for (let k=0;k<60;k++) actualizarArmas(1/60);
       console.assert(es[0].vida<999 && en-prog().energia===25, 'Prueba armas: especial de '+id+' pega delante y cuesta 25');
       out.push(id+': '+es.map(e=>999-e.vida).join('/')+' energía -'+(en-prog().energia)+' mun '+enMano()?.mun+' aturdido '+es.map(e=>(e.aturdido||0)>0?1:0).join('')); }
+    // Etapa 38: cofre u ofrenda con las manos llenas → al suelo; con una ranura libre → a la mano.
+    reset(); juego.flags['incursion.ranuras']=[nuevaRanura('macana',1),nuevaRanura('mazo',2)]; juego.flags['incursion.mano']=1;
+    ofrecerArma('honda',2,j);
+    const suelo=juego.interactuables.find(i=>i.texto==='Tomar honda ★★');
+    console.assert(ranuras().length===2 && enMano().id==='mazo' && suelo, 'Prueba armas: con las manos llenas, el arma del cofre queda en el suelo');
+    suelo.usar();
+    console.assert(textoArmas()==='Macana★ · ▸Honda★★ 30', 'Prueba armas: tomada del suelo, sustituye a la de la mano');
+    out.push('cofre con las manos llenas: suelo y luego '+textoArmas());
+    juego.flags['incursion.ranuras']=[nuevaRanura('macana',1)]; juego.flags['incursion.mano']=0; ofrecerArma('lanza',3,j);
+    console.assert(textoArmas()==='Macana★ · ▸Lanza★★★', 'Prueba armas: con una ranura libre, el arma del cofre se toma');
+    // Sin munición, el arma a distancia se suelta y la otra pasa a la mano.
+    reset(); const r1=nuevaRanura('jabalina',2); r1.mun=1; juego.flags['incursion.ranuras']=[r1,nuevaRanura('macana',1)]; juego.flags['incursion.mano']=0;
+    const lejos=nuevoEspiritu(s.cx+5,s.cy); lejos.vida=lejos.max=999; juego.enemigos.push(lejos);
+    console.assert(lanzarDardo(j) && textoArmas()==='Macana★' && enMano().id==='macana', 'Prueba armas: sin munición se suelta el arma a distancia');
+    out.push('última jabalina: '+textoArmas());
     return out.join('\\n'); })()`);
   log(r);
 };

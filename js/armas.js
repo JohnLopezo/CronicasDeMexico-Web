@@ -81,16 +81,31 @@ function armaDelNivel(id) {
 
 // El estrado: objeto que se dibuja encima y se toma con Usar (o Atacar junto a él).
 function ponerArma(id, punto) {
-  const clave = `incursion.arma_${id}`, tipo = armaDelNivel(id), nv = +id[1] || 1;
-  if (!punto || !tipo || bandera(clave)) return;
-  const A = ARMAS[tipo], o = { tipo: 'arma', arma: tipo, x: punto.x, y: punto.y, z: 0, t: 0, actualizar(a, dt) { a.t += dt; }, dibujar: dibujarArmaSuelta };
+  const clave = `incursion.arma_${id}`, tipo = armaDelNivel(id);
+  if (punto && tipo && !bandera(clave)) armaEnSuelo(tipo, +id[1] || 1, punto, clave, true);
+}
+// Un arma que se toma con Usar: sobre su estrado (estrado = true) o en el suelo (la de un cofre u ofrenda con las manos llenas).
+function armaEnSuelo(tipo, nv, punto, clave, estrado) {
+  const A = ARMAS[tipo], o = { tipo: 'arma', arma: tipo, estrado, x: punto.x, y: punto.y, z: 0, t: 0, actualizar(a, dt) { a.t += dt; }, dibujar: dibujarArmaSuelta };
   juego.otros.push(o);
-  const it = { x: punto.x, y: punto.y - 0.6, r: 1.4, texto: `Tomar ${A.nombre.toLowerCase()} ${estrellas(nv)}`, usar() {
+  const it = { x: punto.x, y: punto.y - (estrado ? 0.6 : 0), r: estrado ? 1.4 : 1, texto: `Tomar ${A.nombre.toLowerCase()} ${estrellas(nv)}`, usar() {
     if (bandera(clave)) return;
     poner(clave); juego.otros = juego.otros.filter((x) => x !== o); juego.interactuables = juego.interactuables.filter((x) => x !== it);
     sonar('premio'); tomarArma(tipo, nv);
   } };
   juego.interactuables.push(it);
+}
+// Arma de un cofre o una ofrenda (etapa 38): con una ranura libre, o si es la misma que llevas, se toma; con las manos llenas
+// queda en el suelo junto a <cerca> para que elijas, en vez de cambiarte sola la de la mano. Devuelve el texto del aviso.
+// shortcut: el arma del suelo no se guarda; si sales del nivel sin tomarla se pierde. Guardarla en juego.flags si molesta.
+let armasSueltas = 0;
+function ofrecerArma(tipo, nv, cerca) {
+  const R = ranuras();
+  if (R.length < RANURAS || R.some((r) => r.id === tipo)) { tomarArma(tipo, nv); return ` y ${ARMAS[tipo].nombre.toLowerCase()} ${estrellas(nv)}`; }
+  const p = [[1.1, 0], [-1.1, 0], [0, -1.1], [0.8, -0.8], [-0.8, -0.8]].map(([dx, dy]) => ({ x: cerca.x + dx, y: cerca.y + dy })).find((q) => !bloqueado(q.x, q.y, 0.3)) || { x: cerca.x, y: cerca.y - 0.8 };
+  armaEnSuelo(tipo, nv, p, `incursion.suelta_${++armasSueltas}`, false);
+  toast(`${nombreArma({ id: tipo, nv })} en el suelo: llevas las manos llenas. Tómala con Usar para cambiarla por la de la mano.`, 5);
+  return ` y ${ARMAS[tipo].nombre.toLowerCase()} ${estrellas(nv)} (queda en el suelo)`;
 }
 // Llevar un arma (del estrado, un cofre o el armero): la misma recarga (y sube de calidad si la nueva es mejor); si no, ocupa la
 // ranura libre o sustituye a la de la mano. Queda en la mano y lo avisa.
@@ -146,7 +161,7 @@ function aparecerCofre(id) {
     }
     entregar({ xp: 10 * piso, objetos }, `premio.${id}.${semillaIncursion()}`);
     const t = rnd(), L = ranuras().find((r) => ARMAS[r.id].clase === 'lejos');
-    if (t < COFRE.arma) tomarArma(ARMAS_COFRE[Math.floor(rnd() * ARMAS_COFRE.length)], piso);
+    if (t < COFRE.arma) ofrecerArma(ARMAS_COFRE[Math.floor(rnd() * ARMAS_COFRE.length)], piso, p);
     else if (t < COFRE.arma + COFRE.municion && L) { const n = Math.ceil(ARMAS[L.id].municion / 2); L.mun += n; toast(`+${n} de munición para ${ARMAS[L.id].nombre.toLowerCase()}`, 4); }
   } });
 }
@@ -161,8 +176,10 @@ const ARMERO = { x: 17.5, y: 1.5 };
 const iconos = {};
 function iconoArma(id) {
   if (iconos[id]) return iconos[id];
-  const c = document.createElement('canvas'), g = c.getContext('2d'); c.width = c.height = 40;
-  for (const [col, a, b, w, h] of DIBUJO[id]) { g.fillStyle = col; g.fillRect(20 + a * 1.2, 20 + b * 1.2, w * 1.2, h * 1.2); }
+  // Etapa 38: al doble (como sobre el estrado) y sobre un disco claro, que en el menú oscuro casi no se veían.
+  const c = document.createElement('canvas'), g = c.getContext('2d'); c.width = c.height = 64;
+  g.fillStyle = 'rgba(232,212,154,.22)'; g.beginPath(); g.arc(32, 32, 31, 0, 7); g.fill();
+  for (const [col, a, b, w, h] of DIBUJO[id]) { g.fillStyle = col; g.fillRect(32 + a * 1.8, 32 + b * 1.8, w * 1.8, h * 1.8); }
   return (iconos[id] = c.toDataURL());
 }
 function poblarArmero(O, I) {
@@ -174,7 +191,7 @@ function menuArmero() {
   const elegida = juego.flags['armero.eleccion'];
   return '<p>El armero de la aldea te presta un arma sencilla (★) para la selva y la mazmorra: sales con ella en cada incursión. En la mazmorra hay mejores (★★ en el piso 2, ★★★ en el 3). Llevas dos: Cambiar arma elige la de la mano, y la estrella hace su especial. Elige una.</p>' +
     ARMAS_COFRE.map((id) => { const A = ARMAS[id];
-      return `<div class="fila"><img src="${iconoArma(id)}" alt=""><div><b>${A.nombre} ★</b><small>${A.clase === 'cerca' ? 'Cuerpo a cuerpo' : 'A distancia'}</small><div>${QUE_HACE[id]}. Especial: ${ESPECIAL_ARMA[id].nombre.toLowerCase()}.</div><small>${textoMaestria(id, 1)}</small></div><button data-armero="${id}" ${elegida === id ? 'disabled' : ''}>${elegida === id ? 'Elegida' : 'Elegir'}</button></div>`;
+      return `<div class="fila arma"><img src="${iconoArma(id)}" alt=""><div><b>${A.nombre} ★</b><small>${A.clase === 'cerca' ? 'Cuerpo a cuerpo' : 'A distancia'}</small><div>${QUE_HACE[id]}. Especial: ${ESPECIAL_ARMA[id].nombre.toLowerCase()}.</div><small>${textoMaestria(id, 1)}</small></div><button data-armero="${id}" ${elegida === id ? 'disabled' : ''}>${elegida === id ? 'Elegida' : 'Elegir'}</button></div>`;
     }).join('');
 }
 function elegirArmero(id) {
@@ -192,9 +209,7 @@ function darArmaDelArmero() {
 function armaEnOfrenda(id) {
   const tipo = id !== 'p3_final' && armaDeCofre(`ofrenda_${id}`, COFRE.ofrenda);
   if (!tipo) return '';
-  const nv = +(id.match(/\d/) || [1])[0];
-  tomarArma(tipo, nv);
-  return ` y ${ARMAS[tipo].nombre.toLowerCase()} ${estrellas(nv)}`;
+  return ofrecerArma(tipo, +(id.match(/\d/) || [1])[0], juego.jugador);
 }
 
 // ---------- Cuerpo a cuerpo: lo llama golpear() (js/actores.js) ----------
@@ -233,7 +248,11 @@ function lanzarDardo(j) {
   const r = enMano(); r.mun--;
   soltarDardo(j, id, ux, uy, Math.round(estadisticas().ataque * danoArma(id, r.nv)), A.atraviesa || 1);
   sonar('disparo');
-  if (!municion()) toast(`Sin munición para ${id === 'honda' ? 'la honda' : id === 'jabalina' ? 'las jabalinas' : 'el átlatl'}: espera al siguiente estrado`, 3);
+  // Sin munición (etapa 38) no sirve de nada: se deja y la otra pasa a la mano, así la ranura queda libre para otra arma.
+  if (!municion()) {
+    const R = ranuras(); R.splice(R.indexOf(r), 1); juego.flags['incursion.mano'] = 0;
+    toast(`Sin ${id === 'honda' ? 'piedras: dejas la honda' : id === 'jabalina' ? 'jabalinas' : 'dardos: dejas el átlatl'}${R.length ? `. En la mano: ${nombreArma(R[0])}` : ''}`, 3);
+  }
   return true;
 }
 const soltarDardo = (j, id, ux, uy, dano, quedan) => juego.dardos.push({ id, x: j.x + ux * 0.4, y: j.y + uy * 0.4, ux, uy, t: alcanceTiro(ARMAS[id]) / ARMAS[id].vel, quedan, tocados: [], dano });
@@ -330,8 +349,9 @@ const DIBUJO = {
 };
 // El arma flota sobre el estrado (sprite de Unity Estrado_Ofrenda_01), con un brillo, y sube y baja.
 function dibujarArmaSuelta(o) {
-  dibujar('Estrado_Ofrenda_01', o.x, o.y, 0);
-  const [sx, sy] = pantalla(o.x, o.y, 1.4 + Math.sin(o.t * 2.5) * 0.08), x = Math.round(sx - vista.cx), y = Math.round(sy - vista.cy);
+  if (o.estrado !== false) dibujar('Estrado_Ofrenda_01', o.x, o.y, 0);
+  // Sobre el estrado flota a 1,4 m; en el suelo (la de un cofre o una ofrenda), más baja.
+  const [sx, sy] = pantalla(o.x, o.y, (o.estrado !== false ? 1.4 : 0.5) + Math.sin(o.t * 2.5) * 0.08), x = Math.round(sx - vista.cx), y = Math.round(sy - vista.cy);
   ctx.fillStyle = 'rgba(255,220,140,.25)'; ctx.beginPath(); ctx.arc(x, y, 26 + Math.sin(o.t * 4) * 2, 0, 7); ctx.fill();
   for (const [c, a, b, w, h] of DIBUJO[o.arma]) { ctx.fillStyle = c; ctx.fillRect(x + a * 2, y + b * 2, w * 2, h * 2); }
 }

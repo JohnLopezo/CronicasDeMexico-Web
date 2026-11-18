@@ -53,6 +53,33 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 38 (2026-11-18): arreglos tras una simulación completa del juego
+
+El usuario pidió que el juego se simulara solo para buscar fallos y mejoras. Tres guiones nuevos en `herramientas/dificultad/`:
+`recorrido.mjs` (cada mapa: aparecer dentro de un muro; portales, enemigos e interactuables que no se alcanzan andando, por
+búsqueda en casillas de 0,25 m; ms por cuadro; fotos y menús), `entradas.mjs` (distancia del enemigo más cercano a la llegada
+en los niveles generados, 30 semillas) y `campana.mjs` (el bot juega del 1-1 al 3-5 sin atajos: limpia, toma estrados, abre
+cofres, usa el santuario de Vida antes de cada jefe, pelea con los jefes y baja por los portales de verdad).
+
+| # | Hallado | Arreglo |
+|---|---|---|
+| 1 | En todos los generados menos el X-1, un enemigo a < 2 m de la llegada en el 50-80 % de las partidas (a veces encima) | `LIBRE_LLEGADA` = 4 m (`js/niveles.js`): `sitio()` sortea hasta 12 veces y se queda el más lejano; si la sala no da, otra; el tapir, a una sala grande lejos de la llegada; la charca del pejelagarto, solo en una sala de en medio (antes podía tapar una escalera: `[assert]` del 2-3). Ahora el más cercano está a ≥ 3,4 m en 30/30 |
+| 2 | Las armas de cofres y ofrendas se equipaban solas y, con las dos ranuras llenas, cambiaban la de la mano aunque fuera mejor | `ofrecerArma` (`js/armas.js`): con ranura libre o la misma arma, se toma; con las manos llenas queda en el suelo junto al cofre (`armaEnSuelo`, sin estrado) y se toma con Usar |
+| 3 | En la campaña se llegaba al Guardián con el 37 % de la vida y perdía | Santuario de Vida nuevo en la antesala del 3-5, junto al de Memoria (`santuarioVidaP3`, (2,75; 2,25)); los tres santuarios usan ahora `santuarioVida` (`js/juego.js`) |
+| 4 | Un espíritu del 3-5 dentro de un muro (punto de Unity sobre los muros de la etapa 35) | `desatascar` al cargar cada región: el enemigo en un muro pasa al hueco libre más cercano (hasta 3 m), con su casa |
+| 5 | La jabalina sin munición seguía ocupando una ranura | Sin munición, el arma a distancia se deja y la otra pasa a la mano |
+| 6 | El nombre del nivel salía dos veces al entrar | Fuera el aviso: ya lo dice el marcador `#zona` |
+| 7 | La pantalla de inicio decía «etapa 24» | Solo «Arco I · La Venta» |
+| 8 | Iconos del armero diminutos y oscuros | Al doble (64 px, ×1,8) sobre un disco claro; filas `.fila.arma` de 48 px |
+
+**Comprobado y bien:** < 1,3 ms por cuadro en todos los mapas (la aldea, lo más pesado); nadie aparece en un muro; todos los
+portales se alcanzan; las tres ofrendas inalcanzables son las secretas, tras el basalto agrietado.
+
+**Campaña tras los arreglos** (perfil celular, Balam, sin armero): 0 caídas del 1-1 al 3-5; nauyaca al 53 % de la vida,
+vencida en 13 s; jaguar con santuario al 95 %, 16 s; Guardián con el santuario nuevo al 85 % (antes, 37 %), vencido al
+primer intento en 38 s. Pruebas: `armas.mjs` con dos casos nuevos (cofre con las manos llenas → suelo; última jabalina →
+se suelta), `entradas.mjs` y `recorrido.mjs` sin `[assert]` ni excepciones.
+
 ## Etapa 37 (2026-11-18): dos armas a elegir, calidad por piso y especial de cada arma (`js/armas.js`)
 
 Pedido del usuario tras probar la 36: que la habilidad especial afecte a los enemigos con un arma, que las armas se elijan,
