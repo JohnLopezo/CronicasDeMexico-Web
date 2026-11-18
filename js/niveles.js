@@ -29,6 +29,48 @@ const PRESUPUESTO = { 1: [0, 11, 13, 15], 2: [16, 18, 20, 22], 3: [19, 21, 23, 2
 // con el santuario del 2-5.
 const VIDA_NIVEL = { 1: 3, 2: 3, 3: 3 };
 
+// ---------- Aspecto de cada piso (etapa 35, solo HTML) ----------
+// En vez del negro, el vacío lleva una textura oscura del piso, y alrededor de las salas generadas crecen plantas y rocas
+// propias: piso 1, selva con musgo; piso 2, agua negra con tule; piso 3, basalto roto de la ciudad olmeca.
+// Fondo: color de base, una textura en mosaico (de una imagen grande, un trozo de 192 px; de una pequeña, lo que tiene
+// pintado) y sprites sueltos repartidos; todo oscurecido con `luz`. `tono`: filtro del suelo de las salas generadas.
+const ESTILO = {
+  1: { tono: 'none', color: '#0c160e', textura: 'Suelo_Selva_00', luz: 'brightness(.32) saturate(.8)', deco: ['Helecho_01', 'Helecho_02', 'Roca_Musgo_01', 'Roca_Musgo_02', 'Roca_Musgo_03', 'Matorral_Selva_01', 'Pasto_Alto_01'] },
+  2: { tono: 'hue-rotate(25deg) saturate(1.15) brightness(.95)', color: '#071a1d', textura: 'Tile_Agua_Anim_01', sueltos: ['Nenufar_01', 'Nenufar_01', 'Tule_01'], luz: 'brightness(.42) saturate(.8)', deco: ['Tule_01', 'Nenufar_01', 'Roca_Musgo_02', 'Planta_Hoja_Ancha_01', 'Planta_Hoja_Ancha_02'] },
+  3: { tono: 'sepia(.35) hue-rotate(-15deg) saturate(1.2)', color: '#3a2f36', sueltos: ['Roca_Basalto_01', 'Roca_Basalto_02', 'Roca_Basalto_03', 'Escombros_Basalto_01', 'Escombros_Basalto_02', 'Escombros_Basalto_03'], luz: 'brightness(.55) saturate(.7)', deco: ['Roca_Basalto_01', 'Roca_Basalto_02', 'Roca_Basalto_03', 'Escombros_Basalto_01', 'Escombros_Basalto_02', 'Basalto_Agrietado_01'] },
+};
+const patrones = {};
+function patronFondo() {
+  const id = mundo.id, piso = /^p[123]$/.test(id) || esGenerado(id) ? +id[1] : 0, e = ESTILO[piso];
+  if (!e) return null;
+  if (!patrones[piso]) {
+    const ims = [e.textura, ...(e.sueltos || [])].filter(Boolean).map(imagen);
+    if (!ims.every((im) => im?.naturalWidth)) return null; // aún cargando: queda el color de siempre
+    const T = 192, c = document.createElement('canvas'), g = c.getContext('2d'), rnd = azar(piso);
+    c.width = c.height = T; g.fillStyle = e.color; g.fillRect(0, 0, T, T); g.filter = e.luz; // el color va tal cual
+    if (e.textura) {
+      const im = ims[0];
+      if (im.naturalWidth > T) g.drawImage(im, (im.naturalWidth - T) >> 1, (im.naturalHeight - T) >> 1, T, T, 0, 0, T, T);
+      else { // lo pintado de una losa pequeña (el agua trae margen transparente), en mosaico
+        const m = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+        m.canvas.width = im.naturalWidth; m.canvas.height = im.naturalHeight; m.drawImage(im, 0, 0);
+        const a = m.getImageData(0, 0, im.naturalWidth, im.naturalHeight).data, xs = [], ys = [];
+        for (let i = 3; i < a.length; i += 4) if (a[i] > 200) { xs.push((i >> 2) % im.naturalWidth); ys.push(Math.floor((i >> 2) / im.naturalWidth)); }
+        const [u0, v0, w, h] = [Math.min(...xs) + 1, Math.min(...ys) + 1, Math.max(...xs) - Math.min(...xs) - 2, Math.max(...ys) - Math.min(...ys) - 2];
+        for (let y = 0; y < T; y += h) for (let x = 0; x < T; x += w) g.drawImage(im, u0, v0, w, h, x, y, w, h);
+      }
+    }
+    // Sueltos: cada uno se pinta también desplazado un mosaico, para que no se corte en la junta.
+    for (let i = 0; i < (piso === 3 ? 22 : 9) && e.sueltos; i++) {
+      const im = imagen(e.sueltos[Math.floor(rnd() * e.sueltos.length)]), x = rnd() * T, y = rnd() * T;
+      for (const ox of [-T, 0, T]) for (const oy of [-T, 0, T]) g.drawImage(im, x + ox - im.naturalWidth / 2, y + oy - im.naturalHeight / 2);
+    }
+    patrones[piso] = ctx.createPattern(c, 'repeat');
+  }
+  patrones[piso].setTransform(new DOMMatrix([1, 0, 0, 1, -vista.cx, -vista.cy])); // la textura se mueve con el mundo
+  return patrones[piso];
+}
+
 // ---------- Azar con semilla ----------
 function azar(semilla) { // mulberry32
   let a = semilla >>> 0;
@@ -80,25 +122,38 @@ function generarNivel(id) {
   const piso = +id[1], n = +id[3], rnd = azar(hash(id + ':' + semillaIncursion()));
   const entre = ([a, b]) => a + Math.floor(rnd() * (b - a + 1));
   const arena = id === 'n1_5', nSalas = arena ? 2 : 2 + Math.min(2, Math.floor((n + piso) / 3));
-  // Salas en fila de oeste a este, unidas por pasillos de 3 de ancho a la altura del centro de la anterior.
+  // Salas que serpentean hacia el este: cada una sale de la anterior por el este o, desde la tercera, hacia el norte o el
+  // sur, por un pasillo de 3 de ancho. Nunca vuelven al oeste, así la bajada (al este de la última) queda libre.
   const salas = [], celdas = new Set(), pon = (x, y) => celdas.add(x + ',' + y);
-  let x = 0, yc = 0;
+  const rect = ([x0, x1, y0, y1]) => { for (let a = x0; a <= x1; a++) for (let b = y0; b <= y1; b++) pon(a, b); };
+  const choca = (s) => salas.some((o) => s.x0 <= o.x1 + 2 && s.x1 >= o.x0 - 2 && s.y0 <= o.y1 + 2 && s.y1 >= o.y0 - 2);
   for (let i = 0; i < nSalas; i++) {
     const grande = arena && i === nSalas - 1, w = grande ? SALA.arena[0] : entre(SALA.ancho), h = grande ? SALA.arena[1] : entre(SALA.alto);
-    const y0 = yc - Math.floor(h / 2), s = { x0: x, x1: x + w - 1, y0, y1: y0 + h - 1 };
-    salas.push(s);
-    for (let cx = s.x0; cx <= s.x1; cx++) for (let cy = s.y0; cy <= s.y1; cy++) pon(cx, cy);
-    if (i === nSalas - 1) break;
-    const largo = entre(SALA.pasillo);
-    for (let cx = s.x1 + 1; cx <= s.x1 + largo; cx++) for (let cy = yc - 1; cy <= yc + 1; cy++) pon(cx, cy);
-    x = s.x1 + largo + 1;
-    yc += Math.round((rnd() - 0.5) * 2); // la siguiente sala, un poco más arriba o abajo: el pasillo sigue dentro de las dos
+    let s = { x0: 0, x1: w - 1, y0: -Math.floor(h / 2), y1: h - 1 - Math.floor(h / 2) };
+    if (i) {
+      const p = salas[i - 1], largo = entre(SALA.pasillo), px = Math.round((p.x0 + p.x1) / 2), py = Math.round((p.y0 + p.y1) / 2);
+      const yc = py + Math.round((rnd() - 0.5) * 2), ye = yc - Math.floor(h / 2), xv = px - entre([3, w - 4]); // el pasillo, dentro de las dos
+      const este = { x0: p.x1 + largo + 1, x1: p.x1 + largo + w, y0: ye, y1: ye + h - 1, paso: [p.x1 + 1, p.x1 + largo, py - 1, py + 1] };
+      const norte = { x0: xv, x1: xv + w - 1, y0: p.y1 + largo + 1, y1: p.y1 + largo + h, paso: [px - 1, px + 1, p.y1 + 1, p.y1 + largo], norte: true };
+      const sur = { x0: xv, x1: xv + w - 1, y0: p.y0 - largo - h, y1: p.y0 - largo - 1, paso: [px - 1, px + 1, p.y0 - largo, p.y0 - 1] };
+      // La primera sala sale al este (su muro de atrás lleva la escalera); la arena, también.
+      const giro = i > 1 && !grande && rnd() < 0.6 ? [rnd() < 0.5 ? norte : sur].filter((c) => !choca(c)) : [];
+      s = giro[0] || este;
+      rect(s.paso);
+    }
+    salas.push(s); rect([s.x0, s.x1, s.y0, s.y1]);
   }
+  // Esquinas rotas: se quita la celda de la esquina de una sala si no da a un pasillo.
+  for (const s of salas) for (const [a, b, u, v] of [[s.x0, s.y0, -1, -1], [s.x1, s.y0, 1, -1], [s.x0, s.y1, -1, 1], [s.x1, s.y1, 1, 1]])
+    if (rnd() < 0.5 && !celdas.has(a + u + ',' + b) && !celdas.has(a + ',' + (b + v))) celdas.delete(a + ',' + b);
   // Centrar en el origen.
   const xs = [...celdas].map((k) => +k.split(',')[0]), ys = [...celdas].map((k) => +k.split(',')[1]);
   const dx = -Math.round((Math.min(...xs) + Math.max(...xs)) / 2), dy = -Math.round((Math.min(...ys) + Math.max(...ys)) / 2);
   const suelo = new Set([...celdas].map((k) => { const [a, b] = k.split(',').map(Number); return a + dx + ',' + (b + dy); }));
-  for (const s of salas) { s.x0 += dx; s.x1 += dx; s.y0 += dy; s.y1 += dy; s.cx = Math.round((s.x0 + s.x1) / 2); s.cy = Math.round((s.y0 + s.y1) / 2); }
+  for (const s of salas) {
+    s.x0 += dx; s.x1 += dx; s.y0 += dy; s.y1 += dy; s.cx = Math.round((s.x0 + s.x1) / 2); s.cy = Math.round((s.y0 + s.y1) / 2);
+    if (s.paso) s.medio = [Math.round((s.paso[0] + s.paso[1]) / 2) + dx, Math.round((s.paso[2] + s.paso[3]) / 2) + dy]; // centro del pasillo que llega
+  }
   const es = (a, b) => suelo.has(a + ',' + b);
   const lim = [Math.min(...xs) + dx - 2, Math.max(...xs) + dx + 2, Math.min(...ys) + dy - 2, Math.max(...ys) + dy + 2];
   const vacio = [];
@@ -114,7 +169,7 @@ function generarNivel(id) {
   const variante = () => `0${1 + Math.floor(rnd() * 3)}`;
   for (const k of suelo) {
     const [a, b] = k.split(',').map(Number);
-    if (!es(a, b + 1) && Math.abs(a - subida.x) > 1.1) objetos.push({ sprite: `Muro_Basalto_${variante()}`, x: a, y: b + 0.5, z: 0 });
+    if (!es(a, b + 1) && (Math.abs(a - subida.x) > 1.1 || Math.abs(b + 0.5 - subida.y) > 1.5)) objetos.push({ sprite: `Muro_Basalto_${variante()}`, x: a, y: b + 0.5, z: 0 });
     if (!es(a - 1, b)) objetos.push({ sprite: `Muro_Basalto_Y_${variante()}`, x: a - 0.5, y: b, z: 0 });
   }
 
@@ -122,10 +177,10 @@ function generarNivel(id) {
   const T = { pinchos: [], placas: [], pinchosPlaca: [], braseros: [], cristales: [], esteras: [], cabezas: [] };
   salas.forEach((s, i) => {
     if (s.x1 - s.x0 >= 6) { T.braseros.push([s.x0 + 1, s.y1 - 0.2]); T.braseros.push([s.x1 - 1, s.y1 - 0.2]); }
-    if (i % 2 === 1 && !(arena && i === salas.length - 1)) T.cristales.push([s.cx, s.y1 - 0.3]);
-    if (rnd() < 0.5) T.esteras.push([s.cx + (rnd() < 0.5 ? -2 : 2), s.cy - 1]);
     const sig = salas[i + 1];
-    if (sig && n + piso >= 3 && rnd() < 0.7) T.pinchos.push([Math.round((s.x1 + sig.x0) / 2), Math.round((s.cy + sig.cy) / 2)]);
+    if (i % 2 === 1 && !(arena && i === salas.length - 1) && !sig?.norte) T.cristales.push([s.cx, s.y1 - 0.3]); // no en la boca de un pasillo al norte
+    if (rnd() < 0.5) T.esteras.push([s.cx + (rnd() < 0.5 ? -2 : 2), s.cy - 1]);
+    if (sig && n + piso >= 3 && rnd() < 0.7) T.pinchos.push(sig.medio);
   });
   const vasijas = salas.slice(0, arena ? 1 : salas.length).flatMap((s) => (rnd() < 0.6 ? [[s.x0 + 1, s.y0 + 0.6]] : []));
 
@@ -180,6 +235,10 @@ function generarNivel(id) {
   // Santuario de Vida (LifeShrine) en la primera sala del X-3: cura la mitad de la vida, una vez por incursión.
   if (n === VIDA_NIVEL[piso]) { const v = { x: s0.x1 - 2, y: s0.y1 - 0.6 }; objetos.push({ sprite: 'Santuario_Vida_01', x: v.x, y: v.y, z: 0 }); puntos.vida = { x: v.x, y: v.y - 0.9 }; }
   if (arena) puntos.subjefe = { x: sf.cx + 2, y: sf.cy };
+  // Decorado del piso en el vacío, lejos del suelo (más lejos por delante, para que no tape a nadie).
+  const deco = ESTILO[piso].deco, cerca = (a, b) => { for (let u = -2; u <= 2; u++) for (let v = -2; v <= 3; v++) if (es(a + u, b + v)) return true; return false; };
+  for (let a = lim[0] - 4; a <= lim[1] + 4; a++) for (let b = lim[2] - 4; b <= lim[3] + 4; b++)
+    if (rnd() < 0.12 && !cerca(a, b)) objetos.push({ sprite: deco[Math.floor(rnd() * deco.length)], x: a + rnd() - 0.5, y: b + rnd() - 0.5, z: 0 });
   TRAMPAS[id] = T; VASIJAS[id] = vasijas;
   return { nota: `Generado (${id}, semilla ${semillaIncursion()})`, generado: true, suelo: [], agua, agua_vadeable: true, objetos, niveles: [], rampas: [], muelles: [],
     limites: lim, puntos, vacio, losas, enemigos, fuentes: fuente.r.suelo.map((c) => c.sprite), piso };
@@ -200,6 +259,7 @@ function dibujarLosas() {
     const c = document.createElement('canvas');
     c.width = (x1 - x0 + 1) * PPU; c.height = (y1 - y0 + 1) * PX_Y + LOSA.matas + LOSA.cara;
     const g = c.getContext('2d');
+    g.filter = ESTILO[d.piso].tono;
     // De atrás hacia delante: la cara de piedra de una fila queda encima de lo que haya debajo.
     for (const l of [...d.losas].sort((p, q) => q.y - p.y)) {
       const [im, u, v] = recorteDe(r, l.src.x, l.src.y, l.arriba, l.abajo);

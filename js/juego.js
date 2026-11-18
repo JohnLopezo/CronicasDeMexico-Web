@@ -466,7 +466,12 @@ function hud(dtReal) {
   const j = juego.jugador;
   $('vidaBar').style.width = `${(100 * j.vida) / j.max}%`;
   const p = prog(), s = estadisticas();
-  $('vidaTxt').textContent = `${guardianActual().nombre} · nv ${p.nivel} · ${j.vida}/${j.max}`;
+  const g = guardianActual(), ico = `arte/Iconos/ICO_marca_${g.id}.png`, img = $('retratoImg');
+  if (img.dataset.ico !== ico) { img.dataset.ico = ico; img.src = ico; img.alt = g.nombre; }
+  $('nvTxt').textContent = `Nv ${p.nivel}`;
+  $('vidaTxt').textContent = `${j.vida}/${j.max}`;
+  $('enerTxt').textContent = `${Math.floor(p.energia)}/${s.energia}`;
+  $('panel').classList.toggle('baja', j.vida > 0 && j.vida <= j.max * 0.3);
   $('energiaBar').style.width = `${(100 * p.energia) / s.energia}%`;
   $('xpBar').style.width = `${(100 * p.xp) / xpParaSubir(p.nivel)}%`;
   $('bTierra').classList.toggle('oculto', p.principal !== 'tierra');
@@ -475,7 +480,9 @@ function hud(dtReal) {
   $('bEspecial').classList.toggle('apagado', juego.esperaEspecial > 0 || p.energia < (especialDe()?.coste || 0));
   $('bTierra').dataset.espera = juego.esperaTierra > 0 ? juego.esperaTierra.toFixed(1) : '';
   const nivel = nombreNivel(juego.region), quedan = esGenerado(juego.region) ? vivos().length : 0;
-  $('esqTxt').textContent = `Esquivas ${'◆'.repeat(j.cargas)}${'◇'.repeat(MOV.cargas - j.cargas)}${nivel ? ` · Nivel ${nivel}` : ''}${quedan ? ` · quedan ${quedan}` : ''}`;
+  $('esqTxt').textContent = '◆'.repeat(j.cargas) + '◇'.repeat(MOV.cargas - j.cargas);
+  $('zona').classList.toggle('oculto', !nivel);
+  if (nivel) $('zona').textContent = `Nivel ${nivel}${quedan ? ` · quedan ${quedan}` : ''}`;
   $('objetivo').textContent = objetivo();
   $('jefe').classList.toggle('oculto', !juego.jefe);
   if (juego.jefe) { $("jefeNombre").textContent = juego.jefe.nombre + (juego.jefe.fase > 1 ? ` · fase ${juego.jefe.fase}` : ""); $('jefeBar').style.width = `${(100 * juego.jefe.vida) / juego.jefe.max}%`; }

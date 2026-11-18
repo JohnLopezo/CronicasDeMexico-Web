@@ -111,7 +111,7 @@ function nombresDeRegion() {
 }
 
 function dibujarSuelo(t) {
-  ctx.fillStyle = mundo.fondo;
+  ctx.fillStyle = patronFondo() || mundo.fondo; // la mazmorra, con la textura de su piso (js/niveles.js)
   ctx.fillRect(0, 0, vista.w, vista.h);
   for (const c of mundo.d.suelo) dibujarEn(c.sprite, c.derecha * PPU, -c.arriba * PPU); // centro del trozo en el plano de la cámara
   if (mundo.d.losas) dibujarLosas(); // niveles generados (js/niveles.js)

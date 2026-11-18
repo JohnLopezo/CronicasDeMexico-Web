@@ -53,6 +53,36 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 35 (2026-11-17): pantalla de juego más clara en el celular y mazmorra con forma y aspecto por piso
+
+**Mapa de los niveles generados** (`generarNivel`, `js/niveles.js`): las salas ya no van en fila. Desde la tercera, cada
+una sale de la anterior hacia el norte o el sur (60 %) por un pasillo vertical de 3 de ancho, si no choca con otra sala (2 m
+de margen); si no, al este. Nunca vuelven al oeste: la bajada sigue al este de la última. La primera sala y la arena del 1-5
+salen al este. Cada esquina de sala se rompe (pierde su celda) con un 50 % si no da a un pasillo. Los pinchos van en el centro
+del pasillo (`sala.medio`); el cristal no se pone en la boca de un pasillo al norte. El hueco del muro de la escalera de
+subida mira también la fila (antes solo la columna). Sigue la semilla por incursión: cambian al volver de la selva.
+
+**Aspecto por piso** (`ESTILO`, `patronFondo`): en vez del negro, el vacío de la mazmorra (también 1-1, 2-5 y 3-5) lleva un
+mosaico oscuro propio, y los niveles generados, plantas y rocas en el vacío (a 2 m del suelo, 3 m por delante) y un tono de
+suelo: piso 1, selva tupida y helechos; piso 2, agua negra con nenúfares y tule, suelo verdoso; piso 3, basalto roto sobre
+piedra morada, suelo rojizo.
+
+
+Antes, arriba a la izquierda había tres barras sin números y una línea de texto larga («Balam · nv 1 · 50/50 · Esquivas ◆◆ ·
+Nivel 1-3 · quedan 6») que en el celular se partía en dos. Ahora (`index.html`, `hud()` en `js/juego.js`):
+
+- **Panel compacto** arriba a la izquierda, al estilo de los juegos de acción para celular: **retrato** con la marca del
+  Guardián (`arte/Iconos/ICO_marca_<id>.png`) y una etiqueta con su nivel; **vida** (roja) y **energía** (azul) con el número
+  dentro de la barra; la experiencia como línea dorada fina; las **esquivas** como rombos ◆◇ debajo.
+- **Poca vida** (30 % o menos): la barra de vida late en rojo.
+- **Ficha del nivel** arriba al centro («Nivel 1-3 · quedan 6»), solo en la mazmorra.
+- **La misión** en una sola línea, con fondo suave y puntos suspensivos si no cabe.
+- **Los avisos** («toast») salen bajo la ficha del nivel, más estrechos (38 % del ancho), para no tapar el panel.
+
+**Pruebas:** capturas a 844 × 390 en la ciudad (sin ficha de nivel) y en el 1-3 con poca vida (la barra late); sin
+`[assert]` ni excepciones. Mapa: plano de 18 niveles (6 × 3 semillas) y capturas del 1-3, 2-2, 2-5, 3-3 y 3-5, sin
+`[assert]` (la autocomprobación de recorrido de `js/niveles.js` pasa). **Falta verlo en el celular.**
+
 ## Etapa 34 (2026-11-17): música prehispánica (`js/musica.js`)
 
 Música de fondo hecha con código (Web Audio, sin archivos), en el estilo que eligió el autor: prehispánico.

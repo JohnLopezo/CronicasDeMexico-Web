@@ -5,7 +5,9 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
-- **Última etapa:** 34 (2026-11-17), música prehispánica por código (`js/musica.js`): explorar/pelear, caracol al empezar la
+- **Última etapa:** 35 (2026-11-17), HUD compacto: panel con retrato (marca del Guardián), vida y energía con números,
+  esquivas ◆◇, ficha del nivel arriba al centro, misión en una línea. Y mazmorra: salas que serpentean (pasillos al norte/sur,
+  esquinas rotas) y aspecto por piso sin fondo negro (`ESTILO`, `patronFondo` en `js/niveles.js`). 34: música prehispánica por código (`js/musica.js`): explorar/pelear, caracol al empezar la
   pelea, volumen «Música» en Opciones. Falta oírla en el celular. 33: jefes con el perfil celular (`jefes.mjs`: `HABS='[0.5]' CAD=0.3 REAC=0.3`); jaguar de 420 a 540
   de vida. 32: mapas con ese perfil (`mapas.mjs`: `HAB=0.5 CAD=0.3 REAC=0.3`), aviso del espíritu 0,55 s, pisos 2-3 con más
   presupuesto. 30-31: controles táctiles tipo Soul Knight. Falta probar 31-33 en celular. 26-29: efectos de golpe y animación por partes (`js/efectos.js`, `js/cuadros.js`).

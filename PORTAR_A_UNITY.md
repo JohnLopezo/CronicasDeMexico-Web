@@ -398,3 +398,17 @@ Unity aún no tiene audio. Opciones: grabar dos bucles desde el navegador (explo
 `AudioClip`, o rehacer el secuenciador con `OnAudioFilterRead`. Lógica a portar: un `MusicDirector` que pasa a pelea con un
 aviso o proyectil activo, un jefe despierto o un enemigo a menos de 5 m (y se queda 4 s), cambia solo al empezar un compás y
 suena el caracol al entrar en pelea; volumen propio en Opciones y al 40 % en pausa.
+
+## 21. HUD compacto (etapa 35)
+
+En el Canvas del HUD: panel arriba a la izquierda con el icono `ICO_marca_<guardián>` en un círculo, su nivel en una etiqueta,
+barras de vida y energía con el texto «actual/máx» dentro, la experiencia como barra fina y las cargas de esquiva como rombos.
+Latido de la barra de vida al 30 % o menos. Nivel de la mazmorra y enemigos que quedan en una ficha arriba al centro; la misión
+en una línea con elipsis; los avisos bajo esa ficha.
+
+## 22. Mazmorra: salas que serpentean y aspecto por piso (etapa 35)
+
+`OlmecaDungeonGenerator` (o el generador de los niveles X-1…X-4): salas que salen de la anterior al este o, desde la tercera,
+al norte/sur (60 %) con pasillo vertical de 3, sin solaparse (margen 2); esquinas rotas al 50 %. Fondo de cámara por piso en
+lugar del negro (selva oscura / agua negra con nenúfares / basalto morado `#3a2f36`), decorado de vacío (helechos y rocas con
+musgo; tule y nenúfar; rocas y escombros de basalto) y tinte del suelo por piso (piso 2 verdoso, piso 3 rojizo).
