@@ -5,6 +5,10 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 40 (2026-11-18):** el jugador ya no anda «como pingüino» de frente ni de espaldas: los cuadros de Unity
+  `Caminar*_05/_01` de los guerreros no mueven los pies; ahora se usa el reposo y se alza un pie y luego el otro (`pasoFrontal`,
+  `js/actores.js`). Pendiente: verlo en el celular.
+
 - **Etapa 39 (2026-11-18, subida a GitHub):** mejor animación de los enemigos (README, etapa 39): los 7 animales pintados llevan la
   capa de movimiento por código (`movAnimal`, `POSE_ANIMAL`, `ESTILOS`) y más zancada al andar (40 cuadros repintados con
   `herramientas/animales.mjs`). Hojas de revisión: `herramientas/dificultad/animaciones.mjs`. Pendiente: verlo en el celular.

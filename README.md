@@ -53,6 +53,22 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 40 (2026-11-18): el jugador ya no anda «como pingüino» de frente ni de espaldas (`js/actores.js`)
+
+El usuario vio que al andar hacia abajo el guerrero parecía un pingüino. En los 4 cuadros `Caminar*_05` (y `_01`) de los siete
+guerreros de Unity **los pies no se mueven y todo el cuerpo se ladea de un lado a otro**; de perfil (`_03`) sí dan pasos. Los
+habitantes no tienen el problema: sus cuadros de frente sí mueven las piernas.
+
+Arreglo (`pasoFrontal`, `PASO_FRONTAL`): andando de frente o de espaldas se usa el cuadro de **reposo** (sin ladeo) y, en un
+ciclo de 4 tiempos al mismo ritmo de antes, se alza 2 px la parte baja (17 % del alto) de un lado del pie, luego apoyo con un
+bote de 1 px hacia abajo, luego el otro lado y otro apoyo. El corte entre pies es el pivote del sprite. Los cuadros se hacen una
+vez por guerrero y dirección (caché) y se pintan con `dibujar(..., { lienzo })`, como las partes de `js/cuadros.js`. El arte de
+Unity no se toca.
+
+**Pruebas:** hoja ×5 con los 4 tiempos nuevos junto a los 4 cuadros viejos (Balam y Xali, de frente y de espaldas): el cuerpo
+queda centrado y alterna los pies; tira del jugador andando con S, W y D en el juego, sin excepciones. Pendiente: verlo en el
+celular (si 2 px se queda corto, subir `PASO_FRONTAL.alza`).
+
 ## Etapa 39 (2026-11-18): mejor animación de los enemigos
 
 Para revisarla, `herramientas/dificultad/animaciones.mjs` hace una **hoja de animación** por enemigo (36 recortes de ~0,08 s:

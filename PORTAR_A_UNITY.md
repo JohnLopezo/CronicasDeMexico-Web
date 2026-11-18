@@ -464,3 +464,10 @@ Cuando se porten los animales (§8), su `DirectionalSpriteAnimator` necesita tam
 al paso, inclinación al correr, anticipación en el aviso, estirón en el ataque y encogerse al recibir un golpe, con los valores
 de `ESTILOS` (Pecari, Tapir, Ocelote, Aullador, Armadillo, Nauyaca, Pejelagarto) en `js/movimiento.js`. Los cuadros de andar se
 repintaron con más zancada (`herramientas/animales.mjs`): copiar los PNG nuevos de `arte/Animales`.
+
+## 28. Andar de frente y de espaldas de los guerreros (etapa 40)
+
+Los cuadros `DSS_Guerrero_*` de andar hacia el sur y el norte (los mismos PNG que aquí, de `recortar_guerreros.py`) no mueven
+los pies: el cuerpo se ladea («como pingüino»). Lo ideal es redibujar esas fichas en `Docs/Guerreros`. Mientras, el truco de
+aquí: en `DirectionalSpriteAnimator`, para N y S usar el cuadro de reposo y alzar 2 px la parte baja (17 % del alto) de un
+lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`, `PASO_FRONTAL` en `js/actores.js`).

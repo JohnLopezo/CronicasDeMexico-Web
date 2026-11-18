@@ -212,9 +212,31 @@ function herirEnemigo(e, cant, desde, afinidad) {
   if (desde === juego.jugador) e.vida > 0 ? golpeConAfinidad(e, afinidad) : mostrarRuptura(e); // primero el daño, como TryDamage
 }
 
+// Andar de frente y de espaldas (etapa 40): en los 4 cuadros de Unity de esas direcciones los pies no se mueven y el cuerpo
+// se ladea de lado a lado (se veía como un pingüino). Se usa el cuadro de reposo y se alza la parte baja de un pie y luego la
+// del otro (fase 0 y 2), con un bote de 1 px en cada apoyo (fase 1 y 3). De perfil siguen sus cuadros, que sí dan pasos.
+// Los habitantes no lo necesitan: sus cuadros de frente sí mueven las piernas.
+const PASO_FRONTAL = { alza: 2, pies: 0.17, bote: 1 }; // pies: parte de abajo de la figura que se alza (fracción del alto)
+const pasosFrontales = new Map();
+function pasoFrontal(nombre, fase) {
+  if (fase % 2) return null; // apoyo: el cuadro tal cual
+  const clave = nombre + ':' + fase, hecho = pasosFrontales.get(clave);
+  if (hecho) return hecho;
+  const im = imagen(nombre), s = SPRITES[nombre];
+  if (!im || !im.naturalWidth || !s) return null; // aún sin cargar: el de reposo, sin alzar
+  const w = im.naturalWidth, h = im.naturalHeight, c = Object.assign(document.createElement('canvas'), { width: w, height: h });
+  const g = c.getContext('2d'); g.drawImage(im, 0, 0);
+  const pie = Math.round(s[1] * w), alto = Math.max(3, Math.round(h * PASO_FRONTAL.pies)), x0 = fase === 0 ? 0 : pie, ancho = fase === 0 ? pie : w - pie;
+  g.clearRect(x0, h - alto, ancho, alto);
+  g.drawImage(im, x0, h - alto, ancho, alto, x0, h - alto - PASO_FRONTAL.alza, ancho, alto);
+  pasosFrontales.set(clave, c);
+  return c;
+}
+
 function dibujarJugador(j) {
   const b = `Guerrero_${guardianActual().nombre}_`;
   const dir = direccion3(j.fx, j.fy);
+  let lienzo = null, bote = 0;
   const cuadros = [7, 6, 5, 4, 3, 2, 1].find((k) => SPRITES[`${b}Muerte${k}_03`]) || 1; // Naira, Ameyali y Ocel tienen 3
   let n;
   if (j.muerto > 0 || j.vida <= 0) n = `${b}Muerte${clamp(Math.ceil(((1.6 - j.muerto) / 1.6) * cuadros), 1, cuadros)}_03`;
@@ -224,11 +246,16 @@ function dibujarJugador(j) {
   else if (j.herido > 0) n = `${b}Dano1_03`;
   else if (j.espera > 0.15 && j.esq <= 0) n = elegir(`${b}${j.combo === 2 ? 'Ataque2' : 'Ataque1'}_03`, `${b}Ataque1_03`);
   else if (j.esq > 0 || enElAire(j)) n = `${b}Correr2_03`;
+  else if (j.mov && dir !== '03' && SPRITES[`${b}Reposo1_${dir}`]) {
+    const fase = Math.floor(j.paso * 8) % 4;
+    n = `${b}Reposo1_${dir}`; lienzo = pasoFrontal(n, fase); bote = fase % 2 ? PASO_FRONTAL.bote : 0;
+  }
   else if (j.mov) n = elegir(`${b}Caminar${1 + (Math.floor(j.paso * 8) % 4)}_${dir}`, `${b}Caminar1_03`);
   else n = elegir(`${b}Reposo1_${dir}`, `${b}Reposo1_03`);
   elipse(j.x, j.y, 0.3, '#0006', null, j.suelo ?? j.z ?? 0);
   const parpadeo = j.inv > 0 && Math.floor(j.inv * 14) % 2 === 0;
-  dibujar(n, j.x, j.y, j.z || 0, { espejo: j.fx < 0, alfa: j.esq > 0 ? 0.6 : parpadeo ? 0.4 : null, filtro: j.destello > 0 ? 'brightness(2)' : null });
+  dibujar(n, j.x, j.y, j.z || 0, { espejo: j.fx < 0, alfa: j.esq > 0 ? 0.6 : parpadeo ? 0.4 : null, filtro: j.destello > 0 ? 'brightness(2)' : null,
+    ...(lienzo ? { lienzo } : {}), ...(bote ? { dy: bote } : {}) });
   if (j.defiende) elipse(j.x, j.y, 0.55, j.t <= (j.perfectaHasta || 0) ? 'rgba(159,212,255,.28)' : 'rgba(159,212,255,.12)', '#9fd4ff', j.z || 0);
 }
 
