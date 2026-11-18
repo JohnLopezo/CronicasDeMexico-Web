@@ -16,6 +16,14 @@ const ESTILOS = {
   espiritu: { paso: 3, bote: 1.2, bamboleo: 0.05, respira: 0.03, flota: 0.8 }, // espectral: además flota un poco
   jaguar: { paso: 2.4, bote: 1.4, bamboleo: 0.05, respira: 0.03 },
   guardian: { paso: 1.4, bote: 1.2, bamboleo: 0.04, respira: 0.02 },
+  // Animales pintados por código (etapa 39): sus cuadros ya mueven las patas, así que el cuerpo bota y se mece menos.
+  Nauyaca: { repta: true, paso: 2, respira: 0.03 },
+  Pecari: { paso: 3.2, bote: 0.8, bamboleo: 0.04, respira: 0.03 },
+  Tapir: { paso: 1.8, bote: 1, bamboleo: 0.03, respira: 0.02 },
+  Ocelote: { paso: 3, bote: 0.6, bamboleo: 0.03, respira: 0.03 },
+  Aullador: { paso: 3, bote: 1.3, bamboleo: 0.06, respira: 0.04 },
+  Armadillo: { paso: 5, bote: 0.5, bamboleo: 0.05, respira: 0.03 },
+  Pejelagarto: { repta: true, paso: 1.6, respira: 0.03 },
 };
 const seno = (t) => Math.sin(2 * Math.PI * t);
 

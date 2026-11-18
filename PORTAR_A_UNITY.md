@@ -457,3 +457,10 @@ proyectiles; aturdir, sangrado, romper basalto), con el mismo coste (25) y la mi
   simulada se llegaba al Guardián con el 37 % de la vida.
 - **Enemigo dentro de un muro al aparecer:** moverlo al hueco libre más cercano (en Unity, un `Physics.CheckCapsule` al
   aparecer, o revisar los puntos de los espíritus del piso 3 en el generador).
+
+## 27. Animación de los animales pintados (etapa 39)
+
+Cuando se porten los animales (§8), su `DirectionalSpriteAnimator` necesita también la capa de movimiento por código (§9): bote
+al paso, inclinación al correr, anticipación en el aviso, estirón en el ataque y encogerse al recibir un golpe, con los valores
+de `ESTILOS` (Pecari, Tapir, Ocelote, Aullador, Armadillo, Nauyaca, Pejelagarto) en `js/movimiento.js`. Los cuadros de andar se
+repintaron con más zancada (`herramientas/animales.mjs`): copiar los PNG nuevos de `arte/Animales`.

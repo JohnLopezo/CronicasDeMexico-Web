@@ -5,6 +5,10 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 39 (2026-11-18, subida a GitHub):** mejor animación de los enemigos (README, etapa 39): los 7 animales pintados llevan la
+  capa de movimiento por código (`movAnimal`, `POSE_ANIMAL`, `ESTILOS`) y más zancada al andar (40 cuadros repintados con
+  `herramientas/animales.mjs`). Hojas de revisión: `herramientas/dificultad/animaciones.mjs`. Pendiente: verlo en el celular.
+
 - **Etapa 38 (2026-11-18, subida a GitHub):** simulación completa del juego y 8 arreglos (README, etapa 38): enemigos a ≥ 4 m de la
   llegada (`LIBRE_LLEGADA`), armas de cofres u ofrendas al suelo con las manos llenas (`ofrecerArma`), santuario de Vida en la
   antesala del 3-5 (`santuarioVidaP3`), `desatascar` enemigos en muros, arma a distancia sin munición se suelta, sin aviso
@@ -92,7 +96,7 @@ Patrón de un enemigo nuevo: constantes en mayúsculas, `nuevoX(x, y)` con `actu
 - Arte o mapas cambiados en Unity: `node sincronizar.mjs`.
 - Pruebas sin ventana (Chrome por DevTools): `node herramientas/dificultad/prueba.mjs "file:///…/index.html" <salida> <guion.mjs>`.
   Guiones de ejemplo en `herramientas/dificultad/`; bots `bot_grupo.js` (`GRUPO`, opción `orilla`) y `bot_jefe.js` (`PELEA`).
-  Revisión general: `recorrido.mjs` (mapas), `entradas.mjs` (enemigos junto a la llegada), `campana.mjs` (campaña entera, ~8 min).
+  Revisión general: `animaciones.mjs` (hojas de animación), `recorrido.mjs` (mapas), `entradas.mjs` (enemigos junto a la llegada), `campana.mjs` (campaña entera, ~8 min).
   Las autocomprobaciones (`console.assert`) salen en la consola: sin líneas `[assert]` = todo bien.
 
 ## Trampas conocidas

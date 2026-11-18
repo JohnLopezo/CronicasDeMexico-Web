@@ -7,6 +7,20 @@ function cuadroAnimal(animal, anim, t, sostener = false) {
   const a = ANIMALES[animal][anim], k = Math.floor(t * a.fps);
   return `${animal}_${anim}_${1 + (sostener ? Math.min(a.cuadros - 1, k) : k % a.cuadros)}`;
 }
+// Etapa 39: el cuerpo de los animales también se mueve (js/movimiento.js), como la fauna de Unity: bota al paso, se inclina al
+// correr, se agacha y se echa atrás al avisar, se estira al atacar y se encoge al recibir un golpe. Sus cuadros siguen moviendo
+// las patas. Animación propia → pose; al morir, sin capa: la muerte ya la hacen sus 6 cuadros.
+const POSE_ANIMAL = {
+  Trote: 'Caminar', Paso: 'Caminar', Anda: 'Caminar', Acecho: 'Caminar', Reptar: 'Caminar', Nada: 'Caminar',
+  Carga: 'Correr', Correr: 'Correr', Corre: 'Correr', Carrera: 'Correr', Embiste: 'Correr',
+  Aviso: 'Aviso', Aullido: 'Aviso',
+  Ataque: 'Ataque', Zarpazo: 'Ataque', Golpe: 'Ataque', Pisoton: 'Ataque', Mordida: 'Ataque', Lanza: 'Ataque', Salto: 'Ataque',
+  Encoge: 'Defensa',
+};
+// shortcut: el avance del aviso se mide sobre 0,8 s para todos (los avisos van de 0,45 a 0,8 s); usar la duración de cada uno
+// si alguno se agacha demasiado tarde.
+const AVISO_ANIMAL = 0.8;
+const movAnimal = (e, animal) => (e.vida <= 0 ? {} : movimiento(e, animal, POSE_ANIMAL[e.anim] || 'Reposo', Math.min(1, (e.ta || 0) / AVISO_ANIMAL)));
 
 // ---------- Nauyaca real (Bothrops asper): sub-jefe del 1-5 ----------
 // Acecha reptando y, a distancia de golpe, se enrosca y lanza la mordida en línea recta (franja avisada). Desde cerca
@@ -72,7 +86,7 @@ function dibujarNauyaca(e) {
   // Sombra alargada: bajo el rollo y bajo el cuello.
   elipse(e.x, e.y, 0.43, '#0005'); elipse(e.x + (e.fx < 0 ? -0.6 : 0.6), e.y, 0.3, '#0004');
   const filtro = e.destello > 0 ? 'brightness(2.4)' : e.roto > 0 ? ROTO_FILTRO : null;
-  dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerta ? Math.min(1, e.muriendo / 0.5) : null });
+  dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerta ? Math.min(1, e.muriendo / 0.5) : null, ...movAnimal(e, 'Nauyaca') });
 }
 
 // ---------- Pecarí de collar (Dicotyles tajacu): enemigo común en manada ----------
@@ -153,7 +167,7 @@ function dibujarPecari(e) {
   const n = muerto ? cuadroAnimal('Pecari', 'Muerte', 0.9 - e.muriendo, true) : cuadroAnimal('Pecari', e.anim, e.ta, e.anim === 'Ataque');
   elipse(e.x, e.y, 0.31, '#0006', null, e.suelo ?? 0);
   const filtro = e.destello > 0 ? 'brightness(2.4)' : e.roto > 0 ? ROTO_FILTRO : null;
-  dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null });
+  dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null, ...movAnimal(e, 'Pecari') });
   if (!muerto && e.vida < e.max) barraMini(e, 0.8);
 }
 
@@ -227,7 +241,7 @@ function dibujarTapir(e) {
     : e.anim === 'Pisoton' ? `Tapir_Pisoton_${1 + Math.min(5, Math.floor((e.ta / (TAPIR.pisoton.aviso + 0.2)) * 6))}` : cuadroAnimal('Tapir', e.anim, e.ta);
   elipse(e.x, e.y, 0.62, '#0006', null, e.suelo ?? 0);
   const filtro = e.destello > 0 ? 'brightness(2.2)' : e.roto > 0 ? ROTO_FILTRO : null;
-  dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.5) : null });
+  dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.5) : null, ...movAnimal(e, 'Tapir') });
   if (!muerto && e.vida < e.max) barraMini(e, 1.4);
 }
 
@@ -309,7 +323,7 @@ function dibujarOcelote(e) {
     : e.anim === 'Salto' ? `Ocelote_Salto_${1 + Math.min(4, Math.floor((1 - Math.max(0, e.t) / OCELOTE.salto.vuelo) * 5))}` : cuadroAnimal('Ocelote', e.anim, e.ta, e.anim === 'Zarpazo');
   elipse(e.x, e.y, 0.32, '#0006', null, e.suelo ?? 0);
   const filtro = e.destello > 0 ? 'brightness(2.4)' : e.roto > 0 ? ROTO_FILTRO : null;
-  dibujar(n, e.x, e.y, e.z || 0, { espejo, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null });
+  dibujar(n, e.x, e.y, e.z || 0, { espejo, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null, ...movAnimal(e, 'Ocelote') });
   if (!muerto && e.vida < e.max) barraMini(e, 0.85 + (e.z || 0));
 }
 
@@ -389,7 +403,7 @@ function dibujarAullador(e) {
     : cuadroAnimal('Aullador', e.anim, e.ta, e.anim === 'Aviso');
   elipse(e.x, e.y, 0.27, '#0006', null, e.suelo ?? 0);
   const filtro = e.destello > 0 ? 'brightness(2.6)' : e.roto > 0 ? ROTO_FILTRO : null;
-  dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null });
+  dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null, ...movAnimal(e, 'Aullador') });
   if (!muerto && e.vida < e.max) barraMini(e, 1.0);
 }
 
@@ -478,7 +492,7 @@ function dibujarArmadillo(e) {
     : cuadroAnimal('Armadillo', e.anim, e.ta, e.anim === 'Encoge' || e.anim === 'Aviso');
   elipse(e.x, e.y, 0.23, '#0006', null, e.suelo ?? 0);
   const filtro = e.destello > 0 ? 'brightness(2.4)' : e.roto > 0 ? ROTO_FILTRO : e.estado === 'encogido' ? 'brightness(1.15)' : null;
-  dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null });
+  dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null, ...movAnimal(e, 'Armadillo') });
   if (!muerto && e.vida < e.max) barraMini(e, 0.65 + (e.z || 0));
 }
 
@@ -618,7 +632,7 @@ function dibujarPejelagarto(e) {
     if (Math.floor(e.ta * 3) % 2) elipse(e.x - e.fx * 0.5, e.y - e.fy * 0.5, 0.18, null, 'rgba(220,235,225,.35)');
     return;
   }
-  if (enTierra(e) || e.z > 0.01) { elipse(e.x, e.y, 0.32, '#0006', null, e.suelo ?? 0); dibujar(n, e.x, e.y, e.z || 0, { espejo, filtro, alfa }); }
+  if (enTierra(e) || e.z > 0.01) { elipse(e.x, e.y, 0.32, '#0006', null, e.suelo ?? 0); dibujar(n, e.x, e.y, e.z || 0, { espejo, filtro, alfa, ...movAnimal(e, 'Pejelagarto') }); }
   else {
     // En la superficie: la parte de abajo, oscura bajo el agua; la de arriba, recortada en la línea del agua.
     const [, sy] = pantalla(e.x, e.y, 0);

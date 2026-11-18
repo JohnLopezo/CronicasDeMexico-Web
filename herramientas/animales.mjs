@@ -200,6 +200,7 @@ function rodilla(H, F, l1, l2, haciaDelante) {
   const k1 = { x: H.x + Math.cos(a + b) * l1, z: H.z + Math.sin(a + b) * l1 }, k2 = { x: H.x + Math.cos(a - b) * l1, z: H.z + Math.sin(a - b) * l1 };
   return ((k1.x > k2.x) === haciaDelante ? k1 : k2);
 }
+// Etapa 39: zancada y alzada al andar subidas (~35-60 %): el paso apenas se leía a tamaño de juego.
 // Paso de una pata con fase p (0-1): en el aire durante "vuelo" de la vuelta (adelanta), en el suelo el resto (atrasa).
 function pisada(p, zancada, alzada, vuelo = 0.4) {
   p = ((p % 1) + 1) % 1;
@@ -309,7 +310,7 @@ function posePecari(f, { marcha = 'quieto', baja = 0, alza = 0, eriza = 0, boca 
   // Patas.
   const patas = PATAS.map((P) => {
     const H = { x: P.x + (P.delante ? 0 : -atras * 0.05), z: zc - 0.03 };
-    const fase = f + (galope ? P.galope : P.trote), paso = marcha === 'quieto' ? { dx: 0, dz: 0 } : pisada(fase, galope ? 0.36 : 0.22, galope ? 0.1 : 0.07, galope ? 0.45 : 0.4);
+    const fase = f + (galope ? P.galope : P.trote), paso = marcha === 'quieto' ? { dx: 0, dz: 0 } : pisada(fase, galope ? 0.36 : 0.3, galope ? 0.1 : 0.11, galope ? 0.45 : 0.4);
     const F = { x: H.x + paso.dx + (P.delante ? 0.02 : -0.02), z: Math.max(0.02, paso.dz + 0.02) }, K = rodilla(H, F, 0.2, 0.19, P.delante);
     const pata = [...cadena({ ...H, y: P.y }, { ...K, y: P.y }, 4, 0.05, 0.032), ...cadena({ ...K, y: P.y }, { ...F, y: P.y }, 5, 0.028, 0.022).slice(1)];
     pata.forEach((p, i, a) => { p.t = i / (a.length - 1); });
@@ -390,7 +391,7 @@ function poseTapir(f, { marcha = 'quieto', encabrita = 0, caido = 0, trompa = 0,
     ...cadena({ x: cuerpo[0].x - 0.02, y: 0, z: cuerpo[0].z + 0.08 }, { x: cuerpo[0].x - 0.13, y: 0, z: cuerpo[0].z - 0.04 }, 3, 0.05, 0.03, { parte: 'cola' })];
   const patas = PATAS_TAPIR.map((P) => {
     const H = { x: P.x, z: zc - 0.08 }, ph = f + P.paso;
-    const paso = !anda ? { dx: 0, dz: 0 } : pisada(carga ? f + (P.delante ? 0.5 : 0) + (P.y > 0 ? 0.1 : 0) : ph, carga ? 0.55 : 0.38, carga ? 0.16 : 0.1, carga ? 0.42 : 0.3);
+    const paso = !anda ? { dx: 0, dz: 0 } : pisada(carga ? f + (P.delante ? 0.5 : 0) + (P.y > 0 ? 0.1 : 0) : ph, carga ? 0.55 : 0.46, carga ? 0.16 : 0.14, carga ? 0.42 : 0.3);
     let F = { x: H.x + paso.dx + (P.delante ? 0.03 : -0.03), z: Math.max(0.03, paso.dz + 0.03) };
     if (caido > 0) F = { x: H.x + (P.delante ? 0.22 : -0.22) * caido, z: 0.03 }; // se le doblan
     const K = rodilla(H, F, 0.33, 0.315, P.delante);
@@ -510,7 +511,7 @@ function poseOcelote(f, { marcha = 'quieto', agacha = 0, salta = 0, zarpa = 0, c
     let F;
     if (salta > 0) F = P.delante ? { x: H.x + 0.12 + 0.2 * salta, z: H.z - 0.3 + 0.12 * salta } : { x: H.x - 0.1 - 0.22 * salta, z: H.z - 0.31 + 0.1 * salta };
     else {
-      const paso = !anda ? { dx: 0, dz: 0 } : pisada(f + (galope ? P.galope : P.paso), galope ? 0.4 : 0.22, galope ? 0.12 : 0.06, galope ? 0.45 : 0.32);
+      const paso = !anda ? { dx: 0, dz: 0 } : pisada(f + (galope ? P.galope : P.paso), galope ? 0.4 : 0.3, galope ? 0.12 : 0.1, galope ? 0.45 : 0.32);
       F = { x: H.x + paso.dx, z: Math.max(0.02, paso.dz + 0.02) };
       if (caido > 0) F = { x: H.x + (P.delante ? 0.22 : -0.2) * caido, z: 0.02 };
       if (zarpa > 0 && P.delante && P.y < 0) F = { x: H.x + 0.12 + 0.2 * zarpa, z: H.z - 0.05 + 0.1 * Math.sin(Math.PI * zarpa) };
@@ -606,13 +607,13 @@ function poseMono(f, { modo = 'sentado', aulla = 0, lanza = null, caido = 0, enc
     // Piernas.
     const cad = { x: pelvis.x, z: pelvis.z - 0.02 };
     let pie;
-    if (anda) { const s = pisada(f + lado, corre ? 0.34 : 0.22, corre ? 0.1 : 0.06, corre ? 0.45 : 0.35); pie = { x: cad.x + s.dx, z: Math.max(0.02, s.dz + 0.02) }; }
+    if (anda) { const s = pisada(f + lado, corre ? 0.34 : 0.3, corre ? 0.1 : 0.1, corre ? 0.45 : 0.35); pie = { x: cad.x + s.dx, z: Math.max(0.02, s.dz + 0.02) }; }
     else pie = { x: cad.x + 0.2 + caido * 0.05, z: 0.02 };
     patas.push(miembro(cad, pie, 0.19, 0.18, anda ? false : true, y, 0.05, 0.036));
     // Brazos (largos): a cuatro patas apoyan; sentado descansan delante, salvo el de lanzar.
     const hombro = { x: pecho.x - 0.02, z: pecho.z - 0.03 };
     let mano;
-    if (anda) { const s = pisada(f + lado + 0.5, corre ? 0.34 : 0.22, corre ? 0.1 : 0.07, corre ? 0.45 : 0.35); mano = { x: hombro.x + s.dx + 0.04, z: Math.max(0.02, s.dz + 0.02) }; }
+    if (anda) { const s = pisada(f + lado + 0.5, corre ? 0.34 : 0.3, corre ? 0.1 : 0.1, corre ? 0.45 : 0.35); mano = { x: hombro.x + s.dx + 0.04, z: Math.max(0.02, s.dz + 0.02) }; }
     else if (lanza !== null && y < 0) { const a = 1.9 - lanza * 1.55; mano = { x: hombro.x + 0.3 * Math.cos(a), z: hombro.z + 0.3 * Math.sin(a) }; }
     else mano = { x: hombro.x + 0.2, z: Math.max(0.02, hombro.z - 0.32 + aulla * 0.12) };
     const brazo = miembro(hombro, mano, 0.21, 0.2, !anda, y - 0.03 * Math.sign(y), 0.038, 0.028);
@@ -700,7 +701,7 @@ function poseArmadillo(f, { marcha = 'quieto', erguido = 0, encoge = 0, excava =
     let F;
     if (encoge > 0) F = { x: H.x * (1 - 0.6 * encoge), z: Math.max(0.02, H.z - 0.1 * (1 - encoge) - 0.04) };
     else if (excava > 0 && P.delante) { const s = Math.sin(2 * Math.PI * f * 2 + (P.y > 0 ? Math.PI : 0)); F = { x: H.x + 0.08 + 0.05 * s, z: 0.02 + 0.03 * Math.max(0, s) }; }
-    else { const s = !anda ? { dx: 0, dz: 0 } : pisada(f * (corre ? 2 : 1) + P.paso, corre ? 0.14 : 0.1, corre ? 0.05 : 0.035, 0.38); F = { x: H.x + s.dx, z: Math.max(0.02, s.dz + 0.02) }; }
+    else { const s = !anda ? { dx: 0, dz: 0 } : pisada(f * (corre ? 2 : 1) + P.paso, corre ? 0.14 : 0.13, corre ? 0.05 : 0.055, 0.38); F = { x: H.x + s.dx, z: Math.max(0.02, s.dz + 0.02) }; }
     const K = rodilla(H, F, 0.075, 0.075, P.delante);
     const pata = [...cadena({ ...H, y: P.y }, { ...K, y: P.y }, 3, 0.04, 0.028), ...cadena({ ...K, y: P.y }, { ...F, y: P.y }, 3, 0.025, 0.022).slice(1)];
     pata.forEach((p, i, a) => { p.t = i / (a.length - 1); }); pata.lejos = P.y > 0; pata.delante = P.delante;

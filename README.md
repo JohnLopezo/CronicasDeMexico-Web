@@ -53,6 +53,27 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 39 (2026-11-18): mejor animación de los enemigos
+
+Para revisarla, `herramientas/dificultad/animaciones.mjs` hace una **hoja de animación** por enemigo (36 recortes de ~0,08 s:
+se acerca, avisa, ataca, recibe un golpe en el 24 y muere en el 30; `ENEMIGOS='["pecari"]'` para elegir). Lo que se vio:
+
+- **Los siete animales pintados por código se deslizaban rígidos.** La capa de movimiento por código (`js/movimiento.js`) solo
+  la usaban los sprites de Unity de un solo cuadro; los animales solo cambiaban de cuadro. Ahora también la llevan
+  (`movAnimal` y `POSE_ANIMAL` en `js/animales.js`, un estilo por animal en `ESTILOS`): el cuerpo bota al paso y se mece, se
+  inclina al correr, se agacha y se echa atrás en el aviso (con temblor al final), se estira en el ataque y se encoge al recibir
+  un golpe; la media vuelta al girar se estrecha en vez de voltearse de golpe. Botes y balanceos más suaves que la fauna de
+  Unity, porque sus cuadros ya mueven las patas. Al morir no se añade nada: la caída la hacen sus 6 cuadros.
+- **El paso apenas se leía a tamaño de juego:** zancada y alzada al andar subidas en `herramientas/animales.mjs` (pecarí 0,22 →
+  0,30 y 0,07 → 0,11; tapir 0,38 → 0,46 y 0,1 → 0,14; ocelote 0,22 → 0,30 y 0,06 → 0,10; aullador 0,22 → 0,30 y 0,06-0,07 →
+  0,10; armadillo 0,10 → 0,13 y 0,035 → 0,055). Correr y galopar no cambian. Repintados los 40 cuadros de andar.
+- La fauna de Unity, el espíritu y los jefes ya tenían movimiento y partes (etapas 26-29) y se ven bien; el reposo del cocodrilo
+  es quieto, como el animal.
+
+**Pruebas:** hojas antes y después revisadas en captura (el pecarí se mece al acechar y se echa atrás al avisar la carga; el
+ocelote se agacha antes del salto); tira ampliada ×4 de los cuadros de andar; `recorrido.mjs` sin `[assert]` ni excepciones,
+dibujo igual que antes (≤ 0,4 ms por cuadro en los niveles). Pendiente: verlo en el celular.
+
 ## Etapa 38 (2026-11-18): arreglos tras una simulación completa del juego
 
 El usuario pidió que el juego se simulara solo para buscar fallos y mejoras. Tres guiones nuevos en `herramientas/dificultad/`:
