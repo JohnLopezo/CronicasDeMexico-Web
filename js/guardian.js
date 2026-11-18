@@ -1,7 +1,7 @@
 'use strict';
 // Guardián de la Piedra Viva: jefe del piso 3, con tres fases (StoneGuardian.cs, valores de la escala ×10).
 
-const GUARDIAN = { vida: 700, r: 0.9, despierta: 6, vel: 1.6, espera: 1, aviso: 0.6, fuerte: 20, ligero: 10, embVel: 11, embLargo: 8,
+const GUARDIAN = { vida: 1100, r: 0.9, despierta: 6, vel: 1.6, espera: 1, aviso: 0.6, fuerte: 20, ligero: 10, embVel: 11, embLargo: 8,
   aturdido: 1.6, fragVel: 6, nombre: 'Guardián de la Piedra Viva' };
 
 function nuevoGuardian(x, y, alMorir) {

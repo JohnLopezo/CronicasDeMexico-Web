@@ -104,6 +104,26 @@ da para 2-3 por mapa); la honda sola ayuda poco (de cerca, golpe sin arma). Por 
 a ×0,6**: con solo la del armero se queda en ~30 %, y las ★★/★★★ que se encuentran siguen ayudando. Ruido entre tandas: ±10 %.
 Ojo: `prueba.mjs` usa el puerto fijo 9333, así que **no** se pueden correr dos tandas a la vez.
 
+**Jefes con armas** (`jefes.mjs`, `HABS='[0.5]' CAD=0.3 REAC=0.3 SEMILLAS=1`, 10 peleas; `ARMAS`, `NV` y `ESP` como en
+`mapas.mjs`; `bot_jefe.js` usa el especial a menos de 2,2 m). Gana · segundos · vida perdida:
+
+| Jefe (nv, llega con) | Sin armas | Macana + especial, calidad del piso | Solo la del armero (★ ×0,6) + especial |
+|---|---|---|---|
+| Nauyaca (2, 70 %) | 10/10 · 14 s · 48 % | 10/10 · 10 s · 31 % (★) | 10/10 · 11 s · 33 % |
+| Jaguar (3, 100 %) | 10/10 · 15 s · 56 % | 10/10 · 8 s · 25 % (★★) | 10/10 · 12 s · 39 % |
+| Guardián (4, 70 %) | 10/10 · 28 s · 54 % | 10/10 · **9 s** · 22 % (★★★) | 9/10 · 23 s · 63 % |
+
+Con la del armero los jefes quedan casi como sin armas; con la ★★★ el Guardián caía en un tercio del tiempo. Por eso, a
+petición del usuario, **vida del Guardián de 700 a 1100** (`GUARDIAN.vida`, `js/guardian.js`). Con 1100:
+
+| Guardián (4, 70 %) | Sin armas | Macana ★★★ + especial | Solo la del armero ★ + especial |
+|---|---|---|---|
+| Con 1100 de vida | gana 2/10 · 48 s · 98 % | 9/10 · **17 s** · 35 % | 6/10 · 37 s · 86 % |
+
+En el piso 3 el estrado del 3-2 siempre da un arma de cerca ★★★, así que lo normal es llegar con ella. **Arreglo de la
+herramienta:** desde la etapa 36, al caer el juego viaja a la aldea, y si el bot perdía, ese viaje llegaba en mitad de la pelea
+siguiente (el jefe no estaba: `TypeError … 'x'`). `jefes.mjs` ahora devuelve la vida al perder, como `mapas.mjs`.
+
 ## Etapa 36 (2026-11-18): armas olmecas de la mazmorra (`js/armas.js`)
 
 Para que atacar sea más fácil, en la primera sala de algunos niveles generados hay un **estrado de ofrenda**

@@ -14,7 +14,12 @@ export default async ({ ev, espera, log }) => {
         await ev(`poner('olm.sello_abierto'); delete juego.flags['olm.jaguar_piedra_vencido']; delete juego.flags['olm.guardian_liberado']; delete juego.flags['olm.subjefe_1_vencido']`);
         await ev(`cargarRegion('${region}','llegada_arriba',juego.jugador.vida)`); await espera(1300); await cerrar();
         r.push(JSON.parse(await ev(`(()=>{ const b=juego.enemigos.find(e=>e.tipo==='${tipo}'); for (const e of juego.enemigos) if (e!==b) e.vida=0; juego.enemigos=[b]; juego.marcas=[]; juego.disparos=[];
-          const j=juego.jugador; j.x=b.x-3.5; j.y=b.y; if (bloqueado(j.x,j.y,0.3)) { j.x=b.x+3.5; } return JSON.stringify(PELEA(b,{nivel:${nivel}, vida:${vida}, habilidad:${hab}, semillas:${process.env.SEMILLAS || 0}, cadencia:${process.env.CAD || 0}, reaccion:${process.env.REAC || 0}})); })()`)));
+          const j=juego.jugador; j.x=b.x-3.5; j.y=b.y; if (bloqueado(j.x,j.y,0.3)) { j.x=b.x+3.5; }
+          juego.flags['incursion.ranuras']=${process.env.ARMAS || '[]'}.map((a)=>nuevaRanura(a, ${process.env.NV || (region.match(/\d/) || [1])[0]})); juego.flags['incursion.mano']=0; prog().energia=999; // ARMAS, NV, ESP: como en mapas.mjs (etapa 37)
+          const res=PELEA(b,{nivel:${nivel}, vida:${vida}, habilidad:${hab}, semillas:${process.env.SEMILLAS || 0}, cadencia:${process.env.CAD || 0}, reaccion:${process.env.REAC || 0}, especial:${!!process.env.ESP}});
+          if (j.vida<=0) { j.vida=j.max; j.muerto=0; } // como mapas.mjs: si no, al caer el juego viaja a la aldea (etapa 36) en mitad de la siguiente pelea
+          return JSON.stringify(res); })()`)));
+        if (!r.at(-1).gana) await espera(1500); // por si el viaje a la aldea ya había salido
         await cerrar();
       }
       const gan = r.filter((x) => x.gana), m = (k, a = r) => a.length ? (a.reduce((s, x) => s + x[k], 0) / a.length).toFixed(0) : '-';

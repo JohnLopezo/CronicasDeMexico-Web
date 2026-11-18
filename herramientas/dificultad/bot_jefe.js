@@ -35,6 +35,8 @@ window.PELEA = function (jefe, o) {
       // Sale despacio de los avisos que aún no estallan; si no, se acerca y ataca.
       const aviso = juego.marcas.find((m) => enMarca(m, j));
       if (aviso && aviso.forma !== 'anillo') { const dd = Math.hypot(j.x - aviso.x, j.y - aviso.y) || 1; vx = (j.x - aviso.x) / dd; vy = (j.y - aviso.y) / dd; }
+      // o.especial: usa el especial del arma a menos de 2,2 m del jefe (etapa 37)
+      else if (o.especial && especialDe() && !(juego.esperaEspecial > 0) && prog().energia >= ESPECIAL.coste && d < 2.2 && j.espera <= 0 && jefe.golpeable !== false && (jefe.z || 0) < 0.6) { j.fx = (jefe.x - j.x) / d; j.fy = (jefe.y - j.y) / d; entrada.cuadroPrevio = performance.now() - 1; pedir('especial'); }
       else if (d > alcance) { vx = (jefe.x - j.x) / d; vy = (jefe.y - j.y) / d; }
       else if (jefe.golpeable !== false && (jefe.z || 0) < 0.6 && t >= toque) { toque = t + (o.cadencia || 0); j.fx = (jefe.x - j.x) / d; j.fy = (jefe.y - j.y) / d; entrada.cuadroPrevio = performance.now() - 1; pedir('atacar'); }
       if (j.vida < j.max * 0.35 && tiene('semilla_preparada') > 0 && !juego.dialogo) usarObjeto('semilla_preparada');

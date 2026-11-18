@@ -5,10 +5,12 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
-- **Etapa 37 (2026-11-18, sin commit todavía):** dos ranuras libres con Cambiar arma (R / `#bArma`), calidad ★-★★★ por piso
+- **Etapa 37 (2026-11-18, subida a GitHub: `8de39d6` y el ajuste del Guardián):** dos ranuras libres con Cambiar arma (R / `#bArma`), calidad ★-★★★ por piso
   (`CALIDAD`, ★ ×0,6 tras medir con el bot) y especial de cada arma con cualquier Guardián (`ESPECIAL_ARMA`; el de Balam se
   quitó). Dificultad medida (README, etapa 37): sin armas ~38 %, con la del armero ~30 %, con mejores ~20 %. Pendiente: que el
-  usuario la pruebe en el celular (posición del botón `#bArma`) y que pida el commit.
+  usuario la pruebe en el celular (posición del botón `#bArma`). Jefes con armas medidos (README, etapa 37): con la del armero,
+  casi como sin armas; con ★★★ el Guardián caía en 9 s, así que su vida pasó de 700 a **1100** (con ★★★: 17 s, gana 9/10; con la
+  del armero: 6/10; sin armas: 2/10). Subido a GitHub.
 - **Antes (2026-11-18):** etapas 35 y 36 **subidas a GitHub** (dos commits: «Etapa 35: … pisos 2 y 3» y
   «Etapa 36: armas olmecas…»). Etapa 35: HUD compacto, salas que serpentean, fondo por piso y suelo y muros de diseño propio en
   los pisos 2 («cámaras inundadas») y 3 («templo olmeca»), pintados por código (`js/pisos.js`, también 2-5 y 3-5). Etapa 36

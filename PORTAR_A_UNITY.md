@@ -320,7 +320,7 @@ desplazamiento local:
 ## 10. Dificultad de los jefes
 
 Valores revisados con un jugador automático (README, etapa 23):
-- **Vida:** nauyaca 380; jaguar 540 desde la etapa 33 (en Unity, `StoneJaguar`, 160); Guardián 700 (en Unity, `StoneGuardian`, 400). Las fases del
+- **Vida:** nauyaca 380; jaguar 540 desde la etapa 33 (en Unity, `StoneJaguar`, 160); Guardián 1100 desde la etapa 37, por las armas (antes 700; en Unity, `StoneGuardian`, 400). Las fases del
   Guardián siguen al 60 % y al 25 %.
 - **Contraataque:** si un jefe recibe 6 golpes en 2,5 s, `TelegraphMarker` en círculo de 2,2 m alrededor durante 0,4 s; quita 8
   con empuje 2,2; espera de 4 s. En Unity puede contarse en `Health` (un evento por golpe del jugador) y lanzarse desde cada jefe.
