@@ -411,4 +411,7 @@ en una línea con elipsis; los avisos bajo esa ficha.
 `OlmecaDungeonGenerator` (o el generador de los niveles X-1…X-4): salas que salen de la anterior al este o, desde la tercera,
 al norte/sur (60 %) con pasillo vertical de 3, sin solaparse (margen 2); esquinas rotas al 50 %. Fondo de cámara por piso en
 lugar del negro (selva oscura / agua negra con nenúfares / basalto morado `#3a2f36`), decorado de vacío (helechos y rocas con
-musgo; tule y nenúfar; rocas y escombros de basalto) y tinte del suelo por piso (piso 2 verdoso, piso 3 rojizo).
+musgo; tule y nenúfar; rocas y escombros de basalto) y diseño propio de suelo y muros en los pisos 2 y 3 (lajas con musgo y charcos + muro de piedras de río; baldosas de
+barro con cruz olmeca + sillares con greca): en Unity, un juego de tiles y de prefabs de muro por piso (referencia:
+`js/pisos.js`, colores en `PALETA`).
+

@@ -63,9 +63,18 @@ del pasillo (`sala.medio`); el cristal no se pone en la boca de un pasillo al no
 subida mira también la fila (antes solo la columna). Sigue la semilla por incursión: cambian al volver de la selva.
 
 **Aspecto por piso** (`ESTILO`, `patronFondo`): en vez del negro, el vacío de la mazmorra (también 1-1, 2-5 y 3-5) lleva un
-mosaico oscuro propio, y los niveles generados, plantas y rocas en el vacío (a 2 m del suelo, 3 m por delante) y un tono de
-suelo: piso 1, selva tupida y helechos; piso 2, agua negra con nenúfares y tule, suelo verdoso; piso 3, basalto roto sobre
-piedra morada, suelo rojizo.
+mosaico oscuro propio, y los niveles generados, plantas y rocas en el vacío (a 2 m del suelo, 3 m por delante). Los pisos 2 y 3 tienen
+**diseño propio de suelo y muros**, pintado por código (`js/pisos.js`: `pintarLosa`, `pintarMuro`) en sus cinco niveles,
+también en el 2-5 y el 3-5 (sus losas se sacan de las celdas pisables, son planos; sus muros pasan a «Muro_Basalto_01@2»,
+mismo nombre de base para que choquen igual, `muroDe`):
+
+| Piso | Fondo | Suelo | Muros |
+|---|---|---|---|
+| 1 | Selva tupida | El de Unity | Basalto de Unity |
+| 2, cámaras inundadas | Agua negra con nenúfares y tule | Lajas verdosas irregulares, musgo en las juntas, charcos (10 %) | Piedras de río apiladas, musgo arriba, marca del agua abajo |
+| 3, templo olmeca | Basalto roto sobre piedra morada | Baldosas de barro biseladas: cruz olmeca (10 %), rajadas (10 %); bordes con friso y greca | Sillares a tizón con friso de grecas y cornisa; pilastras con fajas |
+
+Los objetos de Unity (escalera, estelas, placas, escombros) siguen con su arte.
 
 
 Antes, arriba a la izquierda había tres barras sin números y una línea de texto larga («Balam · nv 1 · 50/50 · Esquivas ◆◆ ·
@@ -81,7 +90,8 @@ Nivel 1-3 · quedan 6») que en el celular se partía en dos. Ahora (`index.html
 
 **Pruebas:** capturas a 844 × 390 en la ciudad (sin ficha de nivel) y en el 1-3 con poca vida (la barra late); sin
 `[assert]` ni excepciones. Mapa: plano de 18 niveles (6 × 3 semillas) y capturas del 1-3, 2-2, 2-5, 3-3 y 3-5, sin
-`[assert]` (la autocomprobación de recorrido de `js/niveles.js` pasa). **Falta verlo en el celular.**
+`[assert]` (la autocomprobación de recorrido de `js/niveles.js` pasa). **Probado en el celular por el usuario: se ve bien y
+va fluido.**
 
 ## Etapa 34 (2026-11-17): música prehispánica (`js/musica.js`)
 

@@ -33,12 +33,21 @@ const VIDA_NIVEL = { 1: 3, 2: 3, 3: 3 };
 // En vez del negro, el vacío lleva una textura oscura del piso, y alrededor de las salas generadas crecen plantas y rocas
 // propias: piso 1, selva con musgo; piso 2, agua negra con tule; piso 3, basalto roto de la ciudad olmeca.
 // Fondo: color de base, una textura en mosaico (de una imagen grande, un trozo de 192 px; de una pequeña, lo que tiene
-// pintado) y sprites sueltos repartidos; todo oscurecido con `luz`. `tono`: filtro del suelo de las salas generadas.
+// pintado) y sprites sueltos repartidos; todo oscurecido con `luz`. `pintado`: suelo y muros con el diseño del piso
+// (js/pisos.js) en sus cinco niveles, también los de Unity (2-5 y 3-5).
 const ESTILO = {
-  1: { tono: 'none', color: '#0c160e', textura: 'Suelo_Selva_00', luz: 'brightness(.32) saturate(.8)', deco: ['Helecho_01', 'Helecho_02', 'Roca_Musgo_01', 'Roca_Musgo_02', 'Roca_Musgo_03', 'Matorral_Selva_01', 'Pasto_Alto_01'] },
-  2: { tono: 'hue-rotate(25deg) saturate(1.15) brightness(.95)', color: '#071a1d', textura: 'Tile_Agua_Anim_01', sueltos: ['Nenufar_01', 'Nenufar_01', 'Tule_01'], luz: 'brightness(.42) saturate(.8)', deco: ['Tule_01', 'Nenufar_01', 'Roca_Musgo_02', 'Planta_Hoja_Ancha_01', 'Planta_Hoja_Ancha_02'] },
-  3: { tono: 'sepia(.35) hue-rotate(-15deg) saturate(1.2)', color: '#3a2f36', sueltos: ['Roca_Basalto_01', 'Roca_Basalto_02', 'Roca_Basalto_03', 'Escombros_Basalto_01', 'Escombros_Basalto_02', 'Escombros_Basalto_03'], luz: 'brightness(.55) saturate(.7)', deco: ['Roca_Basalto_01', 'Roca_Basalto_02', 'Roca_Basalto_03', 'Escombros_Basalto_01', 'Escombros_Basalto_02', 'Basalto_Agrietado_01'] },
+  1: { color: '#0c160e', textura: 'Suelo_Selva_00', luz: 'brightness(.32) saturate(.8)', deco: ['Helecho_01', 'Helecho_02', 'Roca_Musgo_01', 'Roca_Musgo_02', 'Roca_Musgo_03', 'Matorral_Selva_01', 'Pasto_Alto_01'] },
+  2: { pintado: true, color: '#071a1d', textura: 'Tile_Agua_Anim_01', sueltos: ['Nenufar_01', 'Nenufar_01', 'Tule_01'], luz: 'brightness(.42) saturate(.8)', deco: ['Tule_01', 'Nenufar_01', 'Roca_Musgo_02', 'Planta_Hoja_Ancha_01', 'Planta_Hoja_Ancha_02'] },
+  3: { pintado: true, color: '#3a2f36', sueltos: ['Roca_Basalto_01', 'Roca_Basalto_02', 'Roca_Basalto_03', 'Escombros_Basalto_01', 'Escombros_Basalto_02', 'Escombros_Basalto_03'], luz: 'brightness(.55) saturate(.7)', deco: ['Roca_Basalto_01', 'Roca_Basalto_02', 'Roca_Basalto_03', 'Escombros_Basalto_01', 'Escombros_Basalto_02', 'Basalto_Agrietado_01'] },
 };
+// El muro de basalto de un piso con diseño propio: «Muro_Basalto_01@2» (mismo nombre de base, así choca igual), pintado
+// una vez por js/pisos.js. En el piso 1 queda el de Unity.
+function muroDe(nombre, piso) {
+  if (!ESTILO[piso]?.pintado) return nombre;
+  const v = `${nombre}@${piso}`;
+  if (!SPRITES[v]) { SPRITES[v] = SPRITES[nombre]; imagenes[v] = pintarMuro(piso, nombre.includes('_Y_'), +nombre.slice(-2)); }
+  return v;
+}
 const patrones = {};
 function patronFondo() {
   const id = mundo.id, piso = /^p[123]$/.test(id) || esGenerado(id) ? +id[1] : 0, e = ESTILO[piso];
@@ -86,6 +95,16 @@ function semillaIncursion() {
 // Cada celda del suelo es un rectángulo de 48 × 32 px. Las del borde de atrás llevan encima sus matas (10 px) y las del
 // borde de delante, debajo su cara de piedra (14 px).
 const LOSA = { matas: 10, cara: 14 };
+// Los pisos de Unity 2 y 3 (2-5 y 3-5): sus muros con el diseño del piso y su suelo en losas pintadas (como los generados)
+// en vez de las imágenes de Unity. Son planos (sin terrazas), así que basta con las celdas pisables.
+for (const p of [2, 3]) {
+  const r = REGIONES[`p${p}`], [x0, x1, y0, y1] = r.limites;
+  for (const o of r.objetos) if (o.sprite.startsWith('Muro_Basalto')) o.sprite = muroDe(o.sprite, p);
+  const fuera = new Set([...r.vacio, ...(r.agua || [])].map((c) => c.x + ',' + c.y)), es = (x, y) => x >= x0 && x <= x1 && y >= y0 && y <= y1 && !fuera.has(x + ',' + y);
+  r.losas = [];
+  for (let x = x0; x <= x1; x++) for (let y = y0; y <= y1; y++) if (es(x, y)) r.losas.push({ x, y, arriba: es(x, y + 1) ? 0 : LOSA.matas, abajo: es(x, y - 1) ? 0 : LOSA.cara });
+  r.piso = p;
+}
 const losasDePiso = {};
 function losasDe(piso) {
   if (losasDePiso[piso]) return losasDePiso[piso];
@@ -169,8 +188,8 @@ function generarNivel(id) {
   const variante = () => `0${1 + Math.floor(rnd() * 3)}`;
   for (const k of suelo) {
     const [a, b] = k.split(',').map(Number);
-    if (!es(a, b + 1) && (Math.abs(a - subida.x) > 1.1 || Math.abs(b + 0.5 - subida.y) > 1.5)) objetos.push({ sprite: `Muro_Basalto_${variante()}`, x: a, y: b + 0.5, z: 0 });
-    if (!es(a - 1, b)) objetos.push({ sprite: `Muro_Basalto_Y_${variante()}`, x: a - 0.5, y: b, z: 0 });
+    if (!es(a, b + 1) && (Math.abs(a - subida.x) > 1.1 || Math.abs(b + 0.5 - subida.y) > 1.5)) objetos.push({ sprite: muroDe(`Muro_Basalto_${variante()}`, piso), x: a, y: b + 0.5, z: 0 });
+    if (!es(a - 1, b)) objetos.push({ sprite: muroDe(`Muro_Basalto_Y_${variante()}`, piso), x: a - 0.5, y: b, z: 0 });
   }
 
   // Trampas y adornos: braseros y cristales junto al muro de atrás de cada sala; pinchos en los pasillos desde el nivel 2.
@@ -248,10 +267,10 @@ function generarNivel(id) {
 function dibujarLosas() {
   const d = mundo.d;
   if (!d.lienzo) {
-    const r = losasDe(d.piso).r, [x0, x1, y0, y1] = d.limites;
-    if (!r.suelo.every((c) => imagen(c.sprite)?.naturalWidth)) return; // aún cargando
+    const r = losasDe(d.piso).r, [x0, x1, y0, y1] = d.limites, pinta = ESTILO[d.piso].pintado; // pinta: js/pisos.js
+    if (!pinta && !r.suelo.every((c) => imagen(c.sprite)?.naturalWidth)) return; // aún cargando
     // Las celdas de origen que caen en la junta de dos imágenes de suelo no caben enteras en ninguna: se cambian por otra válida.
-    for (const [i, l] of d.losas.entries()) {
+    if (!pinta) for (const [i, l] of d.losas.entries()) {
       if (recorteDe(r, l.src.x, l.src.y, l.arriba, l.abajo)) continue;
       const P = losasDe(d.piso), pool = (l.arriba ? P.norte : l.abajo ? P.sur : P.interior).filter((s) => recorteDe(r, s.x, s.y, l.arriba, l.abajo));
       l.src = pool[i % pool.length];
@@ -259,9 +278,9 @@ function dibujarLosas() {
     const c = document.createElement('canvas');
     c.width = (x1 - x0 + 1) * PPU; c.height = (y1 - y0 + 1) * PX_Y + LOSA.matas + LOSA.cara;
     const g = c.getContext('2d');
-    g.filter = ESTILO[d.piso].tono;
     // De atrás hacia delante: la cara de piedra de una fila queda encima de lo que haya debajo.
     for (const l of [...d.losas].sort((p, q) => q.y - p.y)) {
+      if (pinta) { pintarLosa(g, d.piso, (l.x - 0.5 - x0) * PPU, (y1 - l.y) * PX_Y + LOSA.matas, l); continue; }
       const [im, u, v] = recorteDe(r, l.src.x, l.src.y, l.arriba, l.abajo);
       g.drawImage(im, u, v - l.arriba, PPU, PX_Y + l.arriba + l.abajo, (l.x - 0.5 - x0) * PPU, (y1 - l.y) * PX_Y + LOSA.matas - l.arriba, PPU, PX_Y + l.arriba + l.abajo);
     }
