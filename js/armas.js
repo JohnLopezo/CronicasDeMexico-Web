@@ -186,15 +186,37 @@ function poblarArmero(O, I) {
   const n = nuevoHabitante('armero', 'Guerrero', [ARMERO]); O.push(n);
   I.push(siguiendo(n, 1.4, 'Armero', () => abrirMenu('armero', 'armero'), null, n));
 }
+// Etapa 42: el armero cobra. Cada arma se compra una vez (ecos y materiales de la bolsa, que se guardan en la partida) y
+// después se elige gratis; la macana la presta sin cobrar, para no salir con las manos vacías. [id de OBJETOS, cantidad].
+const PRECIO_ARMERO = {
+  macana: [],
+  mazo: [['ecos', 15], ['fibras', 4]],
+  honda: [['ecos', 15], ['fibras', 5]],
+  lanza: [['ecos', 20], ['fibras', 4], ['obsidiana', 1]],
+  cuchillo: [['ecos', 20], ['obsidiana', 2]],
+  hacha: [['ecos', 25], ['basalto', 3], ['fibras', 2]],
+  atlatl: [['ecos', 25], ['fibras', 4], ['jade', 1]],
+  jabalina: [['ecos', 30], ['obsidiana', 2], ['fibras', 3]],
+};
+const comprada = (id) => !PRECIO_ARMERO[id].length || juego.flags['armero.eleccion'] === id || (juego.flags['armero.compradas'] || []).includes(id); // la ya elegida (partidas de antes) cuenta como tuya
+const alcanza = (id) => PRECIO_ARMERO[id].every(([o, n]) => tiene(o) >= n);
 // Pestaña del armero (pintarMenu en js/recompensas.js).
 function menuArmero() {
   const elegida = juego.flags['armero.eleccion'];
-  return '<p>El armero de la aldea te presta un arma sencilla (★) para la selva y la mazmorra: sales con ella en cada incursión. En la mazmorra hay mejores (★★ en el piso 2, ★★★ en el 3). Llevas dos: Cambiar arma elige la de la mano, y la estrella hace su especial. Elige una.</p>' +
-    ARMAS_COFRE.map((id) => { const A = ARMAS[id];
-      return `<div class="fila arma"><img src="${iconoArma(id)}" alt=""><div><b>${A.nombre} ★</b><small>${A.clase === 'cerca' ? 'Cuerpo a cuerpo' : 'A distancia'}</small><div>${QUE_HACE[id]}. Especial: ${ESPECIAL_ARMA[id].nombre.toLowerCase()}.</div><small>${textoMaestria(id, 1)}</small></div><button data-armero="${id}" ${elegida === id ? 'disabled' : ''}>${elegida === id ? 'Elegida' : 'Elegir'}</button></div>`;
+  return `<p class="resumen">Ecos ${tiene('ecos')}</p><p>El armero de la aldea forja armas sencillas (★) para la selva y la mazmorra: cada una se compra una vez y luego sales con la que elijas en cada incursión. La macana te la presta. En la mazmorra hay mejores (★★ en el piso 2, ★★★ en el 3). Llevas dos: Cambiar arma elige la de la mano, y la estrella hace su especial.</p>` +
+    ARMAS_COFRE.map((id) => { const A = ARMAS[id], tuya = comprada(id);
+      const precio = tuya ? '' : `<small>Precio: ${PRECIO_ARMERO[id].map(([o, n]) => `${nombreObjeto(o)} ${tiene(o)}/${n}`).join(' · ')}</small>`;
+      const boton = tuya ? `<button data-armero="${id}" ${elegida === id ? 'disabled' : ''}>${elegida === id ? 'Elegida' : 'Elegir'}</button>` : `<button data-armero="${id}" ${alcanza(id) ? '' : 'disabled'}>Comprar</button>`;
+      return `<div class="fila arma"><img src="${iconoArma(id)}" alt=""><div><b>${A.nombre} ★</b><small>${A.clase === 'cerca' ? 'Cuerpo a cuerpo' : 'A distancia'}</small><div>${QUE_HACE[id]}. Especial: ${ESPECIAL_ARMA[id].nombre.toLowerCase()}.</div><small>${textoMaestria(id, 1)}</small>${precio}</div>${boton}</div>`;
     }).join('');
 }
 function elegirArmero(id) {
+  if (!comprada(id)) { // comprar: se cobra y queda tuya para siempre
+    if (!alcanza(id)) { sonar('no'); return avisoRecompensa('No te alcanza'); }
+    PRECIO_ARMERO[id].forEach(([o, n]) => quitarObjeto(o, n));
+    juego.flags['armero.compradas'] = [...(juego.flags['armero.compradas'] || []), id];
+    sonar('premio');
+  }
   const antes = juego.flags['armero.eleccion'], R = ranuras(), k = R.findIndex((r) => r.id === antes);
   if (k >= 0 && antes !== id) { R.splice(k, 1); juego.flags['incursion.mano'] = 0; } // solo una del armero
   juego.flags['armero.eleccion'] = id; tomarArma(id, 1);
@@ -362,6 +384,7 @@ console.assert(Object.entries(ARMAS).every(([k, A]) => ['cerca', 'lejos', 'escud
 console.assert(Object.values(BOTIN_COFRE).flat().every(([o]) => OBJETOS[o]), 'Armas: botín con objetos que existen');
 console.assert(!ARMAS_COFRE.includes('escudo') && ARMAS_COFRE.length === 8, 'Armas: el escudo no sale en cofres');
 console.assert(GUARDIANES.every((g) => MAESTRIA[g.id]), 'Armas: maestría de cada Guardián');
+console.assert(ARMAS_COFRE.every((k) => PRECIO_ARMERO[k]?.every(([o, n]) => OBJETOS[o] && n > 0)), 'Armas: precio del armero');
 console.assert(Object.keys(ARMAS).every((k) => ESPECIAL_ARMA[k]?.nombre && ESPECIAL_ARMA[k].mult > 0 && (ESPECIAL_ARMA[k].tiro ? ARMAS[k].clase === 'lejos' : ARMAS[k].clase !== 'lejos')), 'Armas: especial de cada arma');
 console.assert(CALIDAD[1] < CALIDAD[2] && CALIDAD[2] < CALIDAD[3], 'Armas: calidad sube con el piso');
 console.assert(Object.keys(NIVEL_ARMA).every((n) => +n >= 1 && +n <= 4 && +n !== 3), 'Armas: niveles');

@@ -259,7 +259,7 @@ function pintarMenu() {
   const seccion = (t) => `<p class="resumen">${t}</p>`;
   let cuerpo = '';
   if (pestana === 'bolsa') {
-    cuerpo = `<p class="resumen">Ecos ${tiene('ecos')} · Nivel ${p.nivel} (${p.xp}/${xpParaSubir(p.nivel)}) · Vida ${juego.jugador.vida}/${s.vida} · Ataque ${s.ataque} · Defensa ${s.defensa} · Energía ${p.energia}/${s.energia}</p>` +
+    cuerpo = `<p class="resumen">Ecos ${tiene('ecos')} · Nivel ${p.nivel} (${p.xp}/${xpParaSubir(p.nivel)}) · Vida ${juego.jugador.vida}/${s.vida} · Ataque ${s.ataque} · Defensa ${s.defensa} · Energía ${Math.floor(p.energia)}/${s.energia}</p>` +
       (p.orden.filter((id) => id !== 'ecos').map((id) => {
         const o = OBJETOS[id], eq = p.reliquias.includes(id);
         const btn = o.cat === 1 ? `<button data-usar="${id}" ${puedeUsar(id) ? '' : 'disabled'}>Usar</button>`

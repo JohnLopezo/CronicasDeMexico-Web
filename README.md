@@ -53,6 +53,32 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 42 (2026-11-19): la energía se recarga sola y el armero cobra (`js/actores.js`, `js/armas.js`)
+
+Lo pidió el usuario tras probarlo en el celular: la estrella (especial del arma) se apagaba para siempre tras 4 usos, porque la
+energía solo volvía en el santuario de Memoria o con objetos. Ahora se recarga sola a **4 por segundo** (`ENERGIA_REGEN`), hasta
+el tope: otra especial (25) cada ~6 s, que es casi su espera de 5 s. También vale para el golpe de tierra. La especial sí daña:
+con la macana, el remolino le quitó 26 de 39 a un enemigo pegado.
+
+El armero ya no presta las 8 armas gratis: cada una se **compra una vez** con ecos y materiales de la bolsa (que se guardan en la
+partida) y luego se elige sin pagar (`PRECIO_ARMERO`, bandera `armero.compradas`). La macana la sigue prestando, para no
+salir sin nada. El arma que ya tenías elegida en una partida de antes cuenta como comprada.
+
+| Arma | Precio |
+|---|---|
+| Macana | gratis |
+| Mazo | 15 ecos, 4 fibras |
+| Honda | 15 ecos, 5 fibras |
+| Lanza | 20 ecos, 4 fibras, 1 obsidiana |
+| Cuchillo | 20 ecos, 2 obsidianas |
+| Hacha | 25 ecos, 3 basaltos, 2 fibras |
+| Átlatl | 25 ecos, 4 fibras, 1 jade |
+| Jabalina | 30 ecos, 2 obsidianas, 3 fibras |
+
+Prueba: `herramientas/dificultad/etapa42.mjs` (con `?nivel=n1_2`): recarga 8,1 en 2 s sin pasar del tope, la especial daña, sin
+ecos no se compra, al comprar se cobra justo y elegirla de nuevo no cobra. Todo bien y sin `[assert]`. Sin medir aún con el bot
+(`campana.mjs`): con la recarga, la campaña debería ser algo más fácil.
+
 ## Etapa 41 (2026-11-18): al caer en el piso 3, al santuario del 3-5 (`js/juego.js`)
 
 Antes (etapa 36) se caía siempre a la aldea. Ahora, si caes en el piso 3 (3-1 a 3-5) y en esta incursión ya llegaste al 3-5

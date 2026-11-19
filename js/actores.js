@@ -86,6 +86,8 @@ function actualizarJugador(j, dt) {
   j.esqT += dt; j.t = (j.t || 0) + dt; j.victoria = Math.max(0, (j.victoria || 0) - dt);
   if (j.muerto > 0) { j.muerto = Math.max(0, j.muerto - dt); j.defiende = false; return; }
   if (j.recarga > 0 && (j.recarga -= dt) <= 0) j.cargas = MOV.cargas;
+  const pe = prog(), tope = estadisticas().energia; // etapa 42: la energía se recarga sola (ENERGIA_REGEN por segundo)
+  if (pe.energia < tope) pe.energia = Math.min(tope, pe.energia + ENERGIA_REGEN * dt);
 
   const [mx, my] = juego.dialogo ? [0, 0] : ejes();
   const l = Math.hypot(mx, my);
@@ -158,6 +160,7 @@ function golpear(j) {
 // Habilidad especial (PlayerSpecial): F, 25 de energía y 5 s de espera. Etapa 37: la hace el arma en la mano, con cualquier
 // Guardián (ESPECIAL_ARMA en js/armas.js); sin arma, no hay especial.
 const ESPECIAL = { coste: 25, espera: 5 };
+const ENERGIA_REGEN = 4; // etapa 42: antes solo volvía en el santuario o con objetos; 4/s = una especial cada ~6 s
 const especialDe = () => enMano() && ESPECIAL;
 function habilidadEspecial(j) {
   const h = especialDe(), p = prog();

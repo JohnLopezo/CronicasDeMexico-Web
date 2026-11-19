@@ -473,3 +473,10 @@ Los cuadros `DSS_Guerrero_*` de andar hacia el sur y el norte (los mismos PNG qu
 los pies: el cuerpo se ladea («como pingüino»). Lo ideal es redibujar esas fichas en `Docs/Guerreros`. Mientras, el truco de
 aquí: en `DirectionalSpriteAnimator`, para N y S usar el cuadro de reposo y alzar 2 px la parte baja (17 % del alto) de un
 lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`, `PASO_FRONTAL` en `js/actores.js`).
+
+## 29. Recarga de energía y armero que cobra (etapa 42)
+
+- **Recarga:** en Unity la energía tampoco se recupera sola. En `PlayerStats` (o donde se gaste en `PlayerSpecial`), sumar
+  4 por segundo en `Update` hasta `maxEnergy` (`ENERGIA_REGEN` en `js/actores.js`).
+- **Armero:** precios de `PRECIO_ARMERO` (`js/armas.js`; ver la tabla del README, etapa 42) como coste en la ficha de cada
+  arma del armero; lo comprado se guarda en el save (`armero.compradas`); la macana, gratis.
