@@ -91,14 +91,17 @@ const QUE_HACE = {
 function armaDelNivel(id) {
   const piso = +id[1], n = NIVEL_ARMA[+id[3]];
   if (!n || piso < n.desde) return null;
-  const ids = armasDe('olmeca').filter((k) => ARMAS[k].clase === n.clase), rnd = azar(hash(`${id}:arma:${semillaIncursion()}`));
+  const ids = armasDe(esMaya(id) ? 'maya' : 'olmeca').filter((k) => ARMAS[k].clase === n.clase), rnd = azar(hash(`${id}:arma:${semillaIncursion()}`));
   return ids[Math.floor(rnd() * ids.length)];
 }
 
+// Calidad de lo que da un nivel: la de su piso; en la mazmorra maya, una más (se llega más fuerte), hasta ★★★.
+const calidadNivel = (id) => (esMaya(id) ? Math.min(3, +id[1] + 1) : +(String(id).match(/\d/) || [1])[0]);
+const armasCofreDe = (id) => (esMaya(id) ? armasDe('maya').filter((k) => ARMAS[k].clase !== 'escudo') : ARMAS_COFRE);
 // El estrado: objeto que se dibuja encima y se toma con Usar (o Atacar junto a él).
 function ponerArma(id, punto) {
   const clave = `incursion.arma_${id}`, tipo = armaDelNivel(id);
-  if (punto && tipo && !bandera(clave)) armaEnSuelo(tipo, +id[1] || 1, punto, clave, true);
+  if (punto && tipo && !bandera(clave)) armaEnSuelo(tipo, calidadNivel(id), punto, clave, true);
 }
 // Un arma que se toma con Usar: sobre su estrado (estrado = true) o en el suelo (la de un cofre u ofrenda con las manos llenas).
 function armaEnSuelo(tipo, nv, punto, clave, estrado) {
@@ -169,7 +172,7 @@ function aparecerCofre(id) {
   juego.interactuables.push({ x: p.x, y: p.y, r: 1.1, texto: 'Abrir el cofre', usar() {
     if (bandera(clave)) return mensaje('El cofre ya está vacío.');
     poner(clave); sonar('premio');
-    const piso = +(id.match(/\d/) || [1])[0], rnd = azar(hash(`${id}:premio:${semillaIncursion()}`)), objetos = [];
+    const piso = esMaya(id) ? 3 : +(id.match(/\d/) || [1])[0], rnd = azar(hash(`${id}:premio:${semillaIncursion()}`)), objetos = [];
     for (let k = 0; k < 2; k++) { // dos tiradas de la tabla del piso
       const T = BOTIN_COFRE[piso] || BOTIN_COFRE[1], total = T.reduce((t, x) => t + x[1], 0);
       let q = rnd() * total; const [o, , a, b] = T.find((x) => (q -= x[1]) < 0) || T[0];
@@ -177,7 +180,8 @@ function aparecerCofre(id) {
     }
     entregar({ xp: 10 * piso, objetos }, `premio.${id}.${semillaIncursion()}`);
     const t = rnd(), L = ranuras().find((r) => ARMAS[r.id].clase === 'lejos');
-    if (t < COFRE.arma) ofrecerArma(ARMAS_COFRE[Math.floor(rnd() * ARMAS_COFRE.length)], piso, p);
+    const lista = armasCofreDe(id);
+    if (t < COFRE.arma) ofrecerArma(lista[Math.floor(rnd() * lista.length)], calidadNivel(id), p);
     else if (t < COFRE.arma + COFRE.municion && L) { const n = Math.ceil(ARMAS[L.id].municion / 2); L.mun += n; toast(`+${n} de munición para ${ARMAS[L.id].nombre.toLowerCase()}`, 4); }
   } });
 }

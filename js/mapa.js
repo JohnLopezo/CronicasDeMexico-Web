@@ -24,6 +24,7 @@ const RUTA = { ciudad: { palenque: 'palenque', aldea_maya: 'palenque' }, palenqu
 // Dónde está cada aviso de misión que no se encuentra por su habitante: [región, o una función que da el punto en la región].
 const AVISO_EN = {
   'hablar:escriba': 'aldea_maya', 'examinar:tablero_palenque': 'palenque', 'hablar:anciana': 'ciudad', 'examinar:altar_trono': 'ciudad',
+  'llegar:mazmorra_maya': 'palenque', 'vencer:cocodrilo_pantano': 'palenque', 'llegar:camaras_estuco': 'palenque', // etapa 48: la boca del acueducto
   'examinar:hoja_libro': () => juego.interactuables.filter((i) => i.texto === 'Recoger la hoja')[0] || juego.enemigos.find((e) => e.tipo === 'espiritu' && e.vida > 0),
 };
 function objetivoEnMapa() {
@@ -31,6 +32,10 @@ function objetivoEnMapa() {
   if (!id) return null;
   const aviso = MISIONES[id].pasos[juego.misiones[id].paso]?.aviso || '', [verbo, quien] = aviso.split(':'), j = juego.jugador;
   if (verbo === 'hablar') { const n = juego.otros.find((o) => o.id === quien); if (n) return n; }
+  const aqui = juego.interactuables.find((i) => [].concat(i.aviso || []).includes(aviso)); // lo que lleva ese aviso (la boca del acueducto…)
+  if (aqui) return aqui;
+  // En la mazmorra: el jefe despierto o, si no, la bajada del nivel.
+  if (esGenerado(juego.region)) return juego.jefe?.vida > 0 ? juego.jefe : juego.portales.find((t) => t.punto === 'llegada_arriba') || null;
   if (aviso === 'examinar:tablero_palenque' && juego.region === 'palenque') return { x: PALENQUE.tablero.x, y: PALENQUE.tablero.y - 0.7 };
   if (aviso === 'examinar:altar_trono' && juego.region === 'ciudad') return mundo.objetos.filter((o) => o.sprite.startsWith('Altar_Trono')).sort((a, b) => dist(a, j) - dist(b, j))[0];
   const en = AVISO_EN[aviso];

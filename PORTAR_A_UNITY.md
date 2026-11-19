@@ -525,3 +525,14 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
   colisionadores (como `fondoMapa`, `js/mapa.js`); marcadores para jugador, enemigos, NPC, `ScenePortal` y `MemoryShrine`.
 - Objetivo: cada paso de `QuestData` puede llevar un objetivo en el mapa (NPC, objeto o escena); si está en otra escena, se
   marca el portal hacia ella (`RUTA`). Pulsar el minimapa lo agranda; una opción de `ComfortSettings` lo oculta.
+
+## 35. Mazmorra maya, piso 1 (etapa 48)
+
+- **Escenas:** `Maya_Mazmorra_P1` (o niveles generados como en la versión HTML: `m1_1`…`m1_4`) con el estilo «canales del
+  Otolum» (caliza húmeda, canalillos de agua y bóvedas en saledizo; referencia en `losaCanal`/`muroCanal`, `js/pisos.js`).
+- **Entrada:** `ScenePortal` en la plaza de `Maya_Palenque` con `ActiveWhenFlags` (`may.camino_agua`) e `IncursionReset` al
+  cruzarlo; `DefeatReturn` al `MemoryShrine` de Palenque.
+- **Generación por cultura:** `OlmecaDungeonGenerator` → un generador con datos por cultura (población, presupuesto, armas de
+  estrado y cofre de esa cultura, calidad +1 en la maya).
+- **Sub-jefe:** el cocodrilo de pantano, un `WildEnemy` con el `EnemyData` del cocodrilo a escala 1,9 y los valores de
+  `COCODRILO_PANTANO` (`js/mazmorra_maya.js`), barra de jefe y `ReportOnDefeat` (`vencer:cocodrilo_pantano`). Misión `MP_MAY_03`.

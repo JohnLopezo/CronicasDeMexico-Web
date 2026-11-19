@@ -16,6 +16,9 @@ const PALETA = {
   4: { junta: '#8a8169', piedra: ['#d6ccb2', '#cfc4a8', '#c9bea2', '#dcd3bb'], claro: '#ece5d2', oscuro: '#a99e84', cara: '#9c917a',
     tierra: ['#5a4630', '#634d33', '#54412c'], hojas: ['#7a6a3a', '#8c5a2e', '#4f6b30'], pasto: ['#4f7d34', '#679a3f', '#3e6a2c'],
     raiz: '#3a2a1b', estuco: '#a4483a', boveda: '#2c2a24' },
+  // Etapa 48, mazmorra maya piso 1 (los canales del Otolum): caliza húmeda verdosa, musgo, agua en canalillos.
+  11: { junta: '#26302c', piedra: ['#7c877c', '#84907f', '#74806f', '#8b9584'], claro: '#a4ae9a', oscuro: '#56615a', cara: '#46514a',
+    musgo: ['#3f6b31', '#56853a', '#4a7a36'], agua: '#1d5460', brillo: '#6fb0b0', boveda: '#141a18', estuco: '#8a4a3a' },
 };
 const px = (g, c, x, y, w = 1, h = 1) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
 const elige = (rnd, a) => a[Math.floor(rnd() * a.length)];
@@ -33,6 +36,7 @@ function pintarLosa(g, piso, ox, oy, l) {
   const P = PALETA[piso], rnd = azar(((l.x * 73856093) ^ (l.y * 19349663)) >>> 0);
   px(g, P.junta, ox, oy, PPU, PX_Y);
   if (piso === 4) return losaPalenque(g, P, rnd, ox, oy, l);
+  if (piso === 11) return losaCanal(g, P, rnd, ox, oy, l);
   if (piso === 2) {
     // Dos o cuatro lajas: un corte vertical y un corte horizontal a cada lado, a alturas distintas.
     const cx = 14 + Math.floor(rnd() * 20), cy = [8 + Math.floor(rnd() * 16), 8 + Math.floor(rnd() * 16)];
@@ -102,8 +106,46 @@ function losaPalenque(g, P, rnd, ox, oy, l) {
   }
 }
 
+// Piso 11 (canales): dos losas de caliza por celda con musgo en las juntas; a veces un canalillo de agua las cruza (I: el
+// agua corría por canales de piedra bajo Palenque, D). Borde de atrás con musgo; delante, cara de sillares húmeda.
+function losaCanal(g, P, rnd, ox, oy, l) {
+  const cy = 12 + Math.floor(rnd() * 8);
+  for (const [y, h] of [[0, cy], [cy, PX_Y - cy]]) {
+    px(g, elige(rnd, P.piedra), ox + 1, oy + y + 1, PPU - 2, h - 2);
+    px(g, P.claro, ox + 1, oy + y + 1, PPU - 2, 1); px(g, P.oscuro, ox + 1, oy + y + h - 2, PPU - 2, 1);
+    for (let i = 0; i < 6; i++) px(g, rnd() < 0.5 ? P.claro : P.oscuro, ox + 2 + Math.floor(rnd() * (PPU - 4)), oy + y + 2 + Math.floor(rnd() * Math.max(1, h - 4)));
+  }
+  for (let i = 0; i < 8; i++) px(g, elige(rnd, P.musgo), ox + Math.floor(rnd() * PPU), oy + cy - 1 + Math.floor(rnd() * 2), 2, 1);
+  if (rnd() < 0.14) { px(g, P.oscuro, ox, oy + cy - 3, PPU, 6); px(g, P.agua, ox, oy + cy - 2, PPU, 4); for (let x = 2; x < PPU; x += 7) px(g, P.brillo, ox + x, oy + cy - 1, 3, 1); }
+  if (l.arriba) { px(g, P.oscuro, ox, oy - LOSA.matas, PPU, LOSA.matas); for (let x = 0; x < PPU; x++) { const h = 2 + Math.floor(rnd() * 5); px(g, elige(rnd, P.musgo), ox + x, oy - h, 1, h); } }
+  if (l.abajo) {
+    px(g, P.cara, ox, oy + PX_Y, PPU, LOSA.cara); px(g, P.claro, ox, oy + PX_Y, PPU, 1);
+    for (let x = (l.x % 2) * 12; x < PPU; x += 24) px(g, P.junta, ox + x, oy + PX_Y + 1, 1, LOSA.cara - 1);
+    px(g, P.junta, ox, oy + PX_Y + 7, PPU, 1);
+    for (let i = 0; i < 3; i++) px(g, P.agua, ox + Math.floor(rnd() * PPU), oy + PX_Y + 2, 1, 4 + Math.floor(rnd() * 8)); // escurre el agua
+  }
+}
+// Muro de los canales: hiladas de sillares de caliza y, arriba, la bóveda en saledizo (cada hilada sale un poco más hacia
+// dentro, D: la bóveda maya); abajo, la marca húmeda del agua. Mismo tamaño y ancla que los otros muros (64 × 112).
+function muroCanal(esY, variante) {
+  const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[11], rnd = azar(1100 + variante + (esY ? 50 : 0));
+  c.width = 64; c.height = 112;
+  const [x0, x1, y0, y1] = esY ? [26, 37, 20, 108] : [8, 55, 40, 97];
+  px(g, P.junta, x0 - 1, y0 - 1, x1 - x0 + 3, y1 - y0 + 2);
+  for (let y = y1 - 10, fila = 0; y >= y0; y -= 10, fila++)
+    for (let x = x0 - (fila % 2 ? 8 : 0); x <= x1; x += 16) {
+      const a = Math.max(x, x0), b = Math.min(x + 15, x1);
+      px(g, elige(rnd, P.piedra), a, y + 1, b - a, 9); px(g, P.claro, a, y + 1, b - a, 1); px(g, P.oscuro, a, y + 9, b - a, 1); px(g, P.oscuro, b - 1, y + 1, 1, 9);
+    }
+  if (!esY) for (let k = 0; k < 4; k++) px(g, P.oscuro, x0 + 3 + k * 4, y0 - 4 - k * 3, x1 - x0 - 5 - k * 8, 3); // la bóveda que se cierra arriba
+  for (let i = 0; i < 10; i++) px(g, elige(rnd, P.musgo), x0 + Math.floor(rnd() * (x1 - x0)), y0 + Math.floor(rnd() * 12), 2, 1);
+  g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(10,40,44,.45)'; g.fillRect(0, y1 - 14, 64, 20);
+  return Object.assign(c, { naturalWidth: c.width, naturalHeight: c.height, complete: true });
+}
+
 // Muro del borde de atrás (`y` = false: 48 px de ancho, de y ≈ 36 a 98) o del oeste (`y` = true: una columna, x 25-38, y 18-109).
 function pintarMuro(piso, esY, variante) {
+  if (piso === 11) return muroCanal(esY, variante);
   const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[piso], rnd = azar(piso * 100 + variante + (esY ? 50 : 0));
   c.width = 64; c.height = 112;
   if (piso === 2) {

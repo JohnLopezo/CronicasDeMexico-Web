@@ -5,6 +5,12 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 48 (2026-11-19):** mazmorra maya, piso 1 (los canales del Otolum, `m1_1`…`m1_4`): entrada por la boca del acueducto
+  en la plaza de Palenque (`may.camino_agua`), incursión nueva, generador por cultura (`esMaya`, `pisoDe`, claves 11-13), suelo y
+  muros pintados (`losaCanal`, `muroCanal`), sub-jefe cocodrilo de pantano en el 1-4 y misión `MP_MAY_03`. Prueba: `etapa48.mjs`.
+  **Plan acordado:** 3 pisos de 4; siguiente, etapa 49: piso 2 «cámaras de estuco» (`m2_*`, claves 12) con su mini-jefe; 50: piso 3
+  «observatorio» y el Guardián de los Ciclos; 51: habilidad de agua y cierre del capítulo II.
+
 - **Etapa 47 (2026-11-19):** mapa de la región (`js/mapa.js`): minimapa arriba a la derecha con suelo, agua, enemigos,
   habitantes, salidas, santuario y el objetivo de la misión (en otra región, la salida hacia allá); al tocarlo, grande;
   Opciones → Mapa lo oculta. Prueba: `etapa47.mjs`. **Siguiente:** la mazmorra maya (`may.camino_agua`, 10-12 pisos y el
@@ -117,6 +123,7 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 | `js/palenque.js` | Capítulo II: portal de la aldea, región de Palenque (`PALENQUE`, `regionPalenque`), templo y tablero pintados, misión `MP_MAY_01` |
 | `js/aldea_maya.js` | Aldea maya: habitantes pintados (`MAYAS`, `pintarMaya`), casas, milpa y telar, `ALDEA_MAYA`, diálogos y misión `MP_MAY_02` (hojas: `HOJAS`, `poblarHojas`) |
 | `js/mapa.js` | Minimapa: `fondoMapa`, `objetivoEnMapa` (`RUTA`, `AVISO_EN`), `dibujarMapa` cada 150 ms |
+| `js/mazmorra_maya.js` | Mazmorra maya: boca del acueducto (`BOCA`, `bocaAcueducto`, `entrarMazmorraMaya`), misión `MP_MAY_03`, sub-jefe `cocodriloPantano` |
 | `js/pisos.js` | Suelo (`pintarLosa`) y muros (`pintarMuro`) de los pisos 2 y 3 pintados por código; colores en `PALETA` |
 | `js/juego.js` | Banderas, misiones, `cargarRegion`, guardado, bucle `actualizar` |
 | `js/musica.js` | Música prehispánica: instrumentos, `MUSICA` (patrones por modo), `modoMusica`, secuenciador |

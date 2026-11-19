@@ -449,7 +449,7 @@ function actualizar(dt) {
     if (!dentro) { t.armado = true; t.avisado = false; continue; }
     if (!t.armado || juego.dialogo) continue;
     if (t.a && (!t.abierto || t.abierto())) { cargarRegion(t.a, t.punto, j.vida); return; }
-    if (!t.avisado) { t.avisado = true; mensaje(t.cerrado); }
+    if (!t.avisado) { t.avisado = true; mensaje(typeof t.cerrado === 'function' ? t.cerrado() : t.cerrado); } // texto fijo o que depende del momento
   }
 
   // Derrota (etapas 36 y 41, solo HTML): en los pisos 1-2, la selva o la aldea despiertas en la aldea, en la orilla del
@@ -458,7 +458,7 @@ function actualizar(dt) {
   if (j.vida <= 0 && j.muerto <= 0) {
     if (juego.prueba) { j.vida = j.max; j.inv = 2; toast('Te levantas de nuevo.'); return; }
     if (!['ciudad', 'selva', 'palenque', 'aldea_maya'].includes(juego.region)) poner('incursion.caido');
-    if (juego.region === 'palenque' || juego.region === 'aldea_maya') cargarRegion('palenque', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4)); // etapa 43
+    if (juego.region === 'palenque' || juego.region === 'aldea_maya' || esMaya(juego.region)) cargarRegion('palenque', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4)); // etapa 43
     else if (NIVELES[2].includes(juego.region) && bandera('incursion.santuario_p3')) cargarRegion('p3', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4));
     else cargarRegion('ciudad', 'inicio', estadisticas().vida).then(() => toast('Caíste. Despiertas en la aldea, junto al agua.', 4));
   }

@@ -53,6 +53,31 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 48 (2026-11-19): mazmorra maya, piso 1 «los canales del Otolum» (`js/mazmorra_maya.js`, `js/niveles.js`)
+
+Plan acordado con el usuario: la mazmorra maya tiene **3 pisos de 4 niveles** (canales del Otolum, cámaras de estuco y
+observatorio), con un sub-jefe o jefe en cada X-4. Esta etapa hace la entrada y el piso 1.
+
+- **Entrada:** la boca del acueducto, en la plaza del templo de Palenque (junto al tablero). Sin el camino del agua solo se
+  examina; tras devolverle las hojas al escriba (`may.camino_agua`, que ahora también empieza la misión **MP_MAY_03 «El camino
+  del agua»**), se baja. Al bajar empieza una incursión nueva, como al pasar por la selva olmeca: se borran las banderas
+  `incursion.*` y se sale con el arma del tallador de pedernal (o la lanza que presta).
+- **Generador por cultura:** los niveles mayas son `m1_1`…`m1_4` (`NIVELES_MAYA`, `esMaya`, `pisoDe`, `secuenciaDe`). Sus pisos
+  usan las claves 11-13 en `ESTILO`, `PALETA`, `POBLACION`, `PRESUPUESTO` y `VIDA_NIVEL`. Estrados y cofres dan armas mayas,
+  una estrella más (★★ en el piso 1), y el botín del piso 3 olmeco; más experiencia por nivel. Sin la estera olmeca.
+- **Piso 1, canales del Otolum** (`losaCanal`, `muroCanal` en `js/pisos.js`): losas de caliza húmeda con musgo y canalillos de
+  agua, muros de sillares con la bóveda en saledizo y la marca del agua, fondo de agua oscura. Enemigos: espíritus,
+  murciélagos, serpientes, cocodrilos, pejelagartos y armadillos (presupuesto 18-23). Santuario de Vida en el 1-3.
+- **Sub-jefe del 1-4: el cocodrilo de pantano** (`cocodriloPantano`): el cocodrilo de Unity al ×1,9, con 480 de vida, mordida de
+  18 y coletazo de 14 más anchos; débil a la Tierra. Da 220 de experiencia, 2 semillas y jade. La bajada del 1-4 avisa que el
+  piso 2 viene en la etapa siguiente (`cerrado` de un portal puede ser una función).
+- Al caer en la mazmorra maya, a Palenque, junto al santuario. El mapa marca la boca del acueducto y, dentro, la bajada de
+  cada nivel o el jefe (también en la mazmorra olmeca).
+
+Prueba: `herramientas/dificultad/etapa48.mjs` (15 comprobaciones: boca cerrada y abierta, misión, arma maya, los cuatro
+niveles, estrado maya, santuario, cocodrilo con su barra, mapa, aviso del 1-4 y caída). `recorrido.mjs` sin `[assert]` (la
+autocomprobación de niveles recorre también los mayas). Sin medir con el bot la pelea del cocodrilo.
+
 ## Etapa 47 (2026-11-19): mapa de la región (`js/mapa.js`)
 
 - **Minimapa** arriba a la derecha, bajo la pausa y la bolsa (128 × 88), centrado en ti y con unos 30 m alrededor: suelo,

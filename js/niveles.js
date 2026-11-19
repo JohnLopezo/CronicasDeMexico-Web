@@ -8,27 +8,38 @@
 
 const NIVELES = [['p1', 'n1_2', 'n1_3', 'n1_4', 'n1_5'], ['n2_1', 'n2_2', 'n2_3', 'n2_4', 'p2'], ['n3_1', 'n3_2', 'n3_3', 'n3_4', 'p3']];
 const SECUENCIA = NIVELES.flat();
-const esGenerado = (id) => /^n\d_\d$/.test(id);
-const nombreNivel = (id) => { const i = SECUENCIA.indexOf(id); return i < 0 ? '' : `${Math.floor(i / 5) + 1}-${(i % 5) + 1}`; };
-const anterior = (id) => SECUENCIA[SECUENCIA.indexOf(id) - 1];
-const siguiente = (id) => SECUENCIA[SECUENCIA.indexOf(id) + 1];
+// Etapa 48: la mazmorra maya («el camino del agua», bajo Palenque): 3 pisos de 4 niveles, m1_1…m3_4, todos generados; el X-4
+// es la arena de un jefe. Por ahora, el piso 1 (los canales del Otolum). Sus pisos usan las claves 11-13 en ESTILO, PALETA,
+// POBLACION, PRESUPUESTO y VIDA_NIVEL, para no chocar con los olmecas (1-3).
+const NIVELES_MAYA = [['m1_1', 'm1_2', 'm1_3', 'm1_4']];
+const SECUENCIA_MAYA = NIVELES_MAYA.flat();
+const esGenerado = (id) => /^[nm]\d_\d$/.test(id);
+const esMaya = (id) => /^m\d_\d$/.test(id || '');
+const pisoDe = (id) => (esMaya(id) ? 10 : 0) + +id[1];
+const secuenciaDe = (id) => (esMaya(id) ? SECUENCIA_MAYA : SECUENCIA);
+const nombreNivel = (id) => { const S = secuenciaDe(id), i = S.indexOf(id), k = esMaya(id) ? 4 : 5; return i < 0 ? '' : `${Math.floor(i / k) + 1}-${(i % k) + 1}`; };
+const anterior = (id) => (id === 'm1_1' ? 'palenque' : secuenciaDe(id)[secuenciaDe(id).indexOf(id) - 1]);
+const siguiente = (id) => secuenciaDe(id)[secuenciaDe(id).indexOf(id) + 1];
+const SUBJEFE = { n1_5: 'olm.subjefe_1_vencido', m1_4: 'may.subjefe_1_vencido' }; // la bajada no se abre hasta vencerlo
 
 // Enemigos de las salas generadas, por piso: [tipo, peso]. 'espiritu' es el espíritu corrompido; los demás, fauna.
 const POBLACION = {
   1: [['espiritu', 3], ['Murcielago', 2], ['Serpiente', 2], ['pecari', 3], ['aullador', 2], ['armadillo', 2]],
   2: [['espiritu', 2], ['Cocodrilo', 2], ['Avispa', 2], ['Serpiente', 1], ['pecari', 2], ['ocelote', 1], ['armadillo', 2], ['pejelagarto', 2]],
   3: [['espiritu', 3], ['Mono', 2], ['Guacamaya', 1], ['Cocodrilo', 1], ['ocelote', 2], ['aullador', 2]],
+  // Maya, piso 1 (canales): lo que vive en el agua y en la oscuridad, y los espíritus de la Sombra.
+  11: [['espiritu', 3], ['Murcielago', 2], ['Serpiente', 2], ['Cocodrilo', 2], ['pejelagarto', 2], ['armadillo', 1]],
 };
 const SALA = { ancho: [7, 10], alto: [5, 7], pasillo: [2, 4], arena: [13, 9] };
 // Dificultad (revisada el 2026-11-13; ver README, etapa 22): cada nivel tiene un presupuesto de amenaza que se reparte entre
 // sus salas, y cada tipo cuesta según lo peligroso que es (una manada de pecaríes cuesta como un tapir). Presupuesto por piso
 // y nivel (X-1 a X-4; el 1-1 es el piso 1 de Unity). En el X-3 hay un santuario de Vida.
 const COSTE = { Serpiente: 2, Murcielago: 2, Avispa: 2, Guacamaya: 2, armadillo: 2, espiritu: 3, Cocodrilo: 3, Mono: 3, ocelote: 4, aullador: 4, pejelagarto: 4, pecari: 6, tapir: 6 };
-const PRESUPUESTO = { 1: [0, 11, 13, 15], 2: [16, 18, 20, 22], 3: [19, 21, 23, 26] }; // pisos 2 y 3 subidos en la etapa 32 (curva creciente)
+const PRESUPUESTO = { 1: [0, 11, 13, 15], 2: [16, 18, 20, 22], 3: [19, 21, 23, 26], 11: [18, 21, 23] }; // maya: se llega tras el Guardián olmeco // pisos 2 y 3 subidos en la etapa 32 (curva creciente)
 const LIBRE_LLEGADA = 4; // m sin enemigos alrededor de la llegada (etapa 38)
 // Nivel con santuario de Vida en cada piso: el X-3, a mitad de piso. Al 2-1 se llega con las semillas de la nauyaca y al 3-1,
 // con el santuario del 2-5.
-const VIDA_NIVEL = { 1: 3, 2: 3, 3: 3 };
+const VIDA_NIVEL = { 1: 3, 2: 3, 3: 3, 11: 3 };
 
 // ---------- Aspecto de cada piso (etapa 35, solo HTML) ----------
 // En vez del negro, el vacío lleva una textura oscura del piso, y alrededor de las salas generadas crecen plantas y rocas
@@ -44,6 +55,8 @@ const ESTILO = {
 // Etapa 43: Palenque (js/palenque.js), fuera de la mazmorra: selva más clara y suelo pintado.
 ESTILO[4] = { pintado: true, color: '#14301a', textura: 'Suelo_Selva_00', sueltos: ['Helecho_01', 'Helecho_02', 'Flor_Selva_01'], luz: 'brightness(.6) saturate(.9)',
   deco: ['Ceiba_01', 'Palma_Corozo_01', 'Palma_Corozo_02', 'Helecho_01', 'Helecho_02', 'Matorral_Selva_01', 'Matorral_Selva_02', 'Flor_Selva_02', 'Pasto_Alto_02'] };
+// Etapa 48: piso 1 maya, los canales del Otolum (js/pisos.js): caliza húmeda sobre agua oscura.
+ESTILO[11] = { pintado: true, color: '#0b1618', textura: 'Tile_Agua_Anim_01', sueltos: [], luz: 'brightness(.34) saturate(.7)', deco: ['Roca_Musgo_01', 'Roca_Musgo_02', 'Helecho_02'] };
 // El muro de basalto de un piso con diseño propio: «Muro_Basalto_01@2» (mismo nombre de base, así choca igual), pintado
 // una vez por js/pisos.js. En el piso 1 queda el de Unity.
 function muroDe(nombre, piso) {
@@ -74,7 +87,7 @@ function patronFondo() {
       }
     }
     // Sueltos: cada uno se pinta también desplazado un mosaico, para que no se corte en la junta.
-    for (let i = 0; i < (piso === 3 ? 22 : 9) && e.sueltos; i++) {
+    for (let i = 0; i < (piso === 3 ? 22 : 9) && e.sueltos?.length; i++) {
       const im = imagen(e.sueltos[Math.floor(rnd() * e.sueltos.length)]), x = rnd() * T, y = rnd() * T;
       for (const ox of [-T, 0, T]) for (const oy of [-T, 0, T]) g.drawImage(im, x + ox - im.naturalWidth / 2, y + oy - im.naturalHeight / 2);
     }
@@ -142,9 +155,9 @@ function recorteDe(r, x, y, arriba, abajo) {
 
 // ---------- Generador de salas ----------
 function generarNivel(id) {
-  const piso = +id[1], n = +id[3], rnd = azar(hash(id + ':' + semillaIncursion()));
+  const piso = pisoDe(id), n = +id[3], rnd = azar(hash(id + ':' + semillaIncursion()));
   const entre = ([a, b]) => a + Math.floor(rnd() * (b - a + 1));
-  const arena = id === 'n1_5', nSalas = arena ? 2 : 2 + Math.min(2, Math.floor((n + piso) / 3));
+  const arena = !!SUBJEFE[id], nSalas = arena ? 2 : 2 + Math.min(2, Math.floor((n + piso) / 3));
   // Salas que serpentean hacia el este: cada una sale de la anterior por el este o, desde la tercera, hacia el norte o el
   // sur, por un pasillo de 3 de ancho. Nunca vuelven al oeste, así la bajada (al este de la última) queda libre.
   const salas = [], celdas = new Set(), pon = (x, y) => celdas.add(x + ',' + y);
@@ -202,7 +215,7 @@ function generarNivel(id) {
     if (s.x1 - s.x0 >= 6) { T.braseros.push([s.x0 + 1, s.y1 - 0.2]); T.braseros.push([s.x1 - 1, s.y1 - 0.2]); }
     const sig = salas[i + 1];
     if (i % 2 === 1 && !(arena && i === salas.length - 1) && !sig?.norte) T.cristales.push([s.cx, s.y1 - 0.3]); // no en la boca de un pasillo al norte
-    if (rnd() < 0.5) T.esteras.push([s.cx + (rnd() < 0.5 ? -2 : 2), s.cy - 1]);
+    if (rnd() < 0.5 && !esMaya(id)) T.esteras.push([s.cx + (rnd() < 0.5 ? -2 : 2), s.cy - 1]);
     if (sig && n + piso >= 3 && rnd() < 0.7) T.pinchos.push(sig.medio);
   });
   const vasijas = salas.slice(0, arena ? 1 : salas.length).flatMap((s) => (rnd() < 0.6 ? [[s.x0 + 1, s.y0 + 0.6]] : []));
@@ -268,10 +281,10 @@ function generarNivel(id) {
   for (const e of enemigos) delete e.sala;
 
   // Losas: cada celda toma una al azar del suelo de su piso, según su borde.
-  const fuente = losasDe(piso), losas = [];
+  const fuente = REGIONES[`p${piso}`] ? losasDe(piso) : null, losas = []; // los pisos mayas no tienen piso de Unity: solo se pintan
   for (const k of suelo) {
     const [a, b] = k.split(',').map(Number), norte = !es(a, b + 1), sur = !es(a, b - 1);
-    const pool = norte ? fuente.norte : sur ? fuente.sur : fuente.interior, src = pool[Math.floor(rnd() * pool.length)];
+    const pool = fuente ? (norte ? fuente.norte : sur ? fuente.sur : fuente.interior) : [null], src = pool[Math.floor(rnd() * pool.length)];
     losas.push({ x: a, y: b, src, arriba: norte ? LOSA.matas : 0, abajo: sur ? LOSA.cara : 0 });
   }
   // Santuario de Vida (LifeShrine) en la primera sala del X-3: cura la mitad de la vida, una vez por incursión.
@@ -284,7 +297,7 @@ function generarNivel(id) {
     if (rnd() < 0.12 && !cerca(a, b)) objetos.push({ sprite: deco[Math.floor(rnd() * deco.length)], x: a + rnd() - 0.5, y: b + rnd() - 0.5, z: 0 });
   TRAMPAS[id] = T; VASIJAS[id] = vasijas;
   return { nota: `Generado (${id}, semilla ${semillaIncursion()})`, generado: true, suelo: [], agua, agua_vadeable: true, objetos, niveles: [], rampas: [], muelles: [],
-    limites: lim, puntos, vacio, losas, enemigos, fuentes: fuente.r.suelo.map((c) => c.sprite), piso };
+    limites: lim, puntos, vacio, losas, enemigos, fuentes: fuente ? fuente.r.suelo.map((c) => c.sprite) : [], piso };
 }
 
 // Pinta las losas en un lienzo aparte la primera vez (cuando ya cargaron las imágenes de suelo) y luego solo lo copia.
@@ -322,6 +335,7 @@ function poblarNivel(id, P, E, I, T) {
   const pareja = (e) => [[0, 0], [1.2, -0.8]].map(([dx, dy]) => ({ x: e.x + dx, y: e.y + dy })).filter((p, i) => !i || !bloqueado(p.x, p.y, 0.4)).map((p) => nuevoAullador(p.x, p.y));
   const manada = (e) => [[0, 0], [0.9, 0.6], [-0.7, -0.7]].map(([dx, dy]) => ({ x: e.x + dx, y: e.y + dy })).filter((p, i) => !i || !bloqueado(p.x, p.y, 0.4)).map((p) => nuevoPecari(p.x, p.y));
   if (!limpio) for (const e of d.enemigos) E.push(...(e.tipo === 'espiritu' ? [nuevoEspiritu(e.x, e.y)] : e.tipo === 'pecari' ? manada(e) : e.tipo === 'tapir' ? [nuevoTapir(e.x, e.y)] : e.tipo === 'ocelote' ? [nuevoOcelote(e.x, e.y)] : e.tipo === 'aullador' ? pareja(e) : e.tipo === 'armadillo' ? [nuevoArmadillo(e.x, e.y)] : e.tipo === 'pejelagarto' ? [nuevoPejelagarto(e.x, e.y)] : [nuevaFauna(e.tipo, e.x, e.y, false)]));
+  if (id === 'm1_4' && !bandera(SUBJEFE.m1_4)) E.push(cocodriloPantano(P.subjefe.x, P.subjefe.y)); // js/mazmorra_maya.js
   if (id === 'n1_5' && !bandera('olm.subjefe_1_vencido')) E.push(nuevaNauyaca(P.subjefe.x, P.subjefe.y, () => {
     poner('olm.subjefe_1_vencido'); juego.jefe = null;
     entregar({ objetos: [{ id: 'semilla_preparada', n: 2 }] }, 'jefe.nauyaca'); // para llegar al piso 2 con algo de vida
@@ -329,9 +343,11 @@ function poblarNivel(id, P, E, I, T) {
   })); // js/animales.js
   if (P.vida) santuarioVida(`incursion.vida_${id}`, P.vida, mundo.objetos.find((o) => o.sprite.startsWith('Santuario_Vida'))); // js/juego.js
   ponerArma(id, P.arma); // js/armas.js
-  T.push({ ...P.subida, a: anterior(id), punto: 'llegada_abajo' });
-  T.push({ ...P.bajada, a: siguiente(id), punto: 'llegada_arriba', abierto: () => bandera(`incursion.limpio.${id}`) && (id !== 'n1_5' || bandera('olm.subjefe_1_vencido')),
-    cerrado: id === 'n1_5' ? 'Algo grande vigila esta sala. La bajada no se abrirá mientras siga en pie.' : 'Una reja de piedra tapa la bajada. Aún quedan enemigos en el nivel.' });
+  T.push({ ...P.subida, a: anterior(id), punto: id === 'm1_1' ? 'desde_mazmorra' : 'llegada_abajo' });
+  // shortcut: el piso 2 maya aún no existe; la bajada del 1-4 maya se queda cerrada con un aviso (etapa 49 la abre).
+  T.push({ ...P.bajada, a: siguiente(id), punto: 'llegada_arriba', abierto: () => bandera(`incursion.limpio.${id}`) && (!SUBJEFE[id] || bandera(SUBJEFE[id])),
+    cerrado: () => !siguiente(id) && bandera(`incursion.limpio.${id}`) && (!SUBJEFE[id] || bandera(SUBJEFE[id])) ? 'El agua sigue bajando hacia unas cámaras de estuco rojo. Por aquí no se pasa todavía (piso 2: próxima etapa).'
+      : SUBJEFE[id] ? 'Algo grande vigila esta sala. La bajada no se abrirá mientras siga en pie.' : 'Una reja de piedra tapa la bajada. Aún quedan enemigos en el nivel.' });
 }
 // Al vencer al último enemigo de un nivel generado se abre su bajada, con un premio pequeño.
 function revisarNivel() {
@@ -340,7 +356,7 @@ function revisarNivel() {
   if (!esGenerado(id) || bandera(`incursion.limpio.${id}`) || vivos().length) return;
   poner(`incursion.limpio.${id}`);
   aparecerCofre(id); // cofre de recompensas (js/armas.js)
-  const piso = +id[1], n = +id[3];
+  const piso = esMaya(id) ? 3 + +id[1] : +id[1], n = +id[3]; // maya: más experiencia (se llega tras el capítulo olmeca)
   sonar('premio'); toast(`Nivel ${nombreNivel(id)} superado: la bajada está abierta`);
   // Experiencia (más que antes: el jugador sube algo más en la mazmorra) y, en los niveles lejos de un santuario (X-2 y X-4),
   // una semilla medicinal preparada (cura 20, tecla 1): entre dos santuarios hay tres niveles.
@@ -351,7 +367,7 @@ function revisarNivel() {
 (() => {
   const antes = { mundo, flags: juego.flags };
   juego.flags = { 'incursion.semilla': 12345 };
-  for (const id of SECUENCIA.filter(esGenerado)) {
+  for (const id of [...SECUENCIA, ...SECUENCIA_MAYA].filter(esGenerado)) {
     const d = generarNivel(id), suelo = new Set(d.losas.map((l) => l.x + ',' + l.y));
     const de = (p) => Math.round(p.x) + ',' + Math.round(p.y), visto = new Set([de(d.puntos.llegada_arriba)]), cola = [...visto];
     while (cola.length) { const [a, b] = cola.pop().split(',').map(Number); for (const [u, v] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const k = a + u + ',' + (b + v); if (suelo.has(k) && !visto.has(k)) { visto.add(k); cola.push(k); } } }
@@ -362,6 +378,7 @@ function revisarNivel() {
     console.assert(![d.puntos.llegada_arriba, d.puntos.bajada, d.puntos.llegada_abajo, d.puntos.vida].some((p) => p && charca.has(de(p))), `Niveles: la charca de ${id} no tapa las escaleras ni el santuario`);
   }
   console.assert(nombreNivel('p1') === '1-1' && nombreNivel('n1_5') === '1-5' && nombreNivel('p2') === '2-5' && nombreNivel('p3') === '3-5', 'Niveles: nombres');
+  console.assert(nombreNivel('m1_4') === '1-4' && anterior('m1_1') === 'palenque' && siguiente('m1_3') === 'm1_4' && pisoDe('m1_2') === 11 && pisoDe('n2_1') === 2, 'Niveles mayas: nombres y orden');
   Object.assign(juego, { flags: antes.flags }); mundo = antes.mundo;
 })();
 
