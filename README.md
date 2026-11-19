@@ -53,6 +53,32 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 43 (2026-11-19): de la mazmorra olmeca a la época maya, Palenque (`js/palenque.js`)
+
+Lo pidió el usuario: al terminar la mazmorra, pasar a la época siguiente. Según `Docs/Historia_Mundo.md` §6 de Unity es el
+**capítulo II, «Las ciudades de piedra y agua»** (maya; habilidad de agua). El usuario eligió **Palenque** como referencia y,
+para esta etapa, el portal y una primera región.
+
+- **Cierre del capítulo I:** al dejar el Fragmento de la Primera Memoria en el altar-trono (último paso de MP_OLM_06), tres
+  líneas de cierre (las piedras no se borran solas: alguien borra los recuerdos) y se abre un **portal de luz** en la plaza,
+  entre los dos altares (bandera `may.portal_abierto`). Una partida que ya había cumplido MP_OLM_06 lo abre al examinar
+  de nuevo el altar.
+- **Portal:** pregunta con la tarjeta «Capítulo II · Las ciudades de piedra y agua» (Seguir la memoria / Todavía no).
+- **Lakamha' (Palenque):** región pintada por código (piso 4 de `ESTILO` y `PALETA`). Claro de llegada con santuario de
+  Memoria y portal de vuelta, sendero de selva, el río Otolum con un puente de bóveda, calzada y plaza de caliza al pie de un
+  templo de nueve cuerpos con escalinata, cinco vanos, mansarda y crestería, y un tablero de glifos medio borrado. Fauna:
+  2 serpientes, ocelote, 2 aulladores y guacamaya. Misión nueva **MP_MAY_01 «Lakamha'»**: examinar el tablero; el paso
+  siguiente, «Busca a la gente de Lakamha' (próximamente)», espera a la aldea maya.
+- Al caer en Palenque despiertas en su santuario; ahí también se guarda y se continúa.
+- **Fidelidad** (cabecera de `js/palenque.js`): D, el nombre Lakamha' («lugar de las grandes aguas»), el Otolum
+  canalizado con bóveda en saledizo, el Templo de las Inscripciones (nueve cuerpos, cinco vanos, texto jeroglífico largo),
+  estuco rojo, números de barras y puntos, la ceiba y la fauna; I, la composición de la plaza, el puente y el tablero suelto;
+  F, el portal, la voz y los glifos borrados.
+
+Prueba: `herramientas/dificultad/etapa43.mjs` (14 comprobaciones: sin portal antes del altar, misión y portal, tarjeta,
+llegada, misión maya, tablero, guardado en Palenque, caída al santuario de Palenque y vuelta a la aldea), con capturas.
+`recorrido.mjs` sin `[assert]` ni excepciones (el cambio en `patronFondo` y `dibujarLosas` no tocó la mazmorra).
+
 ## Etapa 42 (2026-11-19): la energía se recarga sola y el armero cobra (`js/actores.js`, `js/armas.js`)
 
 Lo pidió el usuario tras probarlo en el celular: la estrella (especial del arma) se apagaba para siempre tras 4 usos, porque la

@@ -41,6 +41,9 @@ const ESTILO = {
   2: { pintado: true, color: '#071a1d', textura: 'Tile_Agua_Anim_01', sueltos: ['Nenufar_01', 'Nenufar_01', 'Tule_01'], luz: 'brightness(.42) saturate(.8)', deco: ['Tule_01', 'Nenufar_01', 'Roca_Musgo_02', 'Planta_Hoja_Ancha_01', 'Planta_Hoja_Ancha_02'] },
   3: { pintado: true, color: '#3a2f36', sueltos: ['Roca_Basalto_01', 'Roca_Basalto_02', 'Roca_Basalto_03', 'Escombros_Basalto_01', 'Escombros_Basalto_02', 'Escombros_Basalto_03'], luz: 'brightness(.55) saturate(.7)', deco: ['Roca_Basalto_01', 'Roca_Basalto_02', 'Roca_Basalto_03', 'Escombros_Basalto_01', 'Escombros_Basalto_02', 'Basalto_Agrietado_01'] },
 };
+// Etapa 43: Palenque (js/palenque.js), fuera de la mazmorra: selva más clara y suelo pintado.
+ESTILO[4] = { pintado: true, color: '#14301a', textura: 'Suelo_Selva_00', sueltos: ['Helecho_01', 'Helecho_02', 'Flor_Selva_01'], luz: 'brightness(.6) saturate(.9)',
+  deco: ['Ceiba_01', 'Palma_Corozo_01', 'Palma_Corozo_02', 'Helecho_01', 'Helecho_02', 'Matorral_Selva_01', 'Matorral_Selva_02', 'Flor_Selva_02', 'Pasto_Alto_02'] };
 // El muro de basalto de un piso con diseño propio: «Muro_Basalto_01@2» (mismo nombre de base, así choca igual), pintado
 // una vez por js/pisos.js. En el piso 1 queda el de Unity.
 function muroDe(nombre, piso) {
@@ -51,7 +54,7 @@ function muroDe(nombre, piso) {
 }
 const patrones = {};
 function patronFondo() {
-  const id = mundo.id, piso = /^p[123]$/.test(id) || esGenerado(id) ? +id[1] : 0, e = ESTILO[piso];
+  const id = mundo.id, piso = mundo.d.piso || (/^p[123]$/.test(id) || esGenerado(id) ? +id[1] : 0), e = ESTILO[piso];
   if (!e) return null;
   if (!patrones[piso]) {
     const ims = [e.textura, ...(e.sueltos || [])].filter(Boolean).map(imagen);
@@ -288,7 +291,7 @@ function generarNivel(id) {
 function dibujarLosas() {
   const d = mundo.d;
   if (!d.lienzo) {
-    const r = losasDe(d.piso).r, [x0, x1, y0, y1] = d.limites, pinta = ESTILO[d.piso].pintado; // pinta: js/pisos.js
+    const pinta = ESTILO[d.piso].pintado, r = pinta ? null : losasDe(d.piso).r, [x0, x1, y0, y1] = d.limites; // pinta: js/pisos.js
     if (!pinta && !r.suelo.every((c) => imagen(c.sprite)?.naturalWidth)) return; // aún cargando
     // Las celdas de origen que caen en la junta de dos imágenes de suelo no caben enteras en ninguna: se cambian por otra válida.
     if (!pinta) for (const [i, l] of d.losas.entries()) {

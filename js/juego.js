@@ -162,13 +162,14 @@ function poblarCiudad(P, E, O, I, T) {
     I.push({ x: o.x, y: o.y - 0.7, r: 1.2, texto: 'Examinar', usar() {
       const txt = altar ? (bandera('olm.anciana_recordo') ? TXT.altarMemoria : TXT.altar)
         : partida ? TXT.estelaPartida : bandera('mision.MP_OLM_02.completada') ? TXT.estelaDespues : TXT.estela;
-      mensaje(txt, () => avisar(altar ? 'examinar:altar_trono' : 'examinar:estela'));
+      mensaje(txt, () => { avisar(altar ? 'examinar:altar_trono' : 'examinar:estela'); if (altar) cierreCapituloI(); }); // etapa 43: js/palenque.js
     } });
   }
   if (bandera('mision.MP_OLM_03.completada') && afueraConMonstruos()) {
     for (const [[x, y], [mx, my]] of INCURSORES) { const e = nuevoEspiritu(x, y); e.casa = { x: mx, y: my }; E.push(e); }
   }
   poblarArmero(O, I); // js/armas.js
+  if (bandera('may.portal_abierto')) portalAldea(O, I); // a Palenque (js/palenque.js)
   for (const [x, y, texto, est] of [[14.0, 1.7, 'Fabricar', 'artesano'], [19.0, -4.3, 'Comerciar', 'comerciante'], [14.0, 6.9, 'Cocinar', 'cocina']])
     I.push({ x, y, r: 0.9, texto, usar: () => abrirMenu(est, est) });
   T.push({ ...P.salida_selva, a: 'selva', punto: 'llegada' });
@@ -217,7 +218,7 @@ function poblar(id) {
   const santuarioMemoria = () => I.push({ x: P.memoria_llegada.x, y: P.memoria_llegada.y, r: 1.4, texto: 'Recordar (guardar)', usar() {
     prog().energia = estadisticas().energia;
     // Al cerrar el mensaje se abre el Museo de la Memoria (MemoryShrine.End).
-    guardar() ? mensaje(`El santuario de Memoria guarda lo que has vivido. Si caes, despertarás ${id === 'p3' ? 'aquí' : 'en la aldea'}.`, () => abrirMenu('museo', 'museo')) : mensaje('No se pudo guardar en este navegador.');
+    guardar() ? mensaje(`El santuario de Memoria guarda lo que has vivido. Si caes, despertarás ${id === 'p3' || id === 'palenque' ? 'aquí' : 'en la aldea'}.`, () => abrirMenu('museo', 'museo')) : mensaje('No se pudo guardar en este navegador.');
   } });
   if (id === 'ciudad') poblarCiudad(P, E, O, I, T);
   if (id === 'selva') {
@@ -277,6 +278,7 @@ function poblar(id) {
   }
   if (id === 'p3') { poner('incursion.santuario_p3'); poblarPiso3(P, E, O, I, T, santuarioMemoria); }
   if (esGenerado(id)) poblarNivel(id, P, E, I, T);
+  if (id === 'palenque') poblarPalenque(P, E, O, I, T, santuarioMemoria); // js/palenque.js
   poblarTrampas(id); // antes que la fauna, para que no aparezca dentro de un brasero
   poblarFauna(id, P);
 }
@@ -333,7 +335,7 @@ async function cargarRegion(id, punto, vida) {
   juego.enemigos.forEach((e, i) => { e.clave = `${id}:${e.tipo}:${i}`; }); // para no dar lo mismo cada vez que reaparece
   if (/^p\d$/.test(id)) entregar(`REC_descubrir_piso${id[1]}`, `descubrir.mazmorra_piso${id[1]}`);
   for (const t of juego.portales) t.armado = false; // no se activa hasta salir de él (se aparece cerca)
-  const pre = [`Guerrero_${guardianActual().nombre}_`, 'Enemigo_', 'Vasija_Rompible_', 'Trampa_Pinchos_', 'Placa_Presion_', 'Brasero_Piedra_', 'Cristal_Memoria_', 'Estera_Tejida_', 'Cabeza_Piedra_', id === 'ciudad' ? 'Npc_' : 'Npc_Guerrero_', ...(id === 'p3' ? ['Guardian_Piedra_'] : []), 'Jefe_', ...(id === 'n1_5' ? ['Nauyaca_'] : []), ...(esGenerado(id) ? ['Pecari_', 'Tapir_', 'Ocelote_', 'Aullador_', 'Armadillo_'] : [])];
+  const pre = [`Guerrero_${guardianActual().nombre}_`, 'Enemigo_', 'Vasija_Rompible_', 'Trampa_Pinchos_', 'Placa_Presion_', 'Brasero_Piedra_', 'Cristal_Memoria_', 'Estera_Tejida_', 'Cabeza_Piedra_', id === 'ciudad' ? 'Npc_' : 'Npc_Guerrero_', ...(id === 'p3' ? ['Guardian_Piedra_'] : []), 'Jefe_', ...(id === 'n1_5' ? ['Nauyaca_'] : []), ...(esGenerado(id) || id === 'palenque' ? ['Pecari_', 'Tapir_', 'Ocelote_', 'Aullador_', 'Armadillo_'] : [])];
   await precargar([...nombresDeRegion(), ...Object.keys(SPRITES).filter((n) => pre.some((p) => n.startsWith(p))), 'Fragmento_Memoria_01', 'Santuario_Vida_02', 'Ofrenda_01', 'Ofrenda_02', 'Ofrenda_03', 'Ofrenda_04', 'Basalto_Agrietado_01']);
   $('fundido').style.opacity = 0;
   juego.viajando = false;
@@ -454,8 +456,9 @@ function actualizar(dt) {
   // niveles limpios). Siempre con la vida llena; lo ganado se queda. En el enlace de prueba (?nivel=) te levantas en el sitio.
   if (j.vida <= 0 && j.muerto <= 0) {
     if (juego.prueba) { j.vida = j.max; j.inv = 2; toast('Te levantas de nuevo.'); return; }
-    if (juego.region !== 'ciudad' && juego.region !== 'selva') poner('incursion.caido');
-    if (NIVELES[2].includes(juego.region) && bandera('incursion.santuario_p3')) cargarRegion('p3', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4));
+    if (!['ciudad', 'selva', 'palenque'].includes(juego.region)) poner('incursion.caido');
+    if (juego.region === 'palenque') cargarRegion('palenque', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4)); // etapa 43
+    else if (NIVELES[2].includes(juego.region) && bandera('incursion.santuario_p3')) cargarRegion('p3', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4));
     else cargarRegion('ciudad', 'inicio', estadisticas().vida).then(() => toast('Caíste. Despiertas en la aldea, junto al agua.', 4));
   }
 }

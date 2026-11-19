@@ -480,3 +480,16 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
   4 por segundo en `Update` hasta `maxEnergy` (`ENERGIA_REGEN` en `js/actores.js`).
 - **Armero:** precios de `PRECIO_ARMERO` (`js/armas.js`; ver la tabla del README, etapa 42) como coste en la ficha de cada
   arma del armero; lo comprado se guarda en el save (`armero.compradas`); la macana, gratis.
+
+## 30. Capítulo II: portal y primera región maya, Palenque (etapa 43)
+
+- **Cierre del capítulo I:** al completar `MP_OLM_06` (aviso `examinar:altar_trono`), un diálogo de cierre y un
+  `ScenePortal` que aparece en la plaza de `Olmeca_Ciudad` con `ActiveWhenFlags` (`may.portal_abierto`), entre los dos
+  altares-trono (x 0, y 6,2 del flujo). Antes de viajar, una tarjeta de capítulo en el HUD (título y dos botones).
+- **Escena nueva `Maya_Palenque`:** sin arte de Unity aún. Trazado en `PALENQUE` (`js/palenque.js`): suelo por tipos (tierra,
+  caliza, puente), río Otolum de 3 m (agua que bloquea, bajo el puente), templo escalonado tras la plaza, tablero de glifos
+  (`InscriptionInteractable`, aviso `examinar:tablero_palenque`), `MemoryShrine` en la llegada (y `DefeatReturn` a él) y
+  fauna (`WildEnemy`: 2 serpientes y una guacamaya; ocelote y aulladores cuando se porten, §8). El arte pintado por código
+  sirve de referencia para pedirlo a Blender.
+- **Misión `MP_MAY_01`** (QuestData nuevo, al catálogo): pasos `examinar:tablero_palenque` y `hablar:gente_lakamha`.
+- Ojo cultural: nada olmeca en la escena maya, y separar D, I y F como en la cabecera de `js/palenque.js`.

@@ -114,9 +114,10 @@ function dibujarSuelo(t) {
   ctx.fillStyle = patronFondo() || mundo.fondo; // la mazmorra, con la textura de su piso (js/niveles.js)
   ctx.fillRect(0, 0, vista.w, vista.h);
   if (!mundo.d.losas) for (const c of mundo.d.suelo) dibujarEn(c.sprite, c.derecha * PPU, -c.arriba * PPU); // centro del trozo en el plano de la cámara
-  if (mundo.d.losas) dibujarLosas(); // niveles generados (js/niveles.js)
   const cuadro = `Tile_Agua_Anim_0${1 + (Math.floor(t * 4) % 4)}`;
-  for (const c of mundo.agua) dibujar(cuadro, c.x, c.y);
+  if (mundo.d.aguaDebajo) for (const c of mundo.agua) dibujar(cuadro, c.x, c.y); // Palenque: el río pasa bajo el puente (js/palenque.js)
+  if (mundo.d.losas) dibujarLosas(); // niveles generados (js/niveles.js)
+  if (!mundo.d.aguaDebajo) for (const c of mundo.agua) dibujar(cuadro, c.x, c.y);
   // El agua que sube en la fase 2 del Guardián, más turbia (FloodTint).
   if (juego.inundado) for (const c of mundo.d.inundacion || []) dibujar(cuadro, c.x, c.y, 0.02, { filtro: 'brightness(.6) saturate(.6)' });
 }

@@ -98,6 +98,7 @@ function sonar(nombre) {
 const AMBIENTES = {
   ciudad: { f: 500, vol: 0.22, pajaros: 0.15 },
   selva: { f: 900, vol: 0.26, pajaros: 0.5 },
+  palenque: { f: 1100, vol: 0.28, pajaros: 0.5 }, // etapa 43: selva con río
   p1: { f: 180, vol: 0.3, dron: 55 },
   p2: { f: 250, vol: 0.3, dron: 49, gotas: 0.35 },
   p3: { f: 150, vol: 0.34, dron: 41 },

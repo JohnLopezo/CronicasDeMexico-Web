@@ -12,6 +12,10 @@ const PALETA = {
     musgo: ['#3f6b31', '#56853a', '#6f9c45'], charco: '#173f45', brillo: '#5fa3a0', cara: '#26332f', gota: '#18221f' },
   3: { junta: '#3b1f17', piedra: ['#8a4e36', '#94573b', '#7f4631', '#9a5e40'], claro: '#b57a55', oscuro: '#5a2f22',
     talla: '#4a2419', cara: '#6a3626', friso: '#a86a48' },
+  // Etapa 43, Palenque (js/palenque.js): caliza clara con juntas, tierra de la selva y estuco con restos de rojo.
+  4: { junta: '#8a8169', piedra: ['#d6ccb2', '#cfc4a8', '#c9bea2', '#dcd3bb'], claro: '#ece5d2', oscuro: '#a99e84', cara: '#9c917a',
+    tierra: ['#5a4630', '#634d33', '#54412c'], hojas: ['#7a6a3a', '#8c5a2e', '#4f6b30'], pasto: ['#4f7d34', '#679a3f', '#3e6a2c'],
+    raiz: '#3a2a1b', estuco: '#a4483a', boveda: '#2c2a24' },
 };
 const px = (g, c, x, y, w = 1, h = 1) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
 const elige = (rnd, a) => a[Math.floor(rnd() * a.length)];
@@ -28,6 +32,7 @@ const greca = (g, c, x0, y, w) => { for (let x = x0; x < x0 + w; x += 8) { px(g,
 function pintarLosa(g, piso, ox, oy, l) {
   const P = PALETA[piso], rnd = azar(((l.x * 73856093) ^ (l.y * 19349663)) >>> 0);
   px(g, P.junta, ox, oy, PPU, PX_Y);
+  if (piso === 4) return losaPalenque(g, P, rnd, ox, oy, l);
   if (piso === 2) {
     // Dos o cuatro lajas: un corte vertical y un corte horizontal a cada lado, a alturas distintas.
     const cx = 14 + Math.floor(rnd() * 20), cy = [8 + Math.floor(rnd() * 16), 8 + Math.floor(rnd() * 16)];
@@ -65,6 +70,35 @@ function pintarLosa(g, piso, ox, oy, l) {
     }
     if (l.arriba) { px(g, P.oscuro, ox, oy - LOSA.matas, PPU, LOSA.matas); px(g, P.friso, ox, oy - LOSA.matas, PPU, 2); for (let x = 2; x < PPU; x += 6) px(g, P.friso, ox + x, oy - 6, 3, 3); }
     if (l.abajo) { px(g, P.cara, ox, oy + PX_Y, PPU, LOSA.cara); px(g, P.friso, ox, oy + PX_Y, PPU, 1); greca(g, P.talla, ox, oy + PX_Y + 4, PPU); px(g, P.junta, ox, oy + PX_Y + LOSA.cara - 2, PPU, 2); }
+  }
+}
+
+// Piso 4 (Palenque): l.tipo 'tierra' (claro y sendero: tierra con hojarasca, pasto en el borde de atrás y talud con raíces
+// delante), 'caliza' (calzada y plaza: dos losas por celda, bordillo de estuco con rojo detrás y sillares delante) o
+// 'puente' (como la caliza, con una bóveda oscura en la cara: el agua pasa por debajo).
+function losaPalenque(g, P, rnd, ox, oy, l) {
+  if (l.tipo === 'tierra') {
+    px(g, P.tierra[0], ox, oy, PPU, PX_Y);
+    for (let i = 0; i < 26; i++) px(g, elige(rnd, P.tierra), ox + Math.floor(rnd() * PPU), oy + Math.floor(rnd() * PX_Y), 3 + Math.floor(rnd() * 5), 2);
+    for (let i = 0; i < 22; i++) px(g, rnd() < 0.7 ? elige(rnd, P.hojas) : P.raiz, ox + Math.floor(rnd() * PPU), oy + Math.floor(rnd() * PX_Y), 1 + Math.floor(rnd() * 2), 1);
+    if (rnd() < 0.3) bola(g, P.oscuro, ox + 8 + rnd() * 32, oy + 6 + rnd() * 20, 2, 1); // piedra suelta
+    if (l.arriba) for (let x = 0; x < PPU; x++) { const h = 3 + Math.floor(rnd() * 8); px(g, P.pasto[2], ox + x, oy - h, 1, h + 1); px(g, elige(rnd, P.pasto), ox + x, oy - h, 1, 1 + Math.floor(rnd() * 2)); }
+    if (l.abajo) { px(g, P.raiz, ox, oy + PX_Y, PPU, LOSA.cara); for (let i = 0; i < 6; i++) px(g, elige(rnd, P.tierra), ox + Math.floor(rnd() * PPU), oy + PX_Y + 1 + Math.floor(rnd() * 10), 3, 2); px(g, P.pasto[2], ox, oy + PX_Y, PPU, 1); }
+    return;
+  }
+  const cx = 18 + Math.floor(rnd() * 12);
+  for (const [x, w] of [[0, cx], [cx, PPU - cx]]) {
+    px(g, elige(rnd, P.piedra), ox + x + 1, oy + 1, w - 2, PX_Y - 2);
+    px(g, P.claro, ox + x + 1, oy + 1, w - 2, 1); px(g, P.oscuro, ox + x + 1, oy + PX_Y - 2, w - 2, 1);
+    for (let i = 0; i < 6; i++) px(g, rnd() < 0.5 ? P.claro : P.oscuro, ox + x + 2 + Math.floor(rnd() * (w - 4)), oy + 2 + Math.floor(rnd() * (PX_Y - 4)));
+  }
+  if (rnd() < 0.25) for (let i = 0; i < 4; i++) px(g, elige(rnd, P.pasto), ox + cx - 1, oy + 2 + Math.floor(rnd() * (PX_Y - 4)), 2, 2); // hierba en la junta
+  if (l.arriba) { px(g, P.oscuro, ox, oy - LOSA.matas, PPU, LOSA.matas); px(g, P.piedra[0], ox, oy - LOSA.matas, PPU, 3); px(g, P.estuco, ox, oy - 4, PPU, 2); }
+  if (l.abajo) {
+    px(g, P.cara, ox, oy + PX_Y, PPU, LOSA.cara); px(g, P.claro, ox, oy + PX_Y, PPU, 1);
+    if (l.tipo === 'puente') { px(g, P.boveda, ox + 12, oy + PX_Y + 4, 24, 10); px(g, P.boveda, ox + 16, oy + PX_Y + 2, 16, 2); } // bóveda maya (en saledizo)
+    else for (let x = (l.x % 2) * 12; x < PPU; x += 24) px(g, P.junta, ox + x, oy + PX_Y + 1, 1, LOSA.cara - 1);
+    px(g, P.junta, ox, oy + PX_Y + 7, PPU, 1);
   }
 }
 

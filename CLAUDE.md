@@ -5,6 +5,12 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 43 (2026-11-19):** de la mazmorra a la época maya. Al dejar el fragmento en el altar-trono (MP_OLM_06) se cierra
+  el capítulo I y se abre un portal en la plaza (`may.portal_abierto`) a **Lakamha' (Palenque)**, región pintada por código
+  (`js/palenque.js`, piso 4): llegada con santuario, río Otolum con puente, plaza, templo escalonado y tablero de glifos;
+  misión `MP_MAY_01`. Prueba: `etapa43.mjs`. **Siguiente:** la aldea maya (gente de Lakamha', paso 2 de MP_MAY_01), luego
+  mazmorra (10-12 pisos) y jefe del agua (Historia_Mundo §6, cap. II). Pendiente: verlo en el celular.
+
 - **Etapa 42 (2026-11-19):** la energía se recarga sola (4/s, `ENERGIA_REGEN` en `js/actores.js`): la estrella ya no se apaga
   tras 4 usos. El armero cobra: cada arma se compra una vez con ecos y materiales (`PRECIO_ARMERO`, `armero.compradas`);
   la macana es gratis. Prueba: `herramientas/dificultad/etapa42.mjs`. Campaña medida: 0 caídas, jefes algo más rápidos (README). Pendiente: verlo en el celular.
@@ -90,6 +96,7 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 | `js/cuadros.js` | Cuadros por partes: `PARTES` por sprite (rect, pivote, aviso/golpe/aleteo, `sinHueco`), `conPartes`, `cuadroAtaque` |
 | `js/niveles.js` | Niveles 1-1…3-5, `generarNivel`, `POBLACION`/`COSTE`/`PRESUPUESTO`, `ESTILO` por piso, enlace de prueba `?nivel=` |
 | `js/armas.js` | Armas de la mazmorra: `ARMAS`, `NIVEL_ARMA`, estrado (`ponerArma`), dardos del disparo (`lanzarDardo`), golpe (`danoGolpe`, `trasGolpe`, `trasBlandir`), escudo (`factorDefensa`), `MAESTRIA`, cofre de recompensas (`aparecerCofre`), armero (`menuArmero`) |
+| `js/palenque.js` | Capítulo II: portal de la aldea, región de Palenque (`PALENQUE`, `regionPalenque`), templo y tablero pintados, misión `MP_MAY_01` |
 | `js/pisos.js` | Suelo (`pintarLosa`) y muros (`pintarMuro`) de los pisos 2 y 3 pintados por código; colores en `PALETA` |
 | `js/juego.js` | Banderas, misiones, `cargarRegion`, guardado, bucle `actualizar` |
 | `js/musica.js` | Música prehispánica: instrumentos, `MUSICA` (patrones por modo), `modoMusica`, secuenciador |
