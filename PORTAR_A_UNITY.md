@@ -493,3 +493,13 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
   sirve de referencia para pedirlo a Blender.
 - **Misión `MP_MAY_01`** (QuestData nuevo, al catálogo): pasos `examinar:tablero_palenque` y `hablar:gente_lakamha`.
 - Ojo cultural: nada olmeca en la escena maya, y separar D, I y F como en la cabecera de `js/palenque.js`.
+
+## 31. La aldea maya de Lakamha' (etapa 44)
+
+- **Escena `Maya_Aldea`**, unida a `Maya_Palenque` por un `ScenePortal` al este de la plaza. Trazado en `ALDEA_MAYA`
+  (`js/aldea_maya.js`): patio de tierra, río al sur, cinco casas, milpa, telar, fogón (estación Cocina) y comercio.
+- **NPC:** siete `NpcData` con `NpcPatrol` (rutas en `ALDEA_MAYA.habitantes`). Hacen falta fichas mayas en `Docs/NPC`; los
+  cuadros pintados por código (`pintarMaya`) son la referencia de ropa y colores.
+- **Diálogos** (`DialogueData` con ramas por banderas) y **misión `MP_MAY_02`** (pasos `examinar:hoja_libro` ×3 y
+  `hablar:escriba`; bandera `may.registros_recuperados`). El paso 2 de `MP_MAY_01` pasa a `hablar:escriba`. Las hojas 2
+  y 3, en la plaza de Palenque, las suelta un `EnemyChaser` (espíritu) con `ReportOnDefeat`.

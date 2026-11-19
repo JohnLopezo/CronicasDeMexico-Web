@@ -53,6 +53,28 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 44 (2026-11-19): la aldea de Lakamha' (`js/aldea_maya.js`)
+
+Al este de la plaza del templo, por un sendero, la aldea maya: casas de bajareque con techo de palma sobre plataformas,
+milpa, telar de cintura, fogón de tres piedras, cestos y vasijas, y el río al sur con una canoa. Todo pintado por código
+salvo los enseres de casa de Unity, que no tienen rasgos de cultura.
+
+- **Siete habitantes pintados por código** (no hay fichas mayas en Unity; lo eligió el usuario): escriba (pincel en el
+  tocado y concha de tinta), tejedora anciana (huipil y enredo), mercadera de cacao y sal (canasta), pescador del Otolum (red),
+  joven cazador (lanza y plumas), niña y niño. Cuadros de 48 × 64 como las fichas (`MAYAS`, `pintarMaya`): reposo y cuatro
+  de andar, de frente, de lado y de espaldas, con contorno oscuro; los niños al ×0,72.
+- **Misiones:** hablar con el escriba completa MP_MAY_01 y empieza **MP_MAY_02 «Los registros perdidos»**. Son tres hojas
+  de su libro de corteza: una junto al río de la aldea y dos en la plaza de Palenque, cada una guardada por un espíritu de
+  la Sombra. Al devolverlas, el escriba recuerda el camino del agua bajo el palacio (`may.camino_agua`), que lleva a la
+  mazmorra maya (siguiente).
+- Servicios: Cocinar (fogón) y Comerciar (mercadera), con las recetas y ofertas de siempre. Al caer en la aldea, al
+  santuario de Palenque.
+- **Fidelidad:** en la cabecera de `js/aldea_maya.js` (D: casas, milpa, telar, fogón, cacao y sal, escribas con pincel,
+  libros de corteza; I: ropa y peinados simplificados y la frente alargada; F: las personas, sus palabras y las hojas).
+
+Prueba: `herramientas/dificultad/etapa44.mjs` (18 comprobaciones; los espíritus pueden esquivar de un salto, así que el
+guion repite el golpe) y hoja de los habitantes (`44_habitantes.png`). `etapa43.mjs` sigue bien.
+
 ## Etapa 43 (2026-11-19): de la mazmorra olmeca a la época maya, Palenque (`js/palenque.js`)
 
 Lo pidió el usuario: al terminar la mazmorra, pasar a la época siguiente. Según `Docs/Historia_Mundo.md` §6 de Unity es el

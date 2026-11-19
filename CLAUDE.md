@@ -5,6 +5,11 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 44 (2026-11-19):** la aldea de Lakamha' (`js/aldea_maya.js`), al este de la plaza: casas, milpa, telar, siete
+  habitantes pintados por código y la misión `MP_MAY_02` (tres hojas del escriba; las de la plaza las guardan espíritus).
+  Prueba: `etapa44.mjs`. **Plan acordado:** 45 armas mayas en un armero de Lakamha', 46 fauna de Chiapas (mono araña,
+  tucán, jaguar, tapir), 47 mapa de la región; después la mazmorra maya (`may.camino_agua`). Pendiente: verlo en el celular.
+
 - **Etapa 43 (2026-11-19):** de la mazmorra a la época maya. Al dejar el fragmento en el altar-trono (MP_OLM_06) se cierra
   el capítulo I y se abre un portal en la plaza (`may.portal_abierto`) a **Lakamha' (Palenque)**, región pintada por código
   (`js/palenque.js`, piso 4): llegada con santuario, río Otolum con puente, plaza, templo escalonado y tablero de glifos;
@@ -97,6 +102,7 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 | `js/niveles.js` | Niveles 1-1…3-5, `generarNivel`, `POBLACION`/`COSTE`/`PRESUPUESTO`, `ESTILO` por piso, enlace de prueba `?nivel=` |
 | `js/armas.js` | Armas de la mazmorra: `ARMAS`, `NIVEL_ARMA`, estrado (`ponerArma`), dardos del disparo (`lanzarDardo`), golpe (`danoGolpe`, `trasGolpe`, `trasBlandir`), escudo (`factorDefensa`), `MAESTRIA`, cofre de recompensas (`aparecerCofre`), armero (`menuArmero`) |
 | `js/palenque.js` | Capítulo II: portal de la aldea, región de Palenque (`PALENQUE`, `regionPalenque`), templo y tablero pintados, misión `MP_MAY_01` |
+| `js/aldea_maya.js` | Aldea maya: habitantes pintados (`MAYAS`, `pintarMaya`), casas, milpa y telar, `ALDEA_MAYA`, diálogos y misión `MP_MAY_02` (hojas: `HOJAS`, `poblarHojas`) |
 | `js/pisos.js` | Suelo (`pintarLosa`) y muros (`pintarMuro`) de los pisos 2 y 3 pintados por código; colores en `PALETA` |
 | `js/juego.js` | Banderas, misiones, `cargarRegion`, guardado, bucle `actualizar` |
 | `js/musica.js` | Música prehispánica: instrumentos, `MUSICA` (patrones por modo), `modoMusica`, secuenciador |

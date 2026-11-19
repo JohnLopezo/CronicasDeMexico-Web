@@ -17,12 +17,12 @@
 // ---------- La región ----------
 // Celdas de suelo por tipo (x0, x1, y0, y1 incluidos; x al este, y hacia el fondo) y el río, de norte a sur.
 const PALENQUE = {
-  suelo: [[-17, -10, -3, 3, 'tierra'], [-9, -2, -1, 1, 'tierra'], [-1, 1, -1, 1, 'puente'], [2, 5, -1, 1, 'caliza'], [6, 19, -6, 6, 'caliza']],
+  suelo: [[-17, -10, -3, 3, 'tierra'], [-9, -2, -1, 1, 'tierra'], [-1, 1, -1, 1, 'puente'], [2, 5, -1, 1, 'caliza'], [6, 19, -6, 6, 'caliza'], [20, 23, -1, 1, 'tierra']], // etapa 44: sendero a la aldea
   rio: [-1, 1, -10, 10],
-  limites: [-20, 22, -10, 10],
+  limites: [-20, 26, -10, 10],
   templo: { x: 12.5, y: 7.6 }, tablero: { x: 12.5, y: 4.6 },
   puntos: {
-    llegada: { x: -14, y: 0 }, memoria: { x: -15.5, y: 2.3 }, memoria_llegada: { x: -15.5, y: 1.2 }, portal: { x: -16.2, y: -1.8 },
+    llegada: { x: -14, y: 0 }, memoria: { x: -15.5, y: 2.3 }, memoria_llegada: { x: -15.5, y: 1.2 }, portal: { x: -16.2, y: -1.8 }, desde_aldea: { x: 21.3, y: 0 }, a_aldea: { x: 23.2, y: 0 },
   },
   // Fauna de la selva de Palenque (lejos de la llegada): [tipo, x, y].
   fauna: [['Serpiente', -6, 0], ['ocelote', 4, 0], ['aullador', 9, -3], ['Guacamaya', 16, -2], ['Serpiente', 17, 3]],
@@ -156,6 +156,8 @@ function poblarPalenque(P, E, O, I, T, santuarioMemoria) {
   portalMemoria(O, I, P.portal, 'Volver al asentamiento', () => mensaje(TXT_MAYA.portal, () => cargarRegion('ciudad', 'desde_maya', juego.jugador.vida)));
   const t = PALENQUE.tablero;
   I.push({ x: t.x, y: t.y - 0.7, r: 1.2, texto: 'Examinar', usar: () => mensaje(TXT_MAYA.tablero, () => avisar('examinar:tablero_palenque')) });
+  T.push({ ...P.a_aldea, a: 'aldea_maya', punto: 'llegada' }); // la aldea (js/aldea_maya.js)
+  poblarHojas('palenque', E, O, I);
   for (const [tipo, x, y] of PALENQUE.fauna)
     E.push(...(tipo === 'ocelote' ? [nuevoOcelote(x, y)] : tipo === 'aullador' ? [nuevoAullador(x, y), nuevoAullador(x + 1.2, y - 0.8)] : [nuevaFauna(tipo, x, y, false)]));
 }
@@ -164,7 +166,7 @@ function poblarPalenque(P, E, O, I, T, santuarioMemoria) {
 (() => {
   const antes = mundo;
   mundo = construirMundo('palenque');
-  for (const [n, p] of Object.entries({ ...PALENQUE.puntos, tablero: { x: PALENQUE.tablero.x, y: PALENQUE.tablero.y - 0.7 } })) if (n !== 'memoria') console.assert(!bloqueado(p.x, p.y, 0.25), `Palenque: ${n} libre`);
+  for (const [n, p] of Object.entries({ ...PALENQUE.puntos, tablero: { x: PALENQUE.tablero.x, y: PALENQUE.tablero.y - 0.7 } })) if (n !== 'memoria' && n !== 'a_aldea') console.assert(!bloqueado(p.x, p.y, 0.25), `Palenque: ${n} libre`);
   console.assert(PALENQUE.fauna.every(([, x, y]) => !bloqueado(x, y, 0.3) && Math.hypot(x - PALENQUE.puntos.llegada.x, y - PALENQUE.puntos.llegada.y) >= LIBRE_LLEGADA), 'Palenque: fauna en suelo y lejos de la llegada');
   mundo = construirMundo('ciudad');
   for (const q of [REGIONES.ciudad.puntos.portal_maya, REGIONES.ciudad.puntos.desde_maya]) console.assert(!bloqueado(q.x, q.y, 0.25), 'Aldea: el portal maya está en un sitio libre');

@@ -279,6 +279,7 @@ function poblar(id) {
   if (id === 'p3') { poner('incursion.santuario_p3'); poblarPiso3(P, E, O, I, T, santuarioMemoria); }
   if (esGenerado(id)) poblarNivel(id, P, E, I, T);
   if (id === 'palenque') poblarPalenque(P, E, O, I, T, santuarioMemoria); // js/palenque.js
+  if (id === 'aldea_maya') poblarAldeaMaya(P, E, O, I, T); // js/aldea_maya.js
   poblarTrampas(id); // antes que la fauna, para que no aparezca dentro de un brasero
   poblarFauna(id, P);
 }
@@ -456,8 +457,8 @@ function actualizar(dt) {
   // niveles limpios). Siempre con la vida llena; lo ganado se queda. En el enlace de prueba (?nivel=) te levantas en el sitio.
   if (j.vida <= 0 && j.muerto <= 0) {
     if (juego.prueba) { j.vida = j.max; j.inv = 2; toast('Te levantas de nuevo.'); return; }
-    if (!['ciudad', 'selva', 'palenque'].includes(juego.region)) poner('incursion.caido');
-    if (juego.region === 'palenque') cargarRegion('palenque', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4)); // etapa 43
+    if (!['ciudad', 'selva', 'palenque', 'aldea_maya'].includes(juego.region)) poner('incursion.caido');
+    if (juego.region === 'palenque' || juego.region === 'aldea_maya') cargarRegion('palenque', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4)); // etapa 43
     else if (NIVELES[2].includes(juego.region) && bandera('incursion.santuario_p3')) cargarRegion('p3', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4));
     else cargarRegion('ciudad', 'inicio', estadisticas().vida).then(() => toast('Caíste. Despiertas en la aldea, junto al agua.', 4));
   }
