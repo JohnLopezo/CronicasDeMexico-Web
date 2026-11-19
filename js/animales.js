@@ -250,17 +250,24 @@ function dibujarTapir(e) {
 // cae cerca de ti, encadena dos zarpazos rápidos y luego se retira a la carrera para volver a acechar. Esquiva a menudo.
 const OCELOTE = { vida: 40, r: 0.31, acecho: 1.3, carrera: 4.6, alerta: 6, distancia: 3.2, esquiva: 0.4,
   salto: { aviso: 0.5, vuelo: 0.42, alto: 0.8, radio: 0.95, dano: 11, maximo: 4.2 }, zarpazo: { dano: 6, radio: 0.7, dur: 0.28 },
-  retirada: 0.8, espera: [0.9, 1.6], nombre: 'Ocelote' };
-function nuevoOcelote(x, y) {
-  return { tipo: 'ocelote', nombre: OCELOTE.nombre, x, y, z: 0, vz: 0, gravedad: true, vida: vidaComun(OCELOTE.vida), max: vidaComun(OCELOTE.vida), r: OCELOTE.r,
+  retirada: 0.8, espera: [0.9, 1.6], nombre: 'Ocelote', tipo: 'ocelote', arte: 'Ocelote', debil: ['Luz'], escudo: 3 };
+// Etapa 46: jaguar (Panthera onca) de la selva de Palenque, el ocelote en grande: más vida, salto más largo y golpes más
+// duros; no esquiva tanto. Élite (cuesta como un tapir).
+const JAGUAR_SELVA = { ...OCELOTE, vida: 95, r: 0.45, acecho: 1.4, carrera: 5, alerta: 7, distancia: 3.8, esquiva: 0.2,
+  salto: { aviso: 0.65, vuelo: 0.48, alto: 0.9, radio: 1.15, dano: 17, maximo: 5 }, zarpazo: { dano: 10, radio: 0.9, dur: 0.32 },
+  retirada: 0.7, espera: [1.1, 1.9], nombre: 'Jaguar', tipo: 'jaguar_selva', arte: 'Jaguar', debil: ['Agua'], escudo: 5 };
+function nuevoOcelote(x, y, D = OCELOTE) {
+  const OCELOTE = D;
+  return { tipo: D.tipo, D, nombre: OCELOTE.nombre, x, y, z: 0, vz: 0, gravedad: true, vida: vidaComun(OCELOTE.vida), max: vidaComun(OCELOTE.vida), r: OCELOTE.r,
     fx: 1, fy: 0, kx: 0, ky: 0, estado: 'reposo', t: 0, anim: 'Reposo', ta: Math.random(), destello: 0, muriendo: 0, cdEsquiva: 0, invul: 0,
-    probEsquiva: OCELOTE.esquiva, esquivar: esquivarSaltando, ruptura: { escudo: 3, seg: 2.5, debil: ['Luz'], nombre: OCELOTE.nombre },
+    probEsquiva: OCELOTE.esquiva, esquivar: esquivarSaltando, ruptura: { escudo: D.escudo, seg: 2.5, debil: D.debil, nombre: OCELOTE.nombre },
     alHerir(e) { e.dano = 0.2; if (e.estado === 'reposo') { e.estado = 'aviso'; e.t = 0.4; } },
     alMorir(e) { e.muriendo = 0.9; quitarAvisosDe(e); },
     actualizar: actualizarOcelote, dibujar: dibujarOcelote };
 }
+const nuevoJaguarSelva = (x, y) => nuevoOcelote(x, y, JAGUAR_SELVA);
 function actualizarOcelote(e, dt) {
-  const j = juego.jugador, O = OCELOTE, d = dist(e, j), l = d || 1;
+  const j = juego.jugador, O = e.D, d = dist(e, j), l = d || 1;
   for (const k of ['destello', 'dano', 'invul', 'cdEsquiva', 'aturdido']) e[k] = Math.max(0, (e[k] || 0) - dt);
   e.ta += dt; e.t -= dt;
   mover(e, e.kx * dt, e.ky * dt, e.r); e.kx *= 0.85; e.ky *= 0.85;
@@ -299,32 +306,32 @@ function actualizarOcelote(e, dt) {
 }
 // Bufa agazapado y marca donde estás; luego salta allí en arco (como mucho 4,2 m).
 function abalanzarse(e) {
-  const j = juego.jugador, S = OCELOTE.salto, l = dist(e, j) || 1, k = Math.min(1, S.maximo / l);
+  const j = juego.jugador, S = e.D.salto, l = dist(e, j) || 1, k = Math.min(1, S.maximo / l);
   e.fx = (j.x - e.x) / l; e.fy = (j.y - e.y) / l;
   e.hacia = { x: e.x + (j.x - e.x) * k, y: e.y + (j.y - e.y) * k }; e.estado = 'avisaSalto'; e.t = S.aviso;
   marca('circulo', e.hacia.x, e.hacia.y, S.radio, S.aviso + S.vuelo, (m) => { if (e.vida > 0 && enMarca(m, j)) herirJugador(S.dano, e, 1.1); }, { dueno: e });
 }
 function zarpazo(e) {
-  const Z = OCELOTE.zarpazo, cx = e.x + e.fx * 0.7, cy = e.y + e.fy * 0.7;
+  const Z = e.D.zarpazo, cx = e.x + e.fx * 0.7, cy = e.y + e.fy * 0.7;
   sonar('tajo');
   if (dist({ x: cx, y: cy }, juego.jugador) < Z.radio + 0.25) herirJugador(Z.dano, e, 0.5);
   juego.efectos.push({ tipo: 'tajo', x: cx, y: cy, t: 0.12, remate: false });
 }
 function retirarse(e) {
   const j = juego.jugador, l = dist(e, j) || 1;
-  e.fx = (j.x - e.x) / l; e.fy = (j.y - e.y) / l; e.estado = 'retirada'; e.t = OCELOTE.retirada;
+  e.fx = (j.x - e.x) / l; e.fy = (j.y - e.y) / l; e.estado = 'retirada'; e.t = e.D.retirada;
 }
 function dibujarOcelote(e) {
   const muerto = e.vida <= 0;
   if (muerto && e.muriendo <= 0) return;
   // Al retirarse corre hacia atrás: mira hacia donde corre.
   const espejo = e.estado === 'retirada' ? e.fx > 0 : e.fx < 0;
-  const n = muerto ? cuadroAnimal('Ocelote', 'Muerte', 0.9 - e.muriendo, true)
-    : e.anim === 'Salto' ? `Ocelote_Salto_${1 + Math.min(4, Math.floor((1 - Math.max(0, e.t) / OCELOTE.salto.vuelo) * 5))}` : cuadroAnimal('Ocelote', e.anim, e.ta, e.anim === 'Zarpazo');
-  elipse(e.x, e.y, 0.32, '#0006', null, e.suelo ?? 0);
+  const a = e.D.arte, n = muerto ? cuadroAnimal(a, 'Muerte', 0.9 - e.muriendo, true)
+    : e.anim === 'Salto' ? `${a}_Salto_${1 + Math.min(4, Math.floor((1 - Math.max(0, e.t) / e.D.salto.vuelo) * 5))}` : cuadroAnimal(a, e.anim, e.ta, e.anim === 'Zarpazo');
+  elipse(e.x, e.y, e.r + 0.01, '#0006', null, e.suelo ?? 0);
   const filtro = e.destello > 0 ? 'brightness(2.4)' : e.roto > 0 ? ROTO_FILTRO : null;
   dibujar(n, e.x, e.y, e.z || 0, { espejo, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null, ...movAnimal(e, 'Ocelote') });
-  if (!muerto && e.vida < e.max) barraMini(e, 0.85 + (e.z || 0));
+  if (!muerto && e.vida < e.max) barraMini(e, (e.D === OCELOTE ? 0.85 : 1.15) + (e.z || 0));
 }
 
 // ---------- Mono aullador de manto (Alouatta palliata mexicana): enemigo a distancia, en pareja ----------
@@ -332,18 +339,24 @@ function dibujarOcelote(e) {
 // (frena mucho) y quita un poco. Si te acercas, huye a cuatro patas a otro sitio. Los de la tropa aúllan por turnos.
 const AULLADOR = { vida: 30, r: 0.27, distancia: [3.8, 6], huye: 2.6, vel: 3.4, alerta: 7,
   fruto: { cada: [1.6, 2.4], aviso: 0.42, vel: 6.5, dano: 6 }, aullido: { cada: 6.5, aviso: 0.8, radio: 4, dano: 4, frena: { slowSeconds: 1.6, slowFactor: 0.3 } },
-  nombre: 'Mono aullador' };
-function nuevoAullador(x, y) {
-  return { tipo: 'aullador', nombre: AULLADOR.nombre, x, y, z: 0, vz: 0, gravedad: true, vida: vidaComun(AULLADOR.vida), max: vidaComun(AULLADOR.vida), r: AULLADOR.r,
+  nombre: 'Mono aullador', tipo: 'aullador', arte: 'Aullador', proyectil: '#d9892c' };
+// Etapa 46: mono araña (Ateles geoffroyi), de la selva de Palenque: rompe y arroja ramas (D), sin aullido; más ágil y
+// más rápido, con menos vida. Va en grupo de tres.
+const ARANA = { ...AULLADOR, vida: 24, distancia: [3.2, 5.4], huye: 2.4, vel: 4.6, fruto: { cada: [1.1, 1.7], aviso: 0.36, vel: 7.5, dano: 7 }, aullido: null,
+  nombre: 'Mono araña', tipo: 'mono_arana', arte: 'MonoArana', proyectil: '#6b4a2a' };
+function nuevoAullador(x, y, D = AULLADOR) {
+  const AULLADOR = D;
+  return { tipo: D.tipo, D, nombre: AULLADOR.nombre, x, y, z: 0, vz: 0, gravedad: true, vida: vidaComun(AULLADOR.vida), max: vidaComun(AULLADOR.vida), r: AULLADOR.r,
     fx: -1, fy: 0, kx: 0, ky: 0, estado: 'reposo', t: 0, anim: 'Reposo', ta: Math.random(), destello: 0, muriendo: 0, cdEsquiva: 0, invul: 0,
-    aulla: AULLADOR.aullido.cada * (0.4 + Math.random() * 0.6), esquivar: esquivarSaltando,
+    aulla: AULLADOR.aullido ? AULLADOR.aullido.cada * (0.4 + Math.random() * 0.6) : Infinity, esquivar: esquivarSaltando,
     ruptura: { escudo: 2, seg: 2.5, debil: ['Tierra'], nombre: AULLADOR.nombre },
     alHerir(e) { e.dano = 0.2; if (e.estado === 'reposo') { e.estado = 'sentado'; e.t = 0.5; } },
     alMorir(e) { e.muriendo = 0.9; quitarAvisosDe(e); },
     actualizar: actualizarAullador, dibujar: dibujarAullador };
 }
+const nuevoMonoArana = (x, y) => nuevoAullador(x, y, ARANA);
 function actualizarAullador(e, dt) {
-  const j = juego.jugador, A = AULLADOR, d = dist(e, j), l = d || 1;
+  const j = juego.jugador, A = e.D, d = dist(e, j), l = d || 1;
   for (const k of ['destello', 'dano', 'invul', 'cdEsquiva', 'aturdido']) e[k] = Math.max(0, (e[k] || 0) - dt);
   e.ta += dt; e.t -= dt; e.aulla -= dt;
   mover(e, e.kx * dt, e.ky * dt, e.r); e.kx *= 0.85; e.ky *= 0.85;
@@ -356,7 +369,7 @@ function actualizarAullador(e, dt) {
     mira(); ponerAnim(e, e.dano > 0 ? 'Dano' : 'Reposo');
     if (d < A.huye) return huirAullador(e);
     if (d > A.distancia[1] + 1) { e.estado = 'acerca'; return; }
-    if (e.aulla <= 0 && d < A.aullido.radio + 1 && !juego.enemigos.some((o) => o !== e && o.tipo === 'aullador' && o.estado === 'avisaAullido')) {
+    if (A.aullido && e.aulla <= 0 && d < A.aullido.radio + 1 && !juego.enemigos.some((o) => o !== e && o.tipo === 'aullador' && o.estado === 'avisaAullido')) {
       e.estado = 'avisaAullido'; e.t = A.aullido.aviso; ponerAnim(e, 'Aviso');
       marca('anillo', e.x, e.y, A.aullido.radio, A.aullido.aviso, (m) => {
         if (e.vida <= 0) return;
@@ -374,7 +387,7 @@ function actualizarAullador(e, dt) {
     mira();
     if (!e.solto && e.t < A.fruto.aviso * 0.35) {
       e.solto = true; sonar('disparo');
-      juego.disparos.push({ x: e.x + e.fx * 0.3, y: e.y + e.fy * 0.3, vx: e.fx * A.fruto.vel, vy: e.fy * A.fruto.vel, t: 2, golpe: A.fruto.dano, color: '#d9892c', z: 0.7 });
+      juego.disparos.push({ x: e.x + e.fx * 0.3, y: e.y + e.fy * 0.3, vx: e.fx * A.fruto.vel, vy: e.fy * A.fruto.vel, t: 2, golpe: A.fruto.dano, color: A.proyectil, z: 0.7 });
     }
     if (e.t <= 0) { e.estado = 'sentado'; e.t = A.fruto.cada[0] + Math.random() * (A.fruto.cada[1] - A.fruto.cada[0]); }
     return;
@@ -391,16 +404,16 @@ function actualizarAullador(e, dt) {
 }
 // Huye a un punto a su distancia, del lado contrario al jugador (o de lado si atrás hay muro).
 function huirAullador(e) {
-  const j = juego.jugador, l = dist(e, j) || 1, ux = (e.x - j.x) / l, uy = (e.y - j.y) / l, D = AULLADOR.distancia[0] + 0.8;
+  const j = juego.jugador, l = dist(e, j) || 1, ux = (e.x - j.x) / l, uy = (e.y - j.y) / l, D = e.D.distancia[0] + 0.8;
   const opciones = [[ux, uy], [-uy, ux], [uy, -ux]].map(([a, b]) => ({ x: j.x + a * D, y: j.y + b * D })).filter((p) => !bloqueado(p.x, p.y, e.r));
   e.meta = opciones[0] || { x: e.x + ux * 2, y: e.y + uy * 2 }; e.estado = 'huye'; e.t = 1.6;
 }
 function dibujarAullador(e) {
   const muerto = e.vida <= 0;
   if (muerto && e.muriendo <= 0) return;
-  const n = muerto ? cuadroAnimal('Aullador', 'Muerte', 0.9 - e.muriendo, true)
-    : e.anim === 'Lanza' ? `Aullador_Lanza_${1 + Math.min(4, Math.floor((1 - Math.max(0, e.t) / AULLADOR.fruto.aviso) * 5))}`
-    : cuadroAnimal('Aullador', e.anim, e.ta, e.anim === 'Aviso');
+  const a = e.D.arte, n = muerto ? cuadroAnimal(a, 'Muerte', 0.9 - e.muriendo, true)
+    : e.anim === 'Lanza' ? `${a}_Lanza_${1 + Math.min(4, Math.floor((1 - Math.max(0, e.t) / e.D.fruto.aviso) * 5))}`
+    : cuadroAnimal(a, e.anim, e.ta, e.anim === 'Aviso');
   elipse(e.x, e.y, 0.27, '#0006', null, e.suelo ?? 0);
   const filtro = e.destello > 0 ? 'brightness(2.6)' : e.roto > 0 ? ROTO_FILTRO : null;
   dibujar(n, e.x, e.y, e.z || 0, { espejo: e.fx < 0, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null, ...movAnimal(e, 'Aullador') });
@@ -644,3 +657,58 @@ function dibujarPejelagarto(e) {
   }
   if (!muerto && e.vida < e.max) barraMini(e, 0.6 + (e.z || 0));
 }
+
+// ---------- Tucán pico canoa (Ramphastos sulfuratus): enemigo volador (etapa 46, selva de Palenque) ----------
+// Vuela en círculo a tu alrededor a 1 m de altura; cada tanto alza el pico, marca una franja hacia ti y se lanza en picada
+// por ella (te hiere si sigues dentro al acabar el aviso). Tras la picada vuelve a subir. Poca vida. D: especie de la
+// selva de Chiapas; I: que ataque (los tucanes no atacan a las personas; aquí lo empuja la Sombra, F).
+const TUCAN = { vida: 22, r: 0.28, alto: 0.95, vel: 2.6, alerta: 7, distancia: 3.4, espera: [1.4, 2.3],
+  picada: { aviso: 0.6, largo: 4.2, ancho: 0.8, dur: 0.4, dano: 8 }, nombre: 'Tucán pico canoa' };
+function nuevoTucan(x, y) {
+  return { tipo: 'tucan', nombre: TUCAN.nombre, x, y, z: TUCAN.alto, vida: vidaComun(TUCAN.vida), max: vidaComun(TUCAN.vida), r: TUCAN.r,
+    fx: 1, fy: 0, kx: 0, ky: 0, estado: 'reposo', t: 0, anim: 'Vuela', ta: Math.random(), destello: 0, muriendo: 0, cdEsquiva: 0, invul: 0, giro: Math.random() < 0.5 ? 1 : -1,
+    ruptura: { escudo: 2, seg: 2.5, debil: ['Tierra'], nombre: TUCAN.nombre },
+    alHerir(e) { e.dano = 0.2; if (e.estado === 'reposo') { e.estado = 'ronda'; e.t = 0.6; } },
+    alMorir(e) { e.muriendo = 0.9; quitarAvisosDe(e); },
+    actualizar: actualizarTucan, dibujar: dibujarTucan };
+}
+function actualizarTucan(e, dt) {
+  const j = juego.jugador, T = TUCAN, d = dist(e, j), l = d || 1;
+  for (const k of ['destello', 'dano', 'invul', 'cdEsquiva', 'aturdido']) e[k] = Math.max(0, (e[k] || 0) - dt);
+  e.ta += dt; e.t -= dt;
+  mover(e, e.kx * dt, e.ky * dt, e.r); e.kx *= 0.85; e.ky *= 0.85;
+  if (e.vida <= 0) { e.z = Math.max(e.suelo ?? 0, e.z - 3 * dt); return; } // cae al suelo
+  const vuelo = (e.suelo ?? 0) + T.alto + 0.08 * Math.sin(e.ta * 3);
+  if (e.aturdido > 0) { ponerAnim(e, 'Dano'); e.z += (vuelo - 0.4 - e.z) * Math.min(1, dt * 4); return; }
+  if (e.estado === 'reposo') { ponerAnim(e, 'Vuela'); e.z = vuelo; if (d < T.alerta && j.vida > 0) { e.estado = 'ronda'; e.t = 0.8; } return; }
+  if (j.vida <= 0) { ponerAnim(e, 'Vuela'); return; }
+  if (e.estado === 'ronda') {
+    e.fx = (j.x - e.x) / l; e.fy = (j.y - e.y) / l;
+    const r = d > T.distancia + 0.4 ? 1 : d < T.distancia - 0.6 ? -1 : 0, vx = e.fx * r - e.fy * e.giro * 0.9, vy = e.fy * r + e.fx * e.giro * 0.9;
+    const x0 = e.x, y0 = e.y; mover(e, vx * T.vel * dt, vy * T.vel * dt, e.r);
+    if (Math.hypot(e.x - x0, e.y - y0) < T.vel * dt * 0.2) e.giro *= -1; // choca: rodea por el otro lado
+    e.z += (vuelo - e.z) * Math.min(1, dt * 4); ponerAnim(e, e.dano > 0 ? 'Dano' : 'Vuela');
+    if (e.t <= 0 && d < T.picada.largo) {
+      const P = T.picada; e.ax = e.fx; e.ay = e.fy; e.estado = 'avisa'; e.t = P.aviso; ponerAnim(e, 'Aviso');
+      marca('franja', e.x, e.y, P.ancho, P.aviso, (m) => { if (e.vida > 0 && enMarca(m, j)) herirJugador(P.dano, e, 0.8); }, { dx: e.ax, dy: e.ay, largo: P.largo, dueno: e });
+    }
+    return;
+  }
+  if (e.estado === 'avisa') { e.z = vuelo; if (e.t <= 0) { e.estado = 'picada'; e.t = T.picada.dur; e.desde = { x: e.x, y: e.y }; ponerAnim(e, 'Picada'); sonar('esquiva'); } return; }
+  if (e.estado === 'picada') {
+    const p = 1 - Math.max(0, e.t) / T.picada.dur, nx = e.desde.x + e.ax * T.picada.largo * p, ny = e.desde.y + e.ay * T.picada.largo * p;
+    if (!bloqueado(nx, ny, e.r)) { e.x = nx; e.y = ny; }
+    e.z = (e.suelo ?? 0) + T.alto - Math.sin(Math.PI * p) * (T.alto - 0.3);
+    if (e.t <= 0) { e.estado = 'ronda'; e.t = T.espera[0] + Math.random() * (T.espera[1] - T.espera[0]); }
+  }
+}
+function dibujarTucan(e) {
+  const muerto = e.vida <= 0;
+  if (muerto && e.muriendo <= 0) return;
+  const n = muerto ? cuadroAnimal('Tucan', 'Muerte', 0.9 - e.muriendo, true) : cuadroAnimal('Tucan', e.anim, e.ta);
+  elipse(e.x, e.y, 0.2, '#0005', null, e.suelo ?? 0); // su sombra en el suelo, para saber dónde está
+  const filtro = e.destello > 0 ? 'brightness(2.6)' : e.roto > 0 ? ROTO_FILTRO : null;
+  dibujar(n, e.x, e.y, e.z || 0, { espejo: (e.estado === 'picada' ? e.ax : e.fx) < 0, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null, ...movAnimal(e, 'Guacamaya') });
+  if (!muerto && e.vida < e.max) barraMini(e, 0.9 + (e.z || 0));
+}
+console.assert(ANIMALES.Jaguar && ANIMALES.MonoArana && ANIMALES.Tucan?.Picada, 'Fauna de Chiapas: cuadros pintados');

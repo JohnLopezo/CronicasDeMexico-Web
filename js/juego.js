@@ -336,7 +336,7 @@ async function cargarRegion(id, punto, vida) {
   juego.enemigos.forEach((e, i) => { e.clave = `${id}:${e.tipo}:${i}`; }); // para no dar lo mismo cada vez que reaparece
   if (/^p\d$/.test(id)) entregar(`REC_descubrir_piso${id[1]}`, `descubrir.mazmorra_piso${id[1]}`);
   for (const t of juego.portales) t.armado = false; // no se activa hasta salir de él (se aparece cerca)
-  const pre = [`Guerrero_${guardianActual().nombre}_`, 'Enemigo_', 'Vasija_Rompible_', 'Trampa_Pinchos_', 'Placa_Presion_', 'Brasero_Piedra_', 'Cristal_Memoria_', 'Estera_Tejida_', 'Cabeza_Piedra_', id === 'ciudad' ? 'Npc_' : 'Npc_Guerrero_', ...(id === 'p3' ? ['Guardian_Piedra_'] : []), 'Jefe_', ...(id === 'n1_5' ? ['Nauyaca_'] : []), ...(esGenerado(id) || id === 'palenque' ? ['Pecari_', 'Tapir_', 'Ocelote_', 'Aullador_', 'Armadillo_'] : [])];
+  const pre = [`Guerrero_${guardianActual().nombre}_`, 'Enemigo_', 'Vasija_Rompible_', 'Trampa_Pinchos_', 'Placa_Presion_', 'Brasero_Piedra_', 'Cristal_Memoria_', 'Estera_Tejida_', 'Cabeza_Piedra_', id === 'ciudad' ? 'Npc_' : 'Npc_Guerrero_', ...(id === 'p3' ? ['Guardian_Piedra_'] : []), 'Jefe_', ...(id === 'n1_5' ? ['Nauyaca_'] : []), ...(esGenerado(id) || id === 'palenque' ? ['Pecari_', 'Tapir_', 'Ocelote_', 'Aullador_', 'Armadillo_', 'Jaguar_', 'MonoArana_', 'Tucan_'] : [])];
   await precargar([...nombresDeRegion(), ...Object.keys(SPRITES).filter((n) => pre.some((p) => n.startsWith(p))), 'Fragmento_Memoria_01', 'Santuario_Vida_02', 'Ofrenda_01', 'Ofrenda_02', 'Ofrenda_03', 'Ofrenda_04', 'Basalto_Agrietado_01']);
   $('fundido').style.opacity = 0;
   juego.viajando = false;

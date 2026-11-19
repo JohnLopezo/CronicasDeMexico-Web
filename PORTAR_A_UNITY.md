@@ -511,3 +511,10 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
 - Armero maya: `NpcData` «Tallador de pedernal» en `Maya_Aldea` con su catálogo (`PRECIO_ARMERO`) y compras guardadas aparte
   (`armero_maya.compradas`).
 - La defensa del escudo sale del escudo que se lleve (`escudoLlevado`), no de un único escudo.
+
+## 33. Fauna de Chiapas (etapa 46)
+
+- Tres `EnemyData` nuevos para `Maya_Palenque`: jaguar (comportamiento del ocelote con los valores de `JAGUAR_SELVA`),
+  mono araña (del aullador sin aullido, `ARANA`) y tucán pico canoa (`TUCAN`: vuela a 1 m, franja avisada y picada). Sprites:
+  los PNG de `arte/Animales/Jaguar_*`, `MonoArana_*` y `Tucan_*` (de `herramientas/animales.mjs`), o fichas nuevas.
+- Lo que el ocelote y el aullador tengan en Unity (§8) debe leer sus valores de datos para reutilizarse así.

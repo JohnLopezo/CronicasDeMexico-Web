@@ -53,6 +53,27 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 46 (2026-11-19): fauna de Chiapas en la selva de Palenque (`js/animales.js`, `herramientas/animales.mjs`)
+
+Tres animales nuevos pintados por código (`node herramientas/animales.mjs`) y el tapir, que ya existía, en Palenque:
+
+| Animal | Cómo se hizo | Cómo pelea |
+|---|---|---|
+| **Jaguar** (*Panthera onca*) | esqueleto y poses del ocelote a escala 1,05 (el ocelote, 0,72); rosetas grandes con punto dentro, pelo dorado | como el ocelote, pero élite: 95 de vida, salto de 5 m (17 de daño), zarpazos de 10; esquiva menos; débil al Agua |
+| **Mono araña** (*Ateles geoffroyi*) | esqueleto del aullador; pardo rojizo, extremidades oscuras, cara clara | grupo de tres; no aúlla, lanza ramas (7) más a menudo y huye más rápido |
+| **Tucán pico canoa** (*Ramphastos sulfuratus*) | nuevo: cuerpo, cabeza, pico verde con franja naranja y punta roja, y alas que aletean | vuela en círculo a 1 m; marca una franja y se lanza en picada (8) |
+| Tapir (*Tapirus bairdii*) | el de la etapa 29 | embiste y pisotea, como en la mazmorra |
+
+- El ocelote y el aullador ya no leen sus constantes directamente: cada uno lleva sus datos (`e.D`), así el jaguar
+  (`JAGUAR_SELVA`) y el mono araña (`ARANA`) usan la misma lógica con sus valores. En la mazmorra todo sigue igual.
+- Palenque: serpiente y tucán en el sendero, monos araña al cruzar el puente, tapir y aulladores en la plaza, el jaguar
+  junto al templo y otro tucán.
+- **Fidelidad:** D, las cuatro especies viven en la selva de Chiapas; los monos araña arrojan ramas a quien se acerca. I y F:
+  que el jaguar y el tucán ataquen (los empuja la Sombra).
+
+Prueba: `herramientas/dificultad/etapa46.mjs` (13 comprobaciones: cuántos hay, cada uno ataca, recibe daño y muere; el
+ocelote y el aullador siguen igual). Hojas de revisión: `node herramientas/animales.mjs <ruta>/hoja.png`.
+
 ## Etapa 45 (2026-11-19): armas mayas en el armero de Lakamha' (`js/armas.js`)
 
 Seis armas mayas del Clásico con `cultura: 'maya'` en `ARMAS`. Solo las vende el **tallador de pedernal**, habitante nuevo

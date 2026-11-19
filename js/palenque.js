@@ -25,7 +25,8 @@ const PALENQUE = {
     llegada: { x: -14, y: 0 }, memoria: { x: -15.5, y: 2.3 }, memoria_llegada: { x: -15.5, y: 1.2 }, portal: { x: -16.2, y: -1.8 }, desde_aldea: { x: 21.3, y: 0 }, a_aldea: { x: 23.2, y: 0 },
   },
   // Fauna de la selva de Palenque (lejos de la llegada): [tipo, x, y].
-  fauna: [['Serpiente', -6, 0], ['ocelote', 4, 0], ['aullador', 9, -3], ['Guacamaya', 16, -2], ['Serpiente', 17, 3]],
+  // Etapa 46: fauna de Chiapas (js/animales.js): mono araña en grupo, tucán, jaguar en la plaza y tapir junto al río.
+  fauna: [['Serpiente', -6, 0], ['tucan', -9, 0.5], ['mono_arana', 4, 0], ['tapir', 9, -4], ['aullador', 14, -4], ['jaguar_selva', 14, 2], ['tucan', 17, -1]],
 };
 function regionPalenque() {
   const P = PALENQUE, tipo = new Map(), rnd = azar(hash('palenque'));
@@ -159,7 +160,8 @@ function poblarPalenque(P, E, O, I, T, santuarioMemoria) {
   T.push({ ...P.a_aldea, a: 'aldea_maya', punto: 'llegada' }); // la aldea (js/aldea_maya.js)
   poblarHojas('palenque', E, O, I);
   for (const [tipo, x, y] of PALENQUE.fauna)
-    E.push(...(tipo === 'ocelote' ? [nuevoOcelote(x, y)] : tipo === 'aullador' ? [nuevoAullador(x, y), nuevoAullador(x + 1.2, y - 0.8)] : [nuevaFauna(tipo, x, y, false)]));
+    E.push(...({ ocelote: () => [nuevoOcelote(x, y)], aullador: () => [nuevoAullador(x, y), nuevoAullador(x + 1.2, y - 0.8)], tapir: () => [nuevoTapir(x, y)], jaguar_selva: () => [nuevoJaguarSelva(x, y)],
+      mono_arana: () => [nuevoMonoArana(x, y), nuevoMonoArana(x + 1.1, y + 0.8), nuevoMonoArana(x + 1.2, y - 0.8)], tucan: () => [nuevoTucan(x, y)] }[tipo] || (() => [nuevaFauna(tipo, x, y, false)]))());
 }
 
 // Autocomprobación: los puntos de llegada, del portal y del tablero están libres.

@@ -5,6 +5,10 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 46 (2026-11-19):** fauna de Chiapas en Palenque: jaguar (el ocelote en grande, `JAGUAR_SELVA`), mono araña
+  (aullador sin aullido que lanza ramas, `ARANA`), tucán pico canoa (vuela y se lanza en picada, `TUCAN`) y el tapir. Ocelote y
+  aullador leen sus datos de `e.D`. Prueba: `etapa46.mjs`. **Siguiente:** 47 mapa de la región; luego la mazmorra maya.
+
 - **Etapa 45 (2026-11-19):** armas mayas del Clásico (`cultura: 'maya'` en `ARMAS`): lanza, hacha y cuchillo de pedernal,
   átlatl, cerbatana y escudo flexible, solo en el armero de Lakamha' (tallador de pedernal; `armero_maya.*`); la mazmorra
   olmeca sigue con las olmecas (`armasDe`). Prueba: `etapa45.mjs`. **Siguiente:** 46 fauna de Chiapas, 47 mapa, mazmorra maya.
@@ -68,7 +72,7 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 - **Etapas anteriores:** 34 música prehispánica (`js/musica.js`); 32-33 dificultad con perfil celular (`mapas.mjs`,
   `jefes.mjs`); 30-31 controles táctiles tipo Soul Knight; 26-29 efectos de golpe y animación por partes.
 - **Siguiente propuesta:** que el usuario confirme en el celular; pasar a Unity según `PORTAR_A_UNITY.md` (secciones 21-24 nuevas).
-- **Deseo pendiente del usuario:** mejor animación para los enemigos actuales; más animales de Veracruz/Tabasco.
+- **Deseo pendiente del usuario:** mejor animación para los enemigos actuales; más animales (de Chiapas ya: etapa 46).
 - **Deudas:** `/ponytail-debt` lista los `shortcut:` del código.
 
 ## Flujo de una etapa (para gastar pocos tokens)

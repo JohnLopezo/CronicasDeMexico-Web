@@ -817,6 +817,89 @@ const ANIMACIONES_PEJE = {
   Muerte: { cuadros: 6, fps: 8, pose: (A, f) => posePeje(0, { vuelco: -Math.PI * suave(0, 0.85, f), curva: 0.25 * (1 - f), boca: 0.3, aleteo: 0, muerto: f > 0.5 }) }, // queda panza arriba
 };
 
+// ---------- Etapa 46: fauna de Chiapas (selva de Palenque) ----------
+// Jaguar (Panthera onca): el esqueleto y las poses del ocelote, pintado más grande (escala) y con rosetas grandes con
+// puntos dentro (D), pelo dorado, manchas macizas en patas y cabeza, cola con anillos solo al final.
+const JAGUAR = {
+  ...OCELOTE,
+  pelo: ramp('#4a3010', '#6e4818', '#93652a', '#b5843a', '#d1a24e', '#e6bd6a'),
+  centro: ramp('#7a5222', '#9a6a2c', '#b8843a'),
+  color(p, q) {
+    const g = hash3(q.x, q.y, 19);
+    if (p.parte === 'pata') return hash3(Math.round(p.t * 6), Math.round(q.fx * 2), p.grupo + 7) > 0.68 ? tono(this.negro, q.luz, q.x, q.y) : tono(this.pelo, q.luz * 0.95, q.x, q.y);
+    if (p.parte === 'cola') return (p.t > 0.68 && Math.floor(p.t * 9) % 2) || p.t > 0.93 || hash3(Math.round(p.t * 10), 0, 3) > 0.75 ? tono(this.negro, q.luz, q.x, q.y) : tono(this.pelo, q.luz, q.x, q.y);
+    if (p.parte === 'cabeza') {
+      if (p.t > 0.93 && q.fy > -0.2) return this.nariz;
+      if (q.fy > 0.42) return tono(this.blanco, q.luz, q.x, q.y);
+      if (g > 0.84) return tono(this.negro, q.luz, q.x, q.y); // manchas pequeñas de la cabeza
+      return tono(this.pelo, q.luz, q.x, q.y);
+    }
+    const u = p.u + (q.fx * q.rp) / 34;
+    if (q.fy > 0.55) return hash3(Math.round(u * 9), Math.round(q.fy * 2), 6) > 0.72 ? tono(this.negro, q.luz, q.x, q.y) : tono(this.blanco, q.luz, q.x, q.y);
+    const r = this.roseta(u * 4.2, (q.fy + 0.62) * 1.35, 31);
+    if (r === 'anillo') return tono(this.negro, q.luz, q.x, q.y);
+    if (r === 'centro') return hash3(Math.round(u * 26), Math.round(q.fy * 8), 5) > 0.82 ? tono(this.negro, q.luz, q.x, q.y) : tono(this.centro, q.luz, q.x, q.y); // el punto dentro de la roseta
+    return tono(this.pelo, q.luz * (g > 0.93 ? 1.1 : 1), q.x, q.y);
+  },
+};
+// Mono araña (Ateles geoffroyi): el esqueleto del aullador; pardo rojizo con extremidades y cabeza oscuras y la cara clara
+// alrededor de los ojos (D). Rompe y arroja ramas (D: lo hace ante intrusos). No aúlla.
+const ARANA = {
+  ...MONO,
+  negro: ramp('#140d09', '#22160f', '#331f14', '#47291a', '#5c3622', '#70442b'),
+  manto: ramp('#5a2e17', '#7a4020', '#99552c', '#b56c3a', '#cc8650'), cara: ramp('#5c4a40', '#7a665a', '#9a8576', '#b8a493'),
+  fruto: ramp('#3a2616', '#5a3d22', '#7a5630', '#9a7040'), // la rama
+  color(p, q) {
+    if (p.parte === 'fruto') return tono(this.fruto, q.luz, q.x, q.y);
+    if (p.parte === 'pata' || p.parte === 'cola') return tono(this.negro, Math.min(1, q.luz * (p.lejos ? 1 : 1.3) + 0.06), q.x, q.y);
+    if (p.parte === 'cabeza') return p.t > 0.55 && q.fy > -0.35 ? tono(this.cara, q.luz, q.x, q.y) : tono(this.negro, q.luz, q.x, q.y);
+    return q.fy < -0.55 ? tono(this.negro, q.luz * 1.1, q.x, q.y) : tono(this.manto, q.luz, q.x, q.y);
+  },
+};
+const ANIMACIONES_ARANA = Object.fromEntries(['Reposo', 'Anda', 'Corre', 'Aviso', 'Lanza', 'Dano', 'Muerte'].map((k) => [k, ANIMACIONES_MONO[k]]));
+// Tucán pico canoa (Ramphastos sulfuratus): negro, pecho y cara amarillos, rojo bajo la cola, patas azules y el pico enorme
+// verde con una franja naranja y la punta roja (D). Cuerpo, cabeza y pico de discos; alas que aletean (sin patas: vuela).
+const TUCAN = {
+  negro: ramp('#08080a', '#141418', '#202026', '#2e2e36', '#3e3e48'), amarillo: ramp('#8a6a10', '#b8901a', '#dcb428', '#f2d24a', '#fbe680'),
+  rojo: ramp('#6a1010', '#9a1c18', '#c42a22', '#e04030'), verde: ramp('#2e5a1a', '#4a8228', '#6aa83a', '#8cc84e'), naranja: ramp('#9a4a10', '#c86a18', '#e88a28'),
+  contorno: hex('#050506'), separa: hex('#2a2a30'), ojo: hex('#0a0a0a'), anillo: hex('#a8d84a'), brillo: hex('#f4f0e0'),
+  color(p, q) {
+    if (p.parte === 'pico') return p.t > 0.86 ? tono(this.rojo, q.luz, q.x, q.y) : q.fy < -0.3 ? tono(this.naranja, q.luz, q.x, q.y) : tono(this.verde, q.luz, q.x, q.y);
+    if (p.parte === 'cabeza') return q.fy > 0.05 || (p.t > 0.5 && q.fx > 0.3) ? tono(this.amarillo, q.luz, q.x, q.y) : tono(this.negro, q.luz, q.x, q.y);
+    if (p.parte === 'cuerpo') { if (p.u > 0.72 && q.fy > -0.25) return p.u < 0.78 ? tono(this.rojo, q.luz, q.x, q.y) : tono(this.amarillo, q.luz, q.x, q.y); if (p.u < 0.16 && q.fy > 0.25) return tono(this.rojo, q.luz, q.x, q.y); }
+    return tono(this.negro, q.luz * (p.parte === 'ala' && p.lejos ? 0.8 : 1), q.x, q.y);
+  },
+  rasgos(L, pose, P) {
+    const pon = (x, y, c) => { x = Math.round(x); y = Math.round(y); if (c && x >= 0 && y >= 0 && x < L.w && y < L.h) { L.col[y * L.w + x] = c; L.parte[y * L.w + x] = 3; } };
+    if (pose.caido > 0.85) return;
+    const o = P(pose.cabeza[Math.round(pose.cabeza.length * 0.6)]);
+    pon(o[0] - 1, o[1] - 1, this.anillo); pon(o[0] + 1, o[1] - 1, this.anillo); pon(o[0], o[1] - 2, this.anillo); pon(o[0], o[1], this.anillo); pon(o[0], o[1] - 1, this.ojo);
+  },
+};
+// aletea (0-1) abre las alas al ritmo; picada (0-1) baja la cabeza y pliega; caido (0-1) cae al suelo.
+function poseTucan(f, { aletea = 1, picada = 0, caido = 0, alza = 0 } = {}) {
+  const z0 = 0.36 - caido * 0.3 + (aletea ? 0.03 * Math.sin(2 * Math.PI * f) : 0), baja = picada * 0.14;
+  const cuerpo = cadena({ x: -0.15, y: 0, z: z0 + 0.04 + baja * 0.6 }, { x: 0.1, y: 0, z: z0 + 0.04 - baja }, 9, 0.07, 0.085).map((p, i, a) => ({ ...p, u: i / (a.length - 1), r: p.r * (1 + 0.2 * Math.sin(Math.PI * p.t)) }));
+  const nuca = { x: 0.13, y: 0, z: z0 + 0.1 - baja * 1.2 + alza * 0.04 };
+  const cabeza = cadena(nuca, { x: 0.2, y: 0, z: nuca.z + 0.01 }, 5, 0.06, 0.055).map((p) => ({ ...p, parte: 'cabeza' }));
+  const extra = cadena({ x: 0.22, y: 0, z: nuca.z - 0.005 }, { x: 0.47, y: 0, z: nuca.z - 0.05 - picada * 0.1 + alza * 0.05 }, 11, 0.048, 0.016).map((p) => ({ ...p, parte: 'pico', grupo: 6 }));
+  extra.push(...cadena({ x: -0.15, y: 0, z: z0 + 0.04 + baja * 0.6 }, { x: -0.36, y: 0, z: z0 + 0.0 + baja + 0.03 * Math.sin(2 * Math.PI * f) }, 6, 0.045, 0.035).map((p) => ({ ...p, parte: 'cola', grupo: 5 })));
+  for (const y of [-0.08, 0.08]) { // alas: del hombro hacia fuera y arriba o abajo; plegadas a lo largo del cuerpo
+    const a = aletea * (1 - picada) ? 1.05 * Math.sin(2 * Math.PI * f) * aletea : -1.35, l = 0.27, s = Math.sign(y);
+    const tip = aletea * (1 - picada) ? { x: -0.02, y: y + s * l * Math.cos(a) * 0.55, z: z0 + 0.1 + l * Math.sin(a) } : { x: -0.2, y: y + s * 0.01, z: z0 + 0.06 };
+    const ala = cadena({ x: 0.05, y, z: z0 + 0.09 - baja * 0.5 }, tip, 6, 0.055, 0.025).map((p) => ({ ...p, parte: 'ala', lejos: y > 0, grupo: y > 0 ? 3 : 4 }));
+    extra.push(...ala);
+  }
+  return { cuerpo, cabeza, patas: [], extra, caido, vuelco: caido * 1.1 };
+}
+const ANIMACIONES_TUCAN = {
+  Vuela: { cuadros: 8, fps: 12, pose: (A, f) => poseTucan(f) },
+  Aviso: { cuadros: 4, fps: 14, pose: (A, f) => poseTucan(f, { alza: 1 }) },
+  Picada: { cuadros: 4, fps: 12, pose: (A, f) => poseTucan(f, { picada: 1, aletea: 0 }) },
+  Dano: { cuadros: 2, fps: 10, pose: (A, f) => poseTucan(f * 0.5, { alza: 0.6 }) },
+  Muerte: { cuadros: 6, fps: 8, pose: (A, f) => poseTucan(0, { aletea: 0, caido: suave(0, 0.8, f) }) },
+};
+
 // ---------- Salida ----------
 const ANIMALES = [
   // escala: el Guardián jugable mide 1,12 m (unos 2/3 de una persona); los animales, modelados en metros reales, se reducen
@@ -828,6 +911,10 @@ const ANIMALES = [
   { nombre: 'Aullador', A: MONO, animaciones: ANIMACIONES_MONO, w: 80, h: 72, ox: 42, oy: 60, escala: 0.72, pintar: pintarCuadrupedo },
   { nombre: 'Armadillo', A: ARMADILLO, animaciones: ANIMACIONES_ARMADILLO, w: 72, h: 52, ox: 36, oy: 40, escala: 0.62, pintar: pintarCuadrupedo },
   { nombre: 'Pejelagarto', A: PEJE, animaciones: ANIMACIONES_PEJE, w: 100, h: 60, ox: 48, oy: 42, escala: 0.72, pintar: pintarCuadrupedo },
+  // Etapa 46, Chiapas: el jaguar, con el esqueleto del ocelote a mayor escala (los machos llegan a 1,8 m sin la cola).
+  { nombre: 'Jaguar', A: JAGUAR, animaciones: ANIMACIONES_OCELOTE, w: 96, h: 72, ox: 48, oy: 58, escala: 1.05, pintar: pintarCuadrupedo },
+  { nombre: 'MonoArana', A: ARANA, animaciones: ANIMACIONES_ARANA, w: 80, h: 72, ox: 42, oy: 60, escala: 0.74, pintar: pintarCuadrupedo },
+  { nombre: 'Tucan', A: TUCAN, animaciones: ANIMACIONES_TUCAN, w: 80, h: 60, ox: 36, oy: 52, escala: 0.8, pintar: pintarCuadrupedo },
 ];
 mkdirSync(join(aqui, 'arte/Animales'), { recursive: true });
 const datos = {}, hoja = [];
