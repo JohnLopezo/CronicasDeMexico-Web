@@ -53,6 +53,24 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 49 (2026-11-19): mazmorra maya, piso 2 «las cámaras de estuco» (`js/mazmorra_maya.js`, `js/niveles.js`, `js/pisos.js`)
+
+- **La bajada del 1-4 se abre:** tras el cocodrilo de pantano se baja al 2-1 (`m2_1`…`m2_4`, clave 12). Al llegar avanza la misión
+  **MP_MAY_03**, que ahora sigue con «vence a lo que vive en la oscuridad» y «sube hacia el observatorio (próximamente)».
+- **Piso 2, cámaras de estuco** (`losaEstuco`, `muroEstuco`): losas de estuco crema gastadas, con grietas, desconchones y fajas rojas;
+  muros de estuco rojo con un tablero de glifos y la bóveda en saledizo; fondo oscuro con escombros. Seco: sin charca ni
+  pejelagarto. Enemigos: espíritus, murciélagos, avispas, serpientes, monos y ocelotes (presupuesto 22-26). Santuario de Vida
+  en el 2-3, estrados y cofres con armas mayas ★★★.
+- **Sub-jefe del 2-4: el murciélago de la muerte** (`murcielagoEstuco`): el murciélago vampiro de Unity al ×2,8, con 520 de vida,
+  mordida de 14 que le devuelve vida y chillido que frena; débil a la Luz y al Viento. Da 280 de experiencia, 2 semillas y jade.
+  La bajada del 2-4 avisa que el piso 3 (el observatorio) viene en la etapa siguiente.
+- Fidelidad: D, el murciélago (sotz') es un «way» de las vasijas del Clásico y la Casa de los Murciélagos del Popol Vuh;
+  D, el estuco pintado de rojo de Palenque. I: los tableros de glifos en estas cámaras. F: el murciélago gigante.
+
+Prueba: `herramientas/dificultad/etapa49.mjs` (11 comprobaciones: del 1-4 al 2-1, misión, piso 12, estrado, santuario,
+murciélago con su barra, mapa, aviso del 2-4 y caída). `etapa48.mjs` ahora comprueba que la bajada del 1-4 lleva al 2-1.
+`recorrido.mjs` sin `[assert]`. Sin medir con el bot la pelea del murciélago.
+
 ## Etapa 48 (2026-11-19): mazmorra maya, piso 1 «los canales del Otolum» (`js/mazmorra_maya.js`, `js/niveles.js`)
 
 Plan acordado con el usuario: la mazmorra maya tiene **3 pisos de 4 niveles** (canales del Otolum, cámaras de estuco y

@@ -37,8 +37,8 @@ export default async ({ ev, espera, foto, log }) => {
   await limpiar(); await cerrar();
   ok(await ev(`bandera('may.subjefe_1_vencido') && juego.misiones.MP_MAY_03.paso === 2`), `cocodrilo vencido: ${await ev('objetivo()')}`);
   const p = JSON.parse(await ev(`JSON.stringify(juego.portales.find((t) => t.punto === 'llegada_arriba'))`));
-  await ev(`juego.jugador.x = ${p.x - 1.5}; juego.jugador.y = ${p.y}`); await espera(250); await ev(`juego.jugador.x = ${p.x}; juego.jugador.y = ${p.y}`); await espera(400);
-  ok(await ev(`juego.region === 'm1_4' && !!juego.dialogo && juego.dialogo.lineas[0].includes('próxima etapa')`), 'la bajada del 1-4 avisa que el piso 2 viene después'); await cerrar();
+  await ev(`juego.jugador.x = ${p.x - 1.5}; juego.jugador.y = ${p.y}`); await espera(250); await ev(`juego.jugador.x = ${p.x}; juego.jugador.y = ${p.y}`); await espera(1800); await cerrar();
+  ok(await ev(`juego.region === 'm2_1'`), 'la bajada del 1-4 lleva al piso 2 (etapa 49)');
   // Caer en la mazmorra maya: a Palenque, junto al santuario.
   await ev(`juego.jugador.vida = 0`); await espera(2600); await cerrar();
   ok(await ev(`juego.region === 'palenque'`), 'al caer, a Palenque');

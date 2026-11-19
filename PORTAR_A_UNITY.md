@@ -536,3 +536,12 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
   estrado y cofre de esa cultura, calidad +1 en la maya).
 - **Sub-jefe:** el cocodrilo de pantano, un `WildEnemy` con el `EnemyData` del cocodrilo a escala 1,9 y los valores de
   `COCODRILO_PANTANO` (`js/mazmorra_maya.js`), barra de jefe y `ReportOnDefeat` (`vencer:cocodrilo_pantano`). Misión `MP_MAY_03`.
+
+## 36. Mazmorra maya, piso 2 (etapa 49)
+
+- **Escenas:** `Maya_Mazmorra_P2` (o niveles generados `m2_1`…`m2_4`) con el estilo «cámaras de estuco» (estuco crema y rojo,
+  tableros de glifos, bóveda en saledizo; referencia en `losaEstuco`/`muroEstuco`, `js/pisos.js`). Datos del piso en la clave 12
+  de `POBLACION`, `PRESUPUESTO`, `VIDA_NIVEL` y `ESTILO` (`js/niveles.js`).
+- **Sub-jefe:** el murciélago de la muerte, un `WildEnemy` con el `EnemyData` del murciélago a escala 2,8 y los valores de
+  `MURCIELAGO_ESTUCO` (`js/mazmorra_maya.js`), barra de jefe y `ReportOnDefeat` (`vencer:murcielago_estuco`).
+- **Misión:** `MP_MAY_03` suma los pasos `vencer:murcielago_estuco` y `llegar:observatorio`; `llegar:camaras_estuco` al entrar al 2-1.

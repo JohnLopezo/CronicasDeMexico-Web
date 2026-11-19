@@ -5,6 +5,11 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 49 (2026-11-19):** mazmorra maya, piso 2 (las cámaras de estuco, `m2_1`…`m2_4`, clave 12): suelo y muros pintados
+  (`losaEstuco`, `muroEstuco`), sub-jefe murciélago de la muerte en el 2-4 (`murcielagoEstuco`), misión `MP_MAY_03` ampliada.
+  Prueba: `etapa49.mjs`. **Siguiente, etapa 50:** piso 3 «observatorio» (`m3_*`, clave 13) y el Guardián de los Ciclos; abrir la
+  bajada del 2-4 (el texto de `cerrado` en `poblarNivel`). Luego 51: habilidad de agua y cierre del capítulo II.
+
 - **Etapa 48 (2026-11-19):** mazmorra maya, piso 1 (los canales del Otolum, `m1_1`…`m1_4`): entrada por la boca del acueducto
   en la plaza de Palenque (`may.camino_agua`), incursión nueva, generador por cultura (`esMaya`, `pisoDe`, claves 11-13), suelo y
   muros pintados (`losaCanal`, `muroCanal`), sub-jefe cocodrilo de pantano en el 1-4 y misión `MP_MAY_03`. Prueba: `etapa48.mjs`.

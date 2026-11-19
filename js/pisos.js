@@ -19,6 +19,9 @@ const PALETA = {
   // Etapa 48, mazmorra maya piso 1 (los canales del Otolum): caliza húmeda verdosa, musgo, agua en canalillos.
   11: { junta: '#26302c', piedra: ['#7c877c', '#84907f', '#74806f', '#8b9584'], claro: '#a4ae9a', oscuro: '#56615a', cara: '#46514a',
     musgo: ['#3f6b31', '#56853a', '#4a7a36'], agua: '#1d5460', brillo: '#6fb0b0', boveda: '#141a18', estuco: '#8a4a3a' },
+  // Etapa 49, mazmorra maya piso 2 (las cámaras de estuco): estuco crema gastado y estuco pintado de rojo.
+  12: { junta: '#3a2119', piedra: ['#c8b494', '#bfab8b', '#cdbb9d', '#b9a584'], claro: '#e0d2b6', oscuro: '#94806a', cara: '#7e3326',
+    rojo: ['#9b3526', '#a63d2c', '#8c2f22'], rojoClaro: '#c25a40', glifo: '#4a2016', grieta: '#5a4636', boveda: '#1a1210' },
 };
 const px = (g, c, x, y, w = 1, h = 1) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
 const elige = (rnd, a) => a[Math.floor(rnd() * a.length)];
@@ -37,6 +40,7 @@ function pintarLosa(g, piso, ox, oy, l) {
   px(g, P.junta, ox, oy, PPU, PX_Y);
   if (piso === 4) return losaPalenque(g, P, rnd, ox, oy, l);
   if (piso === 11) return losaCanal(g, P, rnd, ox, oy, l);
+  if (piso === 12) return losaEstuco(g, P, rnd, ox, oy, l);
   if (piso === 2) {
     // Dos o cuatro lajas: un corte vertical y un corte horizontal a cada lado, a alturas distintas.
     const cx = 14 + Math.floor(rnd() * 20), cy = [8 + Math.floor(rnd() * 16), 8 + Math.floor(rnd() * 16)];
@@ -143,9 +147,50 @@ function muroCanal(esY, variante) {
   return Object.assign(c, { naturalWidth: c.width, naturalHeight: c.height, complete: true });
 }
 
+// Piso 12 (cámaras de estuco): una losa de estuco por celda, lisa y gastada, con grietas y desconchones; a veces una faja roja
+// (D: Palenque pintaba de rojo el estuco de pisos y muros). Borde de atrás con zócalo rojo; delante, cara roja.
+function losaEstuco(g, P, rnd, ox, oy, l) {
+  px(g, elige(rnd, P.piedra), ox + 1, oy + 1, PPU - 2, PX_Y - 2);
+  px(g, P.claro, ox + 1, oy + 1, PPU - 2, 1); px(g, P.oscuro, ox + 1, oy + PX_Y - 2, PPU - 2, 1);
+  for (let i = 0; i < 10; i++) px(g, rnd() < 0.5 ? P.claro : P.oscuro, ox + 2 + Math.floor(rnd() * (PPU - 4)), oy + 2 + Math.floor(rnd() * (PX_Y - 4)), 2, 1);
+  if (rnd() < 0.35) { let x = ox + 4 + Math.floor(rnd() * 30), y = oy + 3; while (y < oy + PX_Y - 3) { px(g, P.grieta, x, y); x += Math.floor(rnd() * 3) - 1; y++; } } // grieta
+  if (rnd() < 0.2) bola(g, P.oscuro, ox + 10 + rnd() * 28, oy + 8 + rnd() * 16, 4, 2); // desconchón
+  if (rnd() < 0.18) { px(g, elige(rnd, P.rojo), ox, oy + 12, PPU, 6); px(g, P.rojoClaro, ox, oy + 12, PPU, 1); } // faja roja
+  if (l.arriba) { px(g, P.cara, ox, oy - LOSA.matas, PPU, LOSA.matas); px(g, P.rojoClaro, ox, oy - LOSA.matas, PPU, 1); }
+  if (l.abajo) {
+    px(g, P.cara, ox, oy + PX_Y, PPU, LOSA.cara); px(g, P.rojoClaro, ox, oy + PX_Y, PPU, 1);
+    for (let i = 0; i < 4; i++) px(g, P.piedra[3], ox + Math.floor(rnd() * PPU), oy + PX_Y + 2 + Math.floor(rnd() * 10), 3, 2); // el estuco caído deja ver la piedra
+    px(g, P.junta, ox, oy + PX_Y + LOSA.cara - 2, PPU, 2);
+  }
+}
+// Muro de las cámaras: estuco rojo sobre sillares, con un tablero de glifos (I: los muros de los palacios llevaban tableros
+// de estuco modelado; F: estos glifos no dicen nada) y la bóveda en saledizo arriba; desconchones que dejan ver la piedra.
+function muroEstuco(esY, variante) {
+  const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[12], rnd = azar(1200 + variante + (esY ? 50 : 0));
+  c.width = 64; c.height = 112;
+  const [x0, x1, y0, y1] = esY ? [26, 37, 20, 108] : [8, 55, 40, 97];
+  px(g, P.junta, x0 - 1, y0 - 1, x1 - x0 + 3, y1 - y0 + 2);
+  px(g, elige(rnd, P.rojo), x0, y0, x1 - x0 + 1, y1 - y0);
+  for (let i = 0; i < 30; i++) px(g, elige(rnd, P.rojo), x0 + Math.floor(rnd() * (x1 - x0)), y0 + Math.floor(rnd() * (y1 - y0)), 3, 2);
+  px(g, P.rojoClaro, x0, y0, x1 - x0 + 1, 1);
+  if (!esY) {
+    for (let k = 0; k < 4; k++) px(g, P.cara, x0 + 3 + k * 4, y0 - 4 - k * 3, x1 - x0 - 5 - k * 8, 3); // la bóveda
+    px(g, P.claro, x0 + 6, y0 + 10, x1 - x0 - 11, 30); px(g, P.oscuro, x0 + 6, y0 + 39, x1 - x0 - 11, 1); // tablero
+    for (let a = 0; a < 3; a++) for (let b = 0; b < 2; b++) { // cartuchos de glifos
+      const gx = x0 + 9 + a * 13, gy = y0 + 13 + b * 13;
+      px(g, P.glifo, gx, gy, 10, 10); px(g, P.claro, gx + 2, gy + 2, 6, 6); px(g, P.glifo, gx + 3 + Math.floor(rnd() * 3), gy + 3, 2, 2 + Math.floor(rnd() * 3));
+      if (rnd() < 0.5) px(g, P.glifo, gx + 2, gy + 6, 6, 1);
+    }
+  } else for (let y = y0; y < y1; y += 22) px(g, P.rojoClaro, x0, y, x1 - x0 + 1, 2);
+  for (let i = 0; i < 3; i++) { const w = 4 + Math.floor(rnd() * 6), x = x0 + Math.floor(rnd() * (x1 - x0 - w)), y = y0 + 44 + Math.floor(rnd() * Math.max(1, y1 - y0 - 50)); px(g, P.oscuro, x, y, w, 4); px(g, P.piedra[3], x + 1, y + 1, w - 2, 2); } // desconchones
+  px(g, P.junta, x0 - 1, y1 - 3, x1 - x0 + 3, 3); // zócalo
+  return Object.assign(c, { naturalWidth: c.width, naturalHeight: c.height, complete: true });
+}
+
 // Muro del borde de atrás (`y` = false: 48 px de ancho, de y ≈ 36 a 98) o del oeste (`y` = true: una columna, x 25-38, y 18-109).
 function pintarMuro(piso, esY, variante) {
   if (piso === 11) return muroCanal(esY, variante);
+  if (piso === 12) return muroEstuco(esY, variante);
   const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[piso], rnd = azar(piso * 100 + variante + (esY ? 50 : 0));
   c.width = 64; c.height = 112;
   if (piso === 2) {
