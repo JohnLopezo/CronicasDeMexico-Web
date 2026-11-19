@@ -435,6 +435,8 @@ NPC con menú de las 8 armas; la elegida se guarda y se da al empezar cada incur
 ## 24. Al caer, a la aldea; fuera, sin monstruos hasta completar la mazmorra (etapa 36)
 
 `DefeatReturn`: en vez del santuario de la mazmorra, siempre a la escena de la aldea, punto de inicio, con la vida llena.
+**Etapa 41:** en el piso 3, si en esta incursión ya se entró al 3-5, al santuario de Memoria del 3-5 (sin reiniciar la
+incursión); y en esa antesala no aparece el espíritu que queda a menos de 4 m del punto donde despiertas.
 Fauna de la selva y espíritus incursores de la aldea: solo con `olm.guardian_liberado`; los espíritus de MP_OLM_03 se quedan.
 
 ## 25. Dos armas, calidad por piso y especial de cada arma (etapa 37)

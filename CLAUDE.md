@@ -5,6 +5,10 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 41 (2026-11-18):** al caer en el piso 3, si en la incursión ya llegaste al 3-5, despiertas junto a su
+  santuario de Memoria con armas y niveles intactos (`incursion.santuario_p3`, derrota en `actualizar`); si no, y en los pisos
+  1-2, a la aldea. El espíritu pegado al santuario no aparece al despertar ahí. Pendiente: verlo en el celular.
+
 - **Etapa 40 (2026-11-18):** el jugador ya no anda «como pingüino» de frente ni de espaldas: los cuadros de Unity
   `Caminar*_05/_01` de los guerreros no mueven los pies; ahora se usa el reposo y se alza un pie y luego el otro (`pasoFrontal`,
   `js/actores.js`). Pendiente: verlo en el celular.
@@ -40,8 +44,8 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
   (`afueraConMonstruos`). `Ejemplo de controles/` (captura de referencia del usuario) no se sube.
 - **Pendiente de probar en el celular:** diseño de pisos 2-3, armas, cofres, armero, caer a la aldea (31-34 ya los vio: bien
   y fluido). **Pendiente de medir con el bot:** dificultad con armas (hay armas casi siempre: armero + estrados + cofres).
-- **Ideas abiertas que se le ofrecieron:** que el armero cobre ecos; que caer en los pisos 1-2 lleve a la aldea y en el 3 al
-  santuario; teñir los objetos de Unity del piso 3; sigilo del cuchillo y recolectar madera con el hacha (no existen esas
+- **Ideas abiertas que se le ofrecieron:** que el armero cobre ecos;
+  teñir los objetos de Unity del piso 3; sigilo del cuchillo y recolectar madera con el hacha (no existen esas
   mecánicas). Armas siempre de la cultura olmeca (el usuario lo pidió; ver README etapa 36).
 - **Etapas anteriores:** 34 música prehispánica (`js/musica.js`); 32-33 dificultad con perfil celular (`mapas.mjs`,
   `jefes.mjs`); 30-31 controles táctiles tipo Soul Knight; 26-29 efectos de golpe y animación por partes.

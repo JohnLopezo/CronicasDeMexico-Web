@@ -181,7 +181,8 @@ function poblarPiso3(P, E, O, I, T, santuarioMemoria) {
   santuarioVidaP3();
   // Dos espíritus jaguar en la antesala, entre la llegada y el santuario (BuildFauna).
   const a = P.llegada_arriba, s = P.memoria_llegada, entre = (k) => ({ x: a.x + (s.x - a.x) * k, y: a.y + (s.y - a.y) * k });
-  for (const k of [0.35, 0.7]) { const p = entre(k); E.push(nuevoEspiritu(p.x, p.y)); }
+  // Al despertar o cargar junto al santuario no se pone el que queda a su lado (etapa 41).
+  for (const k of [0.35, 0.7]) { const p = entre(k); if (dist(p, juego.jugador) >= LIBRE_LLEGADA) E.push(nuevoEspiritu(p.x, p.y)); }
   // La losa: una estela que tapa el pórtico, con un bloqueo a lo ancho del pasillo. Al empujarla se hunde.
   const losa = mundo.objetos.find((o) => o.sprite === 'Estela_Grande_01' && Math.hypot(o.x - P.sello.x, o.y - P.sello.y) < 0.5);
   const bloqueos = [caja(P.sello.x, P.sello.y, 3.2, 0.5), ...mundo.cajas.filter((c) => Math.abs((c[0] + c[2]) / 2 - losa.x) < 0.01 && Math.abs((c[1] + c[3]) / 2 - losa.y) < 0.01)];
@@ -216,7 +217,7 @@ function poblar(id) {
   const santuarioMemoria = () => I.push({ x: P.memoria_llegada.x, y: P.memoria_llegada.y, r: 1.4, texto: 'Recordar (guardar)', usar() {
     prog().energia = estadisticas().energia;
     // Al cerrar el mensaje se abre el Museo de la Memoria (MemoryShrine.End).
-    guardar() ? mensaje('El santuario de Memoria guarda lo que has vivido. Si caes, despertarás en la aldea.', () => abrirMenu('museo', 'museo')) : mensaje('No se pudo guardar en este navegador.');
+    guardar() ? mensaje(`El santuario de Memoria guarda lo que has vivido. Si caes, despertarás ${id === 'p3' ? 'aquí' : 'en la aldea'}.`, () => abrirMenu('museo', 'museo')) : mensaje('No se pudo guardar en este navegador.');
   } });
   if (id === 'ciudad') poblarCiudad(P, E, O, I, T);
   if (id === 'selva') {
@@ -274,7 +275,7 @@ function poblar(id) {
     T.push({ ...P.bajada, a: siguiente('p2'), punto: 'llegada_arriba', abierto: () => bandera('olm.jaguar_piedra_vencido'),
       cerrado: 'Unos escombros tapan la escalera. Algo en esta sala los sostiene.' });
   }
-  if (id === 'p3') poblarPiso3(P, E, O, I, T, santuarioMemoria);
+  if (id === 'p3') { poner('incursion.santuario_p3'); poblarPiso3(P, E, O, I, T, santuarioMemoria); }
   if (esGenerado(id)) poblarNivel(id, P, E, I, T);
   poblarTrampas(id); // antes que la fauna, para que no aparezca dentro de un brasero
   poblarFauna(id, P);
@@ -448,13 +449,14 @@ function actualizar(dt) {
     if (!t.avisado) { t.avisado = true; mensaje(t.cerrado); }
   }
 
-  // Derrota (etapa 36, solo HTML; antes, DefeatReturn al santuario de la mazmorra): caigas donde caigas, despiertas en la aldea,
-  // en la orilla del despertar y con la vida llena. Lo ganado se queda; la incursión (armas, niveles limpios) se pierde al
-  // volver a pasar por la selva. En el enlace de prueba (?nivel=) te levantas en el sitio.
+  // Derrota (etapas 36 y 41, solo HTML): en los pisos 1-2, la selva o la aldea despiertas en la aldea, en la orilla del
+  // despertar; en el piso 3, si en esta incursión ya llegaste al 3-5, junto a su santuario de Memoria (sin perder armas ni
+  // niveles limpios). Siempre con la vida llena; lo ganado se queda. En el enlace de prueba (?nivel=) te levantas en el sitio.
   if (j.vida <= 0 && j.muerto <= 0) {
     if (juego.prueba) { j.vida = j.max; j.inv = 2; toast('Te levantas de nuevo.'); return; }
     if (juego.region !== 'ciudad' && juego.region !== 'selva') poner('incursion.caido');
-    cargarRegion('ciudad', 'inicio', estadisticas().vida).then(() => toast('Caíste. Despiertas en la aldea, junto al agua.', 4));
+    if (NIVELES[2].includes(juego.region) && bandera('incursion.santuario_p3')) cargarRegion('p3', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4));
+    else cargarRegion('ciudad', 'inicio', estadisticas().vida).then(() => toast('Caíste. Despiertas en la aldea, junto al agua.', 4));
   }
 }
 

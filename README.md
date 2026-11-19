@@ -53,6 +53,21 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 41 (2026-11-18): al caer en el piso 3, al santuario del 3-5 (`js/juego.js`)
+
+Antes (etapa 36) se caía siempre a la aldea. Ahora, si caes en el piso 3 (3-1 a 3-5) y en esta incursión ya llegaste al 3-5
+(bandera `incursion.santuario_p3`, que se pone al entrar allí y se borra al volver a pasar por la selva), despiertas junto a su
+santuario de Memoria (`memoria_llegada`), con la vida llena y **sin perder las armas ni los niveles limpios**. El Guardián se
+recarga con la vida llena. Si aún no llegaste al 3-5, o caes en los pisos 1-2, la selva o la aldea, vuelves a la aldea como
+antes, así que caer nunca te adelanta niveles. El santuario de Memoria del 3-5 dice «Si caes, despertarás aquí».
+
+De paso: el espíritu jaguar de la antesala que quedaba a 0,5 m del santuario no se pone si despiertas o cargas partida ahí
+(solo los que quedan a ≥ `LIBRE_LLEGADA`, 4 m; antes te pegaba al aparecer). Al bajar por la escalera siguen los dos.
+
+**Pruebas** (Chrome sin ventana, partida nueva con lanza ★★): caer en el 3-2 sin haber llegado al 3-5 → aldea; en el 2-3 → aldea;
+en el 1-1 → aldea; tras pasar por el 3-5, caer en el 3-2 y en el propio 3-5 → santuario, 50/50, con la lanza y el enemigo más
+cercano a ≥ 3,1 m.
+
 ## Etapa 40 (2026-11-18): el jugador ya no anda «como pingüino» de frente ni de espaldas (`js/actores.js`)
 
 El usuario vio que al andar hacia abajo el guerrero parecía un pingüino. En los 4 cuadros `Caminar*_05` (y `_01`) de los siete
