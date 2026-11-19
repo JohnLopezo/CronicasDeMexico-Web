@@ -21,6 +21,7 @@ const MAYAS = {
   MayaMercadera: { piel: '#a8714a', pelo: '#211a14', peinado: 'trenzas', cinta: '#d1a232', torso: 'huipil', ropa: '#d9b25a', borde: '#7a3b2a', bajo: 'falda', falda: '#6b4a2e', lleva: 'canasta' },
   MayaPescador: { piel: '#7f5134', pelo: '#191410', peinado: 'mono', torso: 'desnudo', bajo: 'ex', ropa: '#d8cfb6', borde: '#4b6b7a', lleva: 'red' },
   MayaCazador: { piel: '#8f5c3a', pelo: '#1a1410', peinado: 'mono', torso: 'capa', capa: '#9a7448', bajo: 'ex', ropa: '#d8cfb6', borde: '#5a7a3a', tocado: 'plumas', lleva: 'lanza' },
+  MayaArmero: { piel: '#8a5636', pelo: '#1a1410', peinado: 'mono', torso: 'capa', capa: '#7a5f42', bajo: 'ex', ropa: '#d8cfb6', borde: '#a4483a', lleva: 'lanza' }, // etapa 45
   MayaNina: { piel: '#a8714a', pelo: '#211a14', peinado: 'trenzas', cinta: '#c0503a', torso: 'huipil', ropa: '#f3eddc', borde: '#4f7d34', bajo: 'falda', falda: '#8a5a3a', nino: true },
   MayaNino: { piel: '#9a6642', pelo: '#1b1511', peinado: 'corto', torso: 'desnudo', bajo: 'ex', ropa: '#efe7d2', borde: '#3d6fa8', nino: true },
 };
@@ -130,11 +131,11 @@ const ALDEA_MAYA = {
     ['Canoa_01', 4, -8], ['Cestos_02', 11.2, -5.6], ['Vasijas_02', 11.3, 0.4], ['Lena_01', -0.6, 2.4],
     // plantas sueltas por el patio (sin choque)
     ...[[-11, -4.6], [-6.5, -5.2], [-1, 5.6], [6, 4.8], [13.4, 6.3], [-11.4, 4.2], [0.5, -5.4], [13.6, -2.2]].map(([x, y], i) => [['Pasto_Alto_01', 'Flor_Selva_01', 'Pasto_Alto_02', 'Helecho_02'][i % 4], x, y])],
-  puntos: { llegada: { x: -17, y: 0 }, portal: { x: -19, y: 0 }, cocina: { x: -2, y: 0.1 }, comercio: { x: 3.6, y: 1.7 }, hoja: { x: 13.5, y: -5.4 } },
+  puntos: { llegada: { x: -17, y: 0 }, portal: { x: -19, y: 0 }, cocina: { x: -2, y: 0.1 }, comercio: { x: 3.6, y: 1.7 }, armero: { x: 9.6, y: 2.4 }, hoja: { x: 13.5, y: -5.4 } },
   // id, arte y ruta (x, y)
   habitantes: [['escriba', 'MayaEscriba', [[-4.8, 5.3], [-3, 5.3]]], ['tejedora', 'MayaTejedora', [[-7.7, 1.1]]], ['mercadera', 'MayaMercadera', [[3, 0.6], [4.6, 0.6]]],
     ['pescador', 'MayaPescador', [[9.6, -5.3], [12.4, -5.3]]], ['cazador', 'MayaCazador', [[-10.5, -2.5], [-10.5, 0.5]]],
-    ['nina_maya', 'MayaNina', [[-0.5, -3], [1.5, -3]]], ['nino_maya', 'MayaNino', [[1.5, -4.2], [-0.5, -4.2]]]],
+    ['armero_maya', 'MayaArmero', [[9.6, 3.2]]], ['nina_maya', 'MayaNina', [[-0.5, -3], [1.5, -3]]], ['nino_maya', 'MayaNino', [[1.5, -4.2], [-0.5, -4.2]]]],
 };
 function regionAldeaMaya() {
   const A = ALDEA_MAYA, tipo = new Map(), rnd = azar(hash('aldea_maya'));
@@ -160,7 +161,7 @@ MISIONES.MP_MAY_02 = { titulo: 'Los registros perdidos', banderas: ['may.registr
   { aviso: 'examinar:hoja_libro', veces: 3, texto: 'Recupera las hojas del libro del escriba (junto al río y en la plaza)' },
   { aviso: 'hablar:escriba', veces: 1, texto: 'Lleva las hojas al escriba' },
 ] };
-Object.assign(NPCS, { escriba: 'Escriba', tejedora: 'Tejedora', mercadera: 'Mercadera', pescador: 'Pescador del Otolum', cazador: 'Joven cazador', nina_maya: 'Niña', nino_maya: 'Niño' });
+Object.assign(NPCS, { escriba: 'Escriba', tejedora: 'Tejedora', mercadera: 'Mercadera', pescador: 'Pescador del Otolum', cazador: 'Joven cazador', armero_maya: 'Tallador de pedernal', nina_maya: 'Niña', nino_maya: 'Niño' });
 const rama = (requiere, lineas, extra = {}) => ({ requiere, prohibe: extra.prohibe || [], lineas, alTerminar: extra.alTerminar || [], mision: extra.mision || null });
 Object.assign(DIALOGOS, {
   escriba: [
@@ -180,6 +181,8 @@ Object.assign(DIALOGOS, {
     rama([], ['El telar se ata a la cintura y al tronco: es el cuerpo el que tensa los hilos.',
       'Antes sabía cada dibujo de memoria. Ahora se me olvidan a la mitad, como a todos aquí. Siéntate junto al fuego si tienes hambre.']),
   ],
+  armero_maya: [rama([], ['El pedernal se trabaja a golpes, lasca a lasca, con piedra y con asta de venado.',
+    'Te presto una lanza. Las demás te las hago si traes con qué pagar: ecos, fibras, y cacao para las buenas.'])],
   mercadera: [rama([], ['Cacao de las tierras bajas y sal de la costa. Aquí todo se cambia por algo.', 'Tú traes ecos, ¿no? Raro pago, pero lo acepto.'])],
   pescador: [rama([], ['El Otolum baja de la sierra. En la ciudad lo metimos entre piedras para que en las lluvias no se lleve la plaza.',
     'Ayer vi una hoja pintada flotando en el agua. La dejé en la orilla, junto a mis cestos.'])],
@@ -217,6 +220,7 @@ function poblarAldeaMaya(P, E, O, I, T) {
   }
   I.push({ ...P.cocina, r: 0.9, texto: 'Cocinar', usar: () => abrirMenu('cocina', 'cocina') });
   I.push({ ...P.comercio, r: 0.9, texto: 'Comerciar', usar: () => abrirMenu('comerciante', 'comerciante') });
+  I.push({ ...P.armero, r: 1, texto: 'Armero', usar: () => abrirMenu('armero_maya', 'armero_maya') }); // js/armas.js, etapa 45
   T.push({ ...P.portal, a: 'palenque', punto: 'desde_aldea' });
   poblarHojas('aldea_maya', E, O, I);
 }

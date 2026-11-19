@@ -254,7 +254,7 @@ const fila = (id, extra) => { const o = OBJETOS[id];
 const desbloqueada = (bandera_) => !bandera_ || bandera(bandera_);
 function pintarMenu() {
   const p = prog(), s = estadisticas();
-  const tabs = [['bolsa', 'Bolsa'], ['bendiciones', 'Bendiciones'], ['guardian', 'Guardián'], ['codice', 'Códice'], ...(estacion ? [[estacion, { artesano: 'Fabricar', cocina: 'Cocinar', comerciante: 'Comerciar', museo: 'Museo de la Memoria', armero: 'Armero' }[estacion]]] : [])];
+  const tabs = [['bolsa', 'Bolsa'], ['bendiciones', 'Bendiciones'], ['guardian', 'Guardián'], ['codice', 'Códice'], ...(estacion ? [[estacion, { artesano: 'Fabricar', cocina: 'Cocinar', comerciante: 'Comerciar', museo: 'Museo de la Memoria', armero: 'Armero', armero_maya: 'Armero' }[estacion]]] : [])];
   const linea = (titulo, texto, color) => `<div class="fila"><span class="ico"></span><div><b${color ? ` style="color:${color}"` : ''}>${titulo}</b><div class="texto">${texto}</div></div></div>`;
   const seccion = (t) => `<p class="resumen">${t}</p>`;
   let cuerpo = '';
@@ -285,8 +285,8 @@ function pintarMenu() {
       objetos('Reliquias', 2) + seccion('Bendiciones') +
       (bendiciones.map(([id, r]) => linea(`${BENDICIONES[id].nombre} (${r})`, BENDICIONES[id].desc, COLOR_RAREZA[3])).join('') || '<p>Ninguna todavía.</p>') +
       objetos('Fragmentos de memoria y objetos de la historia', 4) + objetos('Coleccionables', 3);
-  } else if (pestana === 'armero') {
-    cuerpo = menuArmero(); // js/armas.js
+  } else if (pestana === 'armero' || pestana === 'armero_maya') {
+    cuerpo = menuArmero(pestana === 'armero_maya' ? 'maya' : 'olmeca'); // js/armas.js
   } else if (pestana === 'comerciante') {
     cuerpo = `<p class="resumen">Ecos ${tiene('ecos')}</p>` + Object.entries(OFERTAS).filter(([, o]) => desbloqueada(o.bandera)).map(([k, o]) =>
       fila(o.objeto, `<span class="cuenta">×${o.n} por ${o.coste} ${nombreObjeto(o.precio)}</span><button data-oferta="${k}" ${tiene(o.precio) >= o.coste && tiene(o.objeto) < OBJETOS[o.objeto].tope ? '' : 'disabled'}>Cambiar</button>`)).join('') +

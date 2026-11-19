@@ -503,3 +503,11 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
 - **Diálogos** (`DialogueData` con ramas por banderas) y **misión `MP_MAY_02`** (pasos `examinar:hoja_libro` ×3 y
   `hablar:escriba`; bandera `may.registros_recuperados`). El paso 2 de `MP_MAY_01` pasa a `hablar:escriba`. Las hojas 2
   y 3, en la plaza de Palenque, las suelta un `EnemyChaser` (espíritu) con `ReportOnDefeat`.
+
+## 32. Armas mayas y armero de Lakamha' (etapa 45)
+
+- Seis `WeaponData` nuevos con un campo de cultura (`ARMAS`, `cultura: 'maya'`, en `js/armas.js`; valores, especiales y precios en
+  la tabla del README, etapa 45). La generación de estrados y cofres filtra por la cultura de la mazmorra.
+- Armero maya: `NpcData` «Tallador de pedernal» en `Maya_Aldea` con su catálogo (`PRECIO_ARMERO`) y compras guardadas aparte
+  (`armero_maya.compradas`).
+- La defensa del escudo sale del escudo que se lleve (`escudoLlevado`), no de un único escudo.

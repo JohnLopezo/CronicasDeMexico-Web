@@ -27,7 +27,19 @@ const ARMAS = {
   jabalina: { clase: 'lejos', nombre: 'Jabalina', corto: 'Jabalina', municion: 6, dano: 2.2, vel: 11, alcance: 7, espera: 0.7, atraviesa: 2 },
   honda:    { clase: 'lejos', nombre: 'Honda', corto: 'Honda', municion: 30, dano: 0.8, vel: 15, alcance: 11, espera: 0.35 },
   escudo:   { clase: 'escudo', nombre: 'Escudo rectangular', corto: 'Escudo', defensa: 0.15, lento: 0.85 },
+  // Etapa 45: armas mayas del Clásico (cultura: 'maya'; solo en el armero de Lakamha', js/aldea_maya.js). D: lanzas largas
+  // de punta de pedernal, hachas de mano y cuchillos de pedernal, átlatl y escudos flexibles de tela o piel en los murales de
+  // Bonampak y los dinteles de Yaxchilán; la cerbatana, en vasijas del Clásico con cazadores (y en el Popol Vuh). I: sus
+  // valores de juego y el pedernal más duro que la obsidiana (no se rompe).
+  lanza_maya:    { cultura: 'maya', clase: 'cerca', nombre: 'Lanza de pedernal', corto: 'Lanza', dano: 1.4, alcance: 1.9, radio: 0.6, espera: 0.9 },
+  hacha_maya:    { cultura: 'maya', clase: 'cerca', nombre: 'Hacha de pedernal', corto: 'Hacha', dano: 1.7, alcance: 1, radio: 0.9, espera: 1.25, desgaste: 1, aturde: 0.5 },
+  cuchillo_maya: { cultura: 'maya', clase: 'cerca', nombre: 'Cuchillo de pedernal', corto: 'Cuchillo', dano: 1, alcance: 0.8, radio: 0.7, espera: 0.6, critico: 0.2 },
+  atlatl_maya:   { cultura: 'maya', clase: 'lejos', nombre: 'Átlatl maya', corto: 'Átlatl', municion: 18, dano: 1.1, vel: 13, alcance: 9, espera: 0.45 },
+  cerbatana:     { cultura: 'maya', clase: 'lejos', nombre: 'Cerbatana', corto: 'Cerbatana', municion: 35, dano: 0.6, vel: 17, alcance: 11, espera: 0.3 },
+  escudo_maya:   { cultura: 'maya', clase: 'escudo', nombre: 'Escudo flexible', corto: 'Escudo', defensa: 0.3, lento: 1 },
 };
+const CULTURA_ARMAS = { olmeca: (A) => !A.cultura, maya: (A) => A.cultura === 'maya' };
+const armasDe = (cultura) => Object.keys(ARMAS).filter((k) => CULTURA_ARMAS[cultura](ARMAS[k]));
 const TIRO = { cerca: 2.2, radio: 0.3 }; // a distancia: nadie a menos de 2,2 m (si no, golpe normal) y radio del proyectil
 const SANGRADO = { seg: 2, cada: 0.5, parte: 0.15 }; // crítico del cuchillo: 4 tics de un 15 % del golpe
 // Qué clase de arma da cada nivel (X-n) y desde qué piso.
@@ -40,7 +52,8 @@ const enMano = () => ranuras()[juego.flags['incursion.mano'] || 0] || null;
 const armaDe = (clase) => { const r = enMano(); return r && ARMAS[r.id].clase === clase ? r.id : null; }; // id del arma en la mano si es de esa clase
 const datosDe = (clase) => ARMAS[armaDe(clase)] || null;
 const municion = () => enMano()?.mun || 0;
-const tieneEscudo = () => ranuras().some((r) => r.id === 'escudo');
+const escudoLlevado = () => { const r = ranuras().find((x) => ARMAS[x.id].clase === 'escudo'); return r ? ARMAS[r.id] : null; };
+const tieneEscudo = () => !!escudoLlevado();
 const estrellas = (nv) => '★'.repeat(nv || 1);
 const nombreArma = (r) => `${ARMAS[r.id].nombre} ${estrellas(r.nv)}`;
 const nuevaRanura = (id, nv) => ({ id, nv, mun: ARMAS[id].municion ? ARMAS[id].municion + (maestria().municion || 0) : 0, usos: ARMAS[id].usos || 0 });
@@ -69,13 +82,16 @@ const QUE_HACE = {
   cuchillo: 'muy rápido, críticos que sangran; se rompe tras 40 golpes', hacha: 'también rompe el basalto agrietado',
   atlatl: 'dardos con enemigos lejos', jabalina: 'pocas, mucho daño, atraviesan', honda: 'muchas piedras, de muy lejos',
   escudo: 'al defender, para casi todo de frente; vas algo más lento',
+  lanza_maya: 'la de más alcance, rápida', hacha_maya: 'pesada, gasta guardias y aturde con el remate',
+  cuchillo_maya: 'muy rápido, críticos que sangran; el pedernal no se rompe', atlatl_maya: 'dardos con enemigos lejos',
+  cerbatana: 'muchos dardos flojos, de muy lejos', escudo_maya: 'al defender, para buena parte de lo de frente; no te frena',
 };
 
 // El arma que da un nivel generado: la clase según NIVEL_ARMA y el arma al azar con la semilla de la incursión.
 function armaDelNivel(id) {
   const piso = +id[1], n = NIVEL_ARMA[+id[3]];
   if (!n || piso < n.desde) return null;
-  const ids = Object.keys(ARMAS).filter((k) => ARMAS[k].clase === n.clase), rnd = azar(hash(`${id}:arma:${semillaIncursion()}`));
+  const ids = armasDe('olmeca').filter((k) => ARMAS[k].clase === n.clase), rnd = azar(hash(`${id}:arma:${semillaIncursion()}`));
   return ids[Math.floor(rnd() * ids.length)];
 }
 
@@ -126,7 +142,7 @@ function cambiarArma() {
   sonar('clic'); toast(`En la mano: ${nombreArma(enMano())}`, 2);
 }
 // Arma al azar para un cofre (de cerca o a distancia, nunca el escudo), con la semilla de la incursión y el id del cofre.
-const ARMAS_COFRE = Object.keys(ARMAS).filter((k) => ARMAS[k].clase !== 'escudo');
+const ARMAS_COFRE = armasDe('olmeca').filter((k) => ARMAS[k].clase !== 'escudo'); // la mazmorra olmeca: solo armas olmecas
 const COFRE = { arma: 0.35, municion: 0.3, ofrenda: 0.5 }; // cofre de recompensas: 35 % arma, 30 % munición; ofrenda de Unity: 50 % arma
 // Botín del cofre de recompensas, por piso: [objeto, peso, mínimo, máximo] (ids de OBJETOS); se sacan dos tiradas.
 const BOTIN_COFRE = {
@@ -197,26 +213,34 @@ const PRECIO_ARMERO = {
   hacha: [['ecos', 25], ['basalto', 3], ['fibras', 2]],
   atlatl: [['ecos', 25], ['fibras', 4], ['jade', 1]],
   jabalina: [['ecos', 30], ['obsidiana', 2], ['fibras', 3]],
+  // Armero de Lakamha' (etapa 45): presta la lanza de pedernal; con cacao, el bien de cambio maya.
+  lanza_maya: [], cuchillo_maya: [['ecos', 20], ['obsidiana', 1]], hacha_maya: [['ecos', 25], ['fibras', 3], ['obsidiana', 1]],
+  atlatl_maya: [['ecos', 25], ['fibras', 4], ['jade', 1]], cerbatana: [['ecos', 20], ['fibras', 3], ['cacao', 1]], escudo_maya: [['ecos', 30], ['fibras', 5], ['cacao', 2]],
 };
-const comprada = (id) => !PRECIO_ARMERO[id].length || juego.flags['armero.eleccion'] === id || (juego.flags['armero.compradas'] || []).includes(id); // la ya elegida (partidas de antes) cuenta como tuya
+// Cada armero guarda lo suyo: el de la aldea olmeca en armero.*, el de Lakamha' en armero_maya.*.
+const claveArmero = (id) => (ARMAS[id].cultura === 'maya' ? 'armero_maya' : 'armero');
+const comprada = (id) => { const c = claveArmero(id); return !PRECIO_ARMERO[id].length || juego.flags[`${c}.eleccion`] === id || (juego.flags[`${c}.compradas`] || []).includes(id); }; // la ya elegida (partidas de antes) cuenta como tuya
 const alcanza = (id) => PRECIO_ARMERO[id].every(([o, n]) => tiene(o) >= n);
 // Pestaña del armero (pintarMenu en js/recompensas.js).
-function menuArmero() {
-  const elegida = juego.flags['armero.eleccion'];
-  return `<p class="resumen">Ecos ${tiene('ecos')}</p><p>El armero de la aldea forja armas sencillas (★) para la selva y la mazmorra: cada una se compra una vez y luego sales con la que elijas en cada incursión. La macana te la presta. En la mazmorra hay mejores (★★ en el piso 2, ★★★ en el 3). Llevas dos: Cambiar arma elige la de la mano, y la estrella hace su especial.</p>` +
-    ARMAS_COFRE.map((id) => { const A = ARMAS[id], tuya = comprada(id);
+function menuArmero(cultura = 'olmeca') {
+  const maya = cultura === 'maya', elegida = juego.flags[maya ? 'armero_maya.eleccion' : 'armero.eleccion'];
+  const intro = maya ? "<p>El tallador de pedernal de Lakamha' hace armas sencillas (★): cada una se compra una vez y luego te la llevas cuando quieras. La lanza te la presta. Llevas dos: Cambiar arma elige la de la mano, y la estrella hace su especial.</p>"
+    : `<p>El armero de la aldea forja armas sencillas (★) para la selva y la mazmorra: cada una se compra una vez y luego sales con la que elijas en cada incursión. La macana te la presta. En la mazmorra hay mejores (★★ en el piso 2, ★★★ en el 3). Llevas dos: Cambiar arma elige la de la mano, y la estrella hace su especial.</p>`;
+  return `<p class="resumen">Ecos ${tiene('ecos')}</p>${intro}` +
+    (maya ? armasDe('maya') : ARMAS_COFRE).map((id) => { const A = ARMAS[id], tuya = comprada(id);
       const precio = tuya ? '' : `<small>Precio: ${PRECIO_ARMERO[id].map(([o, n]) => `${nombreObjeto(o)} ${tiene(o)}/${n}`).join(' · ')}</small>`;
       const boton = tuya ? `<button data-armero="${id}" ${elegida === id ? 'disabled' : ''}>${elegida === id ? 'Elegida' : 'Elegir'}</button>` : `<button data-armero="${id}" ${alcanza(id) ? '' : 'disabled'}>Comprar</button>`;
-      return `<div class="fila arma"><img src="${iconoArma(id)}" alt=""><div><b>${A.nombre} ★</b><small>${A.clase === 'cerca' ? 'Cuerpo a cuerpo' : 'A distancia'}</small><div>${QUE_HACE[id]}. Especial: ${ESPECIAL_ARMA[id].nombre.toLowerCase()}.</div><small>${textoMaestria(id, 1)}</small>${precio}</div>${boton}</div>`;
+      return `<div class="fila arma"><img src="${iconoArma(id)}" alt=""><div><b>${A.nombre} ★</b><small>${{ cerca: 'Cuerpo a cuerpo', lejos: 'A distancia', escudo: 'Escudo' }[A.clase]}</small><div>${QUE_HACE[id]}. Especial: ${ESPECIAL_ARMA[id].nombre.toLowerCase()}.</div><small>${A.clase === 'escudo' ? '' : textoMaestria(id, 1)}</small>${precio}</div>${boton}</div>`;
     }).join('');
 }
 function elegirArmero(id) {
   if (!comprada(id)) { // comprar: se cobra y queda tuya para siempre
     if (!alcanza(id)) { sonar('no'); return avisoRecompensa('No te alcanza'); }
     PRECIO_ARMERO[id].forEach(([o, n]) => quitarObjeto(o, n));
-    juego.flags['armero.compradas'] = [...(juego.flags['armero.compradas'] || []), id];
+    const c = claveArmero(id); juego.flags[`${c}.compradas`] = [...(juego.flags[`${c}.compradas`] || []), id];
     sonar('premio');
   }
+  if (claveArmero(id) === 'armero_maya') { juego.flags['armero_maya.eleccion'] = id; return tomarArma(id, 1); } // te la llevas ya (aún no hay incursión maya)
   const antes = juego.flags['armero.eleccion'], R = ranuras(), k = R.findIndex((r) => r.id === antes);
   if (k >= 0 && antes !== id) { R.splice(k, 1); juego.flags['incursion.mano'] = 0; } // solo una del armero
   juego.flags['armero.eleccion'] = id; tomarArma(id, 1);
@@ -293,6 +317,12 @@ const ESPECIAL_ARMA = {
   atlatl:   { nombre: 'Tres dardos', tiro: 3, abre: 16, mult: 1.5 },
   jabalina: { nombre: 'Jabalina imparable', tiro: 1, mult: 3, atraviesa: 99 },
   honda:    { nombre: 'Lluvia de piedras', tiro: 5, abre: 12, mult: 1 },
+  lanza_maya:    { nombre: 'Estocada larga', largo: 3.6, radio: 0.6, mult: 2.4 },
+  hacha_maya:    { nombre: 'Tajo de pedernal', alcance: 1.1, radio: 1.3, mult: 2.6, aturde: 0.6 },
+  cuchillo_maya: { nombre: 'Corte doble', alcance: 0.9, radio: 1, mult: 2.2, sangra: true },
+  atlatl_maya:   { nombre: 'Andanada', tiro: 3, abre: 14, mult: 1.4 },
+  cerbatana:     { nombre: 'Ráfaga', tiro: 4, abre: 6, mult: 0.9 },
+  escudo_maya:   { nombre: 'Empujón', alcance: 1, radio: 1.4, mult: 0.8, aturde: 1 },
 };
 function especialArma(j) {
   const r = enMano(), A = ARMAS[r.id], E = ESPECIAL_ARMA[r.id];
@@ -338,9 +368,10 @@ function actualizarArmas(dt) {
 // Defensa con el escudo: lo que llega de frente (delante del jugador) entra a un 15 %; de espaldas, como sin escudo.
 function factorDefensa(j, desde) {
   const frente = (desde.x - j.x) * j.fx + (desde.y - j.y) * j.fy >= 0;
-  return tieneEscudo() && frente ? ARMAS.escudo.defensa : DEFENSA.factor;
+  const E = escudoLlevado();
+  return E && frente ? E.defensa : DEFENSA.factor;
 }
-const lentoEscudo = () => (tieneEscudo() ? ARMAS.escudo.lento : 1);
+const lentoEscudo = () => escudoLlevado()?.lento ?? 1;
 // Texto corto del HUD: «▸Mazo★★ · Honda★ 25» (▸ = la de la mano, si llevas dos; con munición o usos).
 const textoArmas = () => ranuras().map((r) => `${r === enMano() && ranuras().length > 1 ? '▸' : ''}${ARMAS[r.id].corto}${estrellas(r.nv)}${ARMAS[r.id].municion ? ' ' + r.mun : ARMAS[r.id].usos ? ' ' + r.usos : ''}`).join(' · ');
 
@@ -367,6 +398,13 @@ const DIBUJO = {
   atlatl: [[MADERA, -10, 2, 20, 2], [OSCURA, 8, 0, 2, 4], ['#3b2414', -12, 1, 3, 4], ['#e8d49a', -12, -3, 24, 1], [OBSIDIANA, 12, -4, 3, 3], ['#d4503e', -13, -5, 2, 2], [JADE, -13, -2, 2, 2]],
   jabalina: [['#b98a52', -13, -1, 26, 2], [OSCURA, -13, 0, 26, 1], [OBSIDIANA, 13, -2, 3, 4], ['#d4503e', -14, -3, 2, 2], ['#e0a23a', -14, 1, 2, 2]],
   honda: [['#c9a46a', -8, -10, 1, 12], ['#c9a46a', 7, -10, 1, 12], ['#a67c45', -7, 1, 14, 3], [PIEDRA, -3, -1, 6, 4], ['#c9c2b2', -2, -1, 2, 2]],
+  // Etapa 45, mayas: el pedernal es claro y pardo, no negro como la obsidiana.
+  lanza_maya: [[MADERA, 0, -8, 1, 26], [OSCURA, 1, -8, 1, 26], ['#b8a88a', -1, -16, 3, 8], ['#d8ccb0', 0, -17, 1, 3], ['#8a7a5c', 1, -12, 1, 3], ['#3d6fa8', -1, -7, 3, 1]],
+  hacha_maya: [[MADERA, 0, -8, 2, 20], [OSCURA, 1, -8, 1, 20], ['#a8977a', -7, -10, 8, 7], ['#d0c3a4', -7, -10, 3, 2], ['#7d6e55', -7, -4, 8, 1], ['#a4483a', -1, -8, 4, 2]],
+  cuchillo_maya: [[OSCURA, -1, 3, 3, 6], [MADERA, -1, 3, 1, 6], ['#b8a88a', -1, -9, 3, 12], ['#ddd2b6', 0, -8, 1, 9], ['#b8a88a', 0, -11, 1, 2]],
+  atlatl_maya: [[MADERA, -10, 2, 20, 2], [OSCURA, 8, 0, 2, 4], ['#3b2414', -12, 1, 3, 4], ['#e8d49a', -12, -3, 24, 1], ['#b8a88a', 12, -4, 3, 3], ['#3d6fa8', -13, -5, 2, 2], ['#4f9a4a', -13, -2, 2, 2]],
+  cerbatana: [['#9a7a46', -14, -1, 28, 3], ['#6e5530', -14, 1, 28, 1], ['#3a2a1c', 13, -1, 2, 3], ['#c9a35a', -15, -2, 2, 5]],
+  escudo_maya: [['#6b4a2e', -8, -10, 16, 18], ['#d8c49a', -7, -9, 14, 16], ...[[-4, -6], [2, -5], [-2, 0], [3, 2], [-5, 3]].map(([a, b]) => ['#6b4a2e', a, b, 2, 2]), ...[-7, -4, -1, 2, 5].map((a) => ['#3f8a4a', a, 8, 2, 5])],
   escudo: [[OSCURA, -8, -12, 16, 24], [MADERA, -7, -11, 14, 22], ['#c9a46a', -7, -4, 14, 2], ['#c9a46a', -7, 4, 14, 2], ['#d4503e', -2, -9, 4, 4], [JADE, -2, 7, 4, 3]],
 };
 // El arma flota sobre el estrado (sprite de Unity Estrado_Ofrenda_01), con un brillo, y sube y baja.
@@ -384,6 +422,7 @@ console.assert(Object.entries(ARMAS).every(([k, A]) => ['cerca', 'lejos', 'escud
 console.assert(Object.values(BOTIN_COFRE).flat().every(([o]) => OBJETOS[o]), 'Armas: botín con objetos que existen');
 console.assert(!ARMAS_COFRE.includes('escudo') && ARMAS_COFRE.length === 8, 'Armas: el escudo no sale en cofres');
 console.assert(GUARDIANES.every((g) => MAESTRIA[g.id]), 'Armas: maestría de cada Guardián');
+console.assert(armasDe('maya').length === 6 && armasDe('maya').every((k) => PRECIO_ARMERO[k]), 'Armas: armero maya');
 console.assert(ARMAS_COFRE.every((k) => PRECIO_ARMERO[k]?.every(([o, n]) => OBJETOS[o] && n > 0)), 'Armas: precio del armero');
 console.assert(Object.keys(ARMAS).every((k) => ESPECIAL_ARMA[k]?.nombre && ESPECIAL_ARMA[k].mult > 0 && (ESPECIAL_ARMA[k].tiro ? ARMAS[k].clase === 'lejos' : ARMAS[k].clase !== 'lejos')), 'Armas: especial de cada arma');
 console.assert(CALIDAD[1] < CALIDAD[2] && CALIDAD[2] < CALIDAD[3], 'Armas: calidad sube con el piso');

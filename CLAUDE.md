@@ -5,6 +5,10 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 45 (2026-11-19):** armas mayas del Clásico (`cultura: 'maya'` en `ARMAS`): lanza, hacha y cuchillo de pedernal,
+  átlatl, cerbatana y escudo flexible, solo en el armero de Lakamha' (tallador de pedernal; `armero_maya.*`); la mazmorra
+  olmeca sigue con las olmecas (`armasDe`). Prueba: `etapa45.mjs`. **Siguiente:** 46 fauna de Chiapas, 47 mapa, mazmorra maya.
+
 - **Etapa 44 (2026-11-19):** la aldea de Lakamha' (`js/aldea_maya.js`), al este de la plaza: casas, milpa, telar, siete
   habitantes pintados por código y la misión `MP_MAY_02` (tres hojas del escriba; las de la plaza las guardan espíritus).
   Prueba: `etapa44.mjs`. **Plan acordado:** 45 armas mayas en un armero de Lakamha', 46 fauna de Chiapas (mono araña,

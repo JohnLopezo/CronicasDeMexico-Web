@@ -53,6 +53,30 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 45 (2026-11-19): armas mayas en el armero de Lakamha' (`js/armas.js`)
+
+Seis armas mayas del Clásico con `cultura: 'maya'` en `ARMAS`. Solo las vende el **tallador de pedernal**, habitante nuevo
+de la aldea maya; la mazmorra olmeca (estrados, cofres y ofrendas) sigue dando solo armas olmecas (`armasDe`).
+
+| Arma | Clase | Cómo juega | Especial | Precio |
+|---|---|---|---|---|
+| Lanza de pedernal | cerca | alcance 1,9, rápida | Estocada larga (3,6 m) | prestada |
+| Hacha de pedernal | cerca | pesada, desgasta guardias y aturde con el remate | Tajo de pedernal (aturde) | 25 ecos, 3 fibras, 1 obsidiana |
+| Cuchillo de pedernal | cerca | muy rápido, 20 % de críticos que sangran; no se rompe | Corte doble (sangra) | 20 ecos, 1 obsidiana |
+| Átlatl maya | distancia | 18 dardos | Andanada (3) | 25 ecos, 4 fibras, 1 jade |
+| Cerbatana | distancia | 35 dardos flojos, alcance 11 | Ráfaga (4) | 20 ecos, 3 fibras, 1 cacao |
+| Escudo flexible | escudo | deja pasar el 30 % de frente (el rígido, el 15 %) y no frena | Empujón (aturde) | 30 ecos, 5 fibras, 2 cacaos |
+
+- El armero maya guarda lo suyo en `armero_maya.*` y el arma se lleva en el momento (aún no hay incursión maya); el olmeco,
+  como antes en `armero.*`, con la que sales a la selva.
+- El escudo ya no es solo `escudo`: `escudoLlevado()` da la defensa y la velocidad del escudo que lleves.
+- **Fidelidad:** D, lanzas de pedernal, hachas, cuchillos, átlatl y escudos flexibles en Bonampak y Yaxchilán; la cerbatana en
+  vasijas del Clásico y en el Popol Vuh. I: sus valores y que el pedernal no se rompa. No se usan el arco ni el macuahuitl
+  (sobre todo posclásicos).
+
+Prueba: `herramientas/dificultad/etapa45.mjs` (9 comprobaciones). `etapa42.mjs` y `armas.mjs` siguen bien; en `armas.mjs` el
+especial maya quita 36-42, como los olmecas (31-50).
+
 ## Etapa 44 (2026-11-19): la aldea de Lakamha' (`js/aldea_maya.js`)
 
 Al este de la plaza del templo, por un sendero, la aldea maya: casas de bajareque con techo de palma sobre plataformas,
