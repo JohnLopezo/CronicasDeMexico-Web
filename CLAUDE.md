@@ -5,6 +5,12 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 51 (2026-11-19):** habilidad de agua y **cierre del capítulo II** (`js/agua.js`): el Guardián de los Ciclos da la
+  Corriente (V / botón Agua, `CORRIENTE`, bandera `may.bendicion_agua`), el Fragmento de la Segunda Memoria y `MP_MAY_04` (escriba →
+  tablero → «Fin del capítulo II»); lodo seco que solo deshace el agua (ofrenda en la plaza). Prueba: `etapa51.mjs`. **El capítulo II
+  está completo.** Siguiente propuesta: capítulo III (altiplano: teotihuacana/zapoteca, Historia_Mundo §6 y `Docs/Historia/Capitulos.md`
+  de Unity), o pulir: medir con el bot los jefes mayas, probar 39-51 en el celular, `etapa43.mjs` «al caer» (ya fallaba).
+
 - **Etapa 50 (2026-11-19):** mazmorra maya, piso 3 (el observatorio, `m3_1`…`m3_4`, clave 13; cielo de noche `Cielo_Noche`) y
   el **Guardián de los Ciclos** en el 3-4 (`guardianCiclos`: el Guardián olmeco con la figura `Jefe_SenorLluvia`, 1500 de vida). Al
   vencerlo se cumple `MP_MAY_03` y la escalera del 3-4 sale a Palenque. Prueba: `etapa50.mjs`. **Siguiente, etapa 51:** habilidad
@@ -135,6 +141,7 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 | `js/aldea_maya.js` | Aldea maya: habitantes pintados (`MAYAS`, `pintarMaya`), casas, milpa y telar, `ALDEA_MAYA`, diálogos y misión `MP_MAY_02` (hojas: `HOJAS`, `poblarHojas`) |
 | `js/mapa.js` | Minimapa: `fondoMapa`, `objetivoEnMapa` (`RUTA`, `AVISO_EN`), `dibujarMapa` cada 150 ms |
 | `js/mazmorra_maya.js` | Mazmorra maya: boca del acueducto (`BOCA`, `bocaAcueducto`, `entrarMazmorraMaya`), misión `MP_MAY_03`, sub-jefes `cocodriloPantano` y `murcielagoEstuco`, jefe `guardianCiclos` |
+| `js/agua.js` | Bendición del Agua (`corrienteDeAgua`, `CORRIENTE`), lodo seco (`lodoSeco`), cierre del capítulo II (`MP_MAY_04`, `cierreCapituloII`) |
 | `js/pisos.js` | Suelo (`pintarLosa`) y muros (`pintarMuro`) de los pisos 2 y 3 pintados por código; colores en `PALETA` |
 | `js/juego.js` | Banderas, misiones, `cargarRegion`, guardado, bucle `actualizar` |
 | `js/musica.js` | Música prehispánica: instrumentos, `MUSICA` (patrones por modo), `modoMusica`, secuenciador |

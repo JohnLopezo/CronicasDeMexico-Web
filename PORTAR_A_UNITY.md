@@ -554,3 +554,13 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
   1500 de vida, `BreakGauge` débil a Viento y Tierra, `ReportOnDefeat` (`vencer:guardian_ciclos`), bandera
   `may.guardian_ciclos_vencido`. Valores en `GUARDIAN_CICLOS` (`js/mazmorra_maya.js`).
 - **Salida:** `ScenePortal` del 3-4 a `Maya_Palenque` (`desde_mazmorra`). Misión `MP_MAY_03` completa con `vencer:guardian_ciclos`.
+
+## 38. Habilidad de agua y cierre del capítulo II (etapa 51)
+
+- **Habilidad:** `PlayerWaterCurrent` (nuevo, junto a la de tierra de `BEN_tierra`): entrada V / botón Este secundario; franja de
+  5 × 1,2 m delante, `Health.TakeDamage` con afinidad Agua (1,5 × ataque), empuje 9 a los no jefes, cura 6, coste 30, espera 5.
+  Se activa con la bandera `may.bendicion_agua` (no ocupa ranura de Bendición). Valores en `CORRIENTE` (`js/agua.js`).
+- **Obstáculo:** `BreakableMud` (como `BreakableBasalt`, pero solo lo rompe la corriente); uno en `Maya_Palenque` tapando un
+  `RewardChest` (`REC_ofrenda_may_lodo`).
+- **Historia:** `QuestData` `MP_MAY_04` (`hablar:escriba`, `examinar:tablero_palenque`), `ItemData` `fragmento_segunda_memoria`,
+  entrada de Museo `registro.cultura.maya`, diálogos nuevos del escriba y la pantalla de fin de capítulo.

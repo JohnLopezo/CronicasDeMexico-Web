@@ -364,6 +364,7 @@ entrada.alPulsar = (acc) => {
   if (juego.menuAbierto) { if (acc === 'bolsa') cerrarMenu(); return; }
   if (acc === 'bolsa' && !juego.dialogo) return abrirMenu();
   if (acc === 'tierra') return golpeDeTierra();
+  if (acc === 'agua') return corrienteDeAgua(); // js/agua.js
   if (acc === 'fijar') return alternarFijar();
   if (acc === 'especial') return; // la recoge el jugador con consumir()
   if (acc === 'cambiar') return cambiarArma(); // js/armas.js
@@ -381,7 +382,7 @@ const esTactil = () => document.body.classList.contains('es-tactil');
 function alternarPausa() {
   juego.pausa = !juego.pausa;
   $('pausa').classList.toggle('oculto', !juego.pausa);
-  $('pausaAyuda').textContent = esTactil() ? 'Joystick: mover · Espada: atacar (junto a algo, la mano: usar; mantener: acción de senda) · Escudo (mantener): defender · Flechas: esquivar · Flecha arriba: saltar · Montaña: tierra · Estrella: especial del arma · Flechas cruzadas: cambiar arma · Bolsa · Con arma a distancia, Espada con el enemigo lejos: dispara' : 'WASD o flechas: mover · J o clic: atacar · Q o clic derecho (mantener): defender · Espacio: esquivar · K: saltar · E: usar · Tab: fijar objetivo · C: tierra · F: especial del arma · R: cambiar arma · 1: uso rápido · I: bolsa · Esc: pausa · Con arma a distancia, J con el enemigo lejos: dispara';
+  $('pausaAyuda').textContent = esTactil() ? 'Joystick: mover · Espada: atacar (junto a algo, la mano: usar; mantener: acción de senda) · Escudo (mantener): defender · Flechas: esquivar · Flecha arriba: saltar · Montaña: tierra · Gota: agua · Estrella: especial del arma · Flechas cruzadas: cambiar arma · Bolsa · Con arma a distancia, Espada con el enemigo lejos: dispara' : 'WASD o flechas: mover · J o clic: atacar · Q o clic derecho (mantener): defender · Espacio: esquivar · K: saltar · E: usar · Tab: fijar objetivo · C: tierra · V: agua · F: especial del arma · R: cambiar arma · 1: uso rápido · I: bolsa · Esc: pausa · Con arma a distancia, J con el enemigo lejos: dispara';
   if (juego.pausa) $('reanudar').focus();
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden && juego.activo && !juego.pausa) alternarPausa(); });
@@ -495,6 +496,7 @@ function dibujarTodo() {
   for (const s of juego.disparos) elipse(s.x, s.y, s.color ? 0.18 : 0.14, s.color || '#c9a8ff', '#fff', s.z || 0.9);
   dibujarDardos();
   for (const f of juego.efectos) {
+    if (f.tipo === 'agua') dibujarCorriente(f); // js/agua.js
     if (f.tipo === 'tierra') elipse(f.x, f.y, TIERRA.radio * (1.2 - f.t), `rgba(224,162,58,${f.t * 1.5})`, '#e0a23a');
     if (f.tipo === 'num') dibujarNumero(f); // js/efectos.js
     if (f.tipo === 'tajo') elipse(f.x, f.y, (f.radio ?? ATAQUE.radio) * (f.remate ? 1.15 : 1), `rgba(255,240,200,${f.t * 3})`, null, 0.5);
@@ -521,6 +523,9 @@ function hud(dtReal) {
   $('bEspecial').classList.toggle('apagado', juego.esperaEspecial > 0 || p.energia < (especialDe()?.coste || 0));
   $('bArma').classList.toggle('oculto', ranuras().length < 2);
   $('bTierra').dataset.espera = juego.esperaTierra > 0 ? juego.esperaTierra.toFixed(1) : '';
+  $('bAgua').classList.toggle('oculto', !tieneAgua());
+  $('bAgua').classList.toggle('apagado', juego.esperaAgua > 0 || p.energia < CORRIENTE.coste);
+  $('bAgua').dataset.espera = juego.esperaAgua > 0 ? juego.esperaAgua.toFixed(1) : '';
   const nivel = nombreNivel(juego.region), quedan = esGenerado(juego.region) ? vivos().length : 0;
   $('esqTxt').textContent = '◆'.repeat(j.cargas) + '◇'.repeat(MOV.cargas - j.cargas) + (textoArmas() ? '  ' + textoArmas() : ''); // armas (js/armas.js)
   $('zona').classList.toggle('oculto', !nivel);
@@ -561,6 +566,7 @@ function bucle(ahora) {
   if (juego.activo && juego.jugador && !juego.viajando) {
     if (!juego.pausa && !juego.menuAbierto) {
       juego.esperaTierra = Math.max(0, juego.esperaTierra - dtReal);
+      juego.esperaAgua = Math.max(0, (juego.esperaAgua || 0) - dtReal);
       juego.esperaEspecial = Math.max(0, (juego.esperaEspecial || 0) - dtReal);
       if (juego.defensaExtra && (juego.defensaExtra.t -= dtReal) <= 0) juego.defensaExtra = null;
       for (const f of juego.alAparecer) f();

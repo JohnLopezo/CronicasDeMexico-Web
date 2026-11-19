@@ -50,7 +50,7 @@ const TXT_MAZMORRA_MAYA = {
   entrar: 'El escriba tenía razón: el agua corre por canales de piedra bajo el palacio. Hace frío, y el eco de tus pasos tarda en volver.',
   cocodrilo: 'El cocodrilo se hunde en el agua negra y no vuelve a salir. Más abajo, la corriente suena más fuerte: baja hacia unas cámaras de estuco rojo.',
   murcielago: 'El murciélago se estrella contra un tablero de glifos y se deshace en polvo. Detrás, una escalera sube: por ella entra el viento.',
-  guardian: 'El Guardián de los Ciclos se arrodilla y baja el hacha. La lluvia que traía se calma. En su pecho, los glifos de la cuenta larga siguen girando, más despacio: la Sombra ya no los empuja. Una escalera baja de la torre, hacia la plaza de Palenque.',
+  guardian: 'El Guardián de los Ciclos se arrodilla y baja el hacha. La lluvia que traía se calma. En su pecho, los glifos de la cuenta larga siguen girando, más despacio: la Sombra ya no los empuja. En sus manos queda el agua: te la ofrece, y la corriente del Otolum se te mete en el cuerpo. Una escalera baja de la torre, hacia la plaza de Palenque.',
 };
 // Desde poblarPalenque (js/palenque.js): la boca se examina siempre; con el camino del agua, se entra.
 function bocaAcueducto(I) {
@@ -125,7 +125,7 @@ function guardianCiclos(x, y) {
     juego.marcas = juego.marcas.filter((m) => m.dueno !== g); juego.disparos = [];
     Object.assign(g, { vida: 1, muriendo: 0, estado: 'liberado', golpeable: false, embiste: 0, z: 0 });
     entregar(C.premio, 'jefe.guardian_ciclos');
-    mensaje(TXT_MAZMORRA_MAYA.guardian, () => avisar('vencer:guardian_ciclos'));
+    mensaje(TXT_MAZMORRA_MAYA.guardian, () => { avisar('vencer:guardian_ciclos'); premioGuardianCiclos(); }); // js/agua.js
   });
   Object.assign(g, { vida: C.vida, max: C.vida, nombre: C.nombre, figura: C.figura, ruptura: { escudo: 6, seg: 3, debil: ['Viento', 'Tierra'], nombre: C.nombre } }); // el viento aparta las nubes de Chaak
   if (bandera(SUBJEFE.m3_4)) Object.assign(g, { estado: 'liberado', golpeable: false, vida: 1 });

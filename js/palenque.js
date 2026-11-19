@@ -156,10 +156,11 @@ function poblarPalenque(P, E, O, I, T, santuarioMemoria) {
   santuarioMemoria();
   portalMemoria(O, I, P.portal, 'Volver al asentamiento', () => mensaje(TXT_MAYA.portal, () => cargarRegion('ciudad', 'desde_maya', juego.jugador.vida)), 'ciudad');
   const t = PALENQUE.tablero;
-  I.push({ x: t.x, y: t.y - 0.7, r: 1.2, texto: 'Examinar', usar: () => mensaje(TXT_MAYA.tablero, () => avisar('examinar:tablero_palenque')) });
+  I.push({ x: t.x, y: t.y - 0.7, r: 1.2, texto: 'Examinar', usar: () => cierreCapituloII() || mensaje(TXT_MAYA.tablero, () => avisar('examinar:tablero_palenque')) }); // etapa 51: js/agua.js
   T.push({ ...P.a_aldea, a: 'aldea_maya', punto: 'llegada' }); // la aldea (js/aldea_maya.js)
   poblarHojas('palenque', E, O, I);
   bocaAcueducto(I); // la entrada a la mazmorra maya (js/mazmorra_maya.js)
+  lodoPalenque(); // la ofrenda tapada de lodo (js/agua.js)
   for (const [tipo, x, y] of PALENQUE.fauna)
     E.push(...({ ocelote: () => [nuevoOcelote(x, y)], aullador: () => [nuevoAullador(x, y), nuevoAullador(x + 1.2, y - 0.8)], tapir: () => [nuevoTapir(x, y)], jaguar_selva: () => [nuevoJaguarSelva(x, y)],
       mono_arana: () => [nuevoMonoArana(x, y), nuevoMonoArana(x + 1.1, y + 0.8), nuevoMonoArana(x + 1.2, y - 0.8)], tucan: () => [nuevoTucan(x, y)] }[tipo] || (() => [nuevaFauna(tipo, x, y, false)]))());

@@ -94,6 +94,7 @@
   #bSaltar { --c: #8fd8ff; right: calc(var(--d) + 91px); bottom: 119px; }
   #bDefender { --c: #6aa8ff; right: calc(var(--d) + 15px); bottom: 151px; }
   #bTierra { --c: #e6b94a; right: calc(var(--d) + 189px); bottom: 106px; }
+  #bAgua { --c: #6fb8f0; right: calc(var(--d) + 199px); bottom: 30px; } /* etapa 51: la corriente (js/agua.js) */
   #bEspecial { --c: #c58cff; right: calc(var(--d) + 107px); bottom: 203px; }
   #bArma { --c: #e8d49a; right: calc(var(--d) + 185px); bottom: 190px; width: 52px; height: 52px; }
   /* Etapa 47: minimapa (js/mapa.js) bajo la pausa y la bolsa; al tocarlo, grande en el centro. */
@@ -166,6 +167,7 @@
 <button id="bAtacar" class="tbtn oculto" data-acc="atacar" aria-label="Atacar"><svg class="seguir" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg><svg class="mano" viewBox="0 0 24 24"><path d="M8 13V5a1.5 1.5 0 0 1 3 0v6M11 10V4a1.5 1.5 0 0 1 3 0v6M14 10V5a1.5 1.5 0 0 1 3 0v7c0 5-3 8-7 8s-6-3-7-6l-1-3a1.5 1.5 0 0 1 3-1l1 2"/></svg><svg class="espada" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2"/></svg></button>
 <button id="bEsquivar" class="tbtn oculto" data-acc="esquivar" aria-label="Esquivar"><svg viewBox="0 0 24 24"><path d="M5 5l7 7-7 7M13 5l7 7-7 7"/></svg></button>
 <button id="bTierra" class="tbtn oculto" data-acc="tierra" aria-label="Tierra"><svg viewBox="0 0 24 24"><path d="M3 20l6-10 4 6 3-4 5 8z"/></svg></button>
+<button id="bAgua" class="tbtn oculto" data-acc="agua" aria-label="Agua"><svg viewBox="0 0 24 24"><path d="M12 3c3 4.5 6 8 6 11a6 6 0 0 1-12 0c0-3 3-6.5 6-11z"/></svg></button>
 <button id="bEspecial" class="tbtn oculto" data-acc="especial" aria-label="Especial"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg></button>
 <button id="bArma" class="tbtn oculto" data-acc="cambiar" aria-label="Cambiar arma"><svg viewBox="0 0 24 24"><path d="M4 8h14l-3-3M20 16H6l3 3"/></svg></button>
 <button id="bDefender" class="tbtn oculto" data-acc="defender" aria-label="Defender"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></button>
@@ -235,6 +237,7 @@
 <script src="js/palenque.js"></script>
 <script src="js/aldea_maya.js"></script>
 <script src="js/mazmorra_maya.js"></script>
+<script src="js/agua.js"></script>
 <script src="js/mapa.js"></script>
 <script src="js/recompensas.js"></script>
 </body>

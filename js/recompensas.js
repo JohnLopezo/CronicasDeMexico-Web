@@ -157,7 +157,7 @@ function golpeDeTierra() {
   juego.efectos.push({ tipo: 'tierra', x: j.x, y: j.y, t: 0.4 });
   vista.temblor = 0.2; sonar('tierra');
   for (const e of juego.enemigos) if (e.vida > 0 && e.golpeable !== false && dist(e, j) < TIERRA.radio + e.r) herirEnemigo(e, estadisticas().ataque * TIERRA.multiplicador, j, 'Tierra'); // la Tierra es siempre Tierra
-  for (const r of juego.rompibles) if (!bandera(r.bandera) && dist(r, j) < TIERRA.radio + 1) r.romper();
+  for (const r of juego.rompibles) if (!r.agua && !bandera(r.bandera) && dist(r, j) < TIERRA.radio + 1) r.romper(); // el lodo, solo con agua (js/agua.js)
 }
 
 // ---------- Ofrendas y basalto agrietado (RewardChest, BreakableBasalt) ----------
@@ -267,7 +267,7 @@ function pintarMenu() {
         return fila(id, `<span class="cuenta">×${tiene(id)}${eq ? ' · equipada' : ''}</span>${btn}`);
       }).join('') || '<p>La bolsa está vacía.</p>');
   } else if (pestana === 'bendiciones') {
-    cuerpo = [['Principal', p.principal], ['Secundaria', p.secundaria]].map(([r, id]) => { const b = BENDICIONES[id];
+    cuerpo = [['Principal', p.principal], ['Secundaria', p.secundaria], ...(bandera('may.bendicion_agua') ? [['Agua', 'agua']] : [])].map(([r, id]) => { const b = BENDICIONES[id];
       return `<div class="fila"><span class="ico"></span><div><b>${r}: ${b ? b.nombre : '—'}</b><div>${b ? b.desc : 'Aún no tienes ninguna.'}</div><small>${b ? [b.combate, b.exploracion].filter(Boolean).join(' · ') : ''}</small></div></div>`; }).join('');
   } else if (pestana === 'guardian') {
     cuerpo = '<p>Cambiar de Guardián no cura ni recupera energía.</p><div class="cartas">' + GUARDIANES.map((g) => cartaGuardian(g, p.nivel, g.id === p.guardian)).join('') + '</div>';
@@ -278,7 +278,7 @@ function pintarMenu() {
   } else if (pestana === 'museo') {
     const objetos = (titulo, cat) => seccion(titulo) + (p.orden.filter((id) => OBJETOS[id].cat === cat).map((id) => { const o = OBJETOS[id];
       return linea(`${o.nombre}${tiene(id) > 1 ? ` ×${tiene(id)}` : ''} · ${ORIGEN[o.origen]}`, o.desc + (o.notaOrigen ? `<small>${o.notaOrigen}</small>` : ''), COLOR_RAREZA[o.rareza]); }).join('') || '<p>Nada todavía.</p>');
-    const bendiciones = [[p.principal, 'principal'], [p.secundaria, 'secundaria']].filter(([id]) => id);
+    const bendiciones = [[p.principal, 'principal'], [p.secundaria, 'secundaria'], [bandera('may.bendicion_agua') && 'agua', 'del Guardián de los Ciclos']].filter(([id]) => id);
     cuerpo = '<p>El Museo de la Memoria guarda lo que has recuperado. (D = documentado, I = interpretación, F = ficción del juego.)</p>' + seccion('Culturas') +
       MUSEO.map((c) => !bandera(c.bandera) ? linea('???', 'Una memoria todavía por recuperar.') : linea(c.titulo, c.resumen) +
         c.guardianes.map((g) => (bandera(g.bandera) ? linea(`Guardián liberado: ${g.nombre}`, g.recuerdo, COLOR_RAREZA[4]) : linea(`Guardián: ${g.nombre}`, 'Aún corrompido.'))).join('')).join('') +

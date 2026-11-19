@@ -46,7 +46,7 @@ function objetivoEnMapa() {
 }
 let mapaGrande = false;
 function dibujarMapa() {
-  const ver = juego.activo && juego.jugador && mundo && opciones.mapa && !juego.viajando;
+  const ver = juego.activo && juego.jugador && mundo && opciones.mapa && !juego.viajando && !juego.menuAbierto; // bajo un menú o una capa, no
   lienzoMapa.classList.toggle('oculto', !ver);
   lienzoMapa.classList.toggle('grande', mapaGrande);
   if (!ver) return;

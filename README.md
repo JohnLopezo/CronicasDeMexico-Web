@@ -53,6 +53,31 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 51 (2026-11-19): la habilidad de agua y el cierre del capítulo II (`js/agua.js`)
+
+Lo que pide la biblia (Historia_Mundo, cap. II, Recompensa): el guardián liberado concede una habilidad de agua que supera
+obstáculos y abre rutas; el fragmento muestra que la Sombra afecta tierras lejanas.
+
+- **Bendición del Agua: la Corriente** (tecla **V**, botón táctil **Agua** con una gota, a la izquierda de Esquivar). La concede
+  el Guardián de los Ciclos al liberarse (`may.bendicion_agua`), sin quitar la de la Tierra (no ocupa ranura). Chorro de 5 m
+  hacia donde miras (1,2 m de ancho): 1,5 × ataque con afinidad Agua, empuja a los que no son jefes, te cura 6. Cuesta 30 de
+  energía y espera 5 s (`CORRIENTE`). Sale en la pestaña Bendiciones y en el Museo.
+- **Lodo seco** (`lodoSeco`, como el basalto agrietado): solo lo deshace la corriente (el golpe de tierra ya no rompe lo que es
+  `agua: true`). En la plaza de Palenque (esquina sureste, `LODO_PALENQUE`) tapa una ofrenda: 60 de experiencia, 2 jades y 2
+  cacaos (`REC_ofrenda_may_lodo`).
+- **Cierre del capítulo II, misión MP_MAY_04 «Lo que guardaba el agua»** (empieza al vencer al Guardián, que también da el
+  **Fragmento de la Segunda Memoria**): contárselo al escriba, que te manda al tablero de la plaza; al poner allí el fragmento,
+  la columna lisa recupera sus glifos y la luz muestra ciudades del altiplano que también se borran (`cierreCapituloII`).
+  Banderas `may.registros_recuperados` (la tejedora ya tenía su línea) y `registro.cultura.maya` (entrada «La memoria maya» en
+  el Museo, con el Guardián). Pantalla «Fin del capítulo II» con el capítulo III «próximamente».
+- El minimapa se oculta mientras hay un menú o una capa abierta (antes tapaba la pantalla del capítulo).
+
+Prueba: `herramientas/dificultad/etapa51.mjs` (14 comprobaciones: botón oculto sin la bendición, premio del Guardián, la corriente
+hiere al de delante y no al de atrás, gasta y cura, espera, la tierra no rompe el lodo y el agua sí, ofrenda, mapa, escriba,
+tablero, fin del capítulo y la bendición en la bolsa). `etapa50.mjs`, `etapa47.mjs`, `etapa44.mjs` y `recorrido.mjs` bien.
+**Ya fallaba antes de esta etapa** (comprobado sin los cambios): `etapa43.mjs`, «al caer, al santuario de Palenque» (el jugador
+no queda a menos de 0,5 m del santuario tras 2,5 s); sin investigar.
+
 ## Etapa 50 (2026-11-19): mazmorra maya, piso 3 «el observatorio» y el Guardián de los Ciclos (`js/mazmorra_maya.js`, `js/niveles.js`, `js/pisos.js`)
 
 - **La bajada del 2-4 se abre:** tras el murciélago se sube al 3-1 (`m3_1`…`m3_4`, clave 13), y la misión **MP_MAY_03** avanza
