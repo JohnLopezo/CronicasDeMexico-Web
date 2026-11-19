@@ -24,7 +24,7 @@ const RUTA = { ciudad: { palenque: 'palenque', aldea_maya: 'palenque' }, palenqu
 // Dónde está cada aviso de misión que no se encuentra por su habitante: [región, o una función que da el punto en la región].
 const AVISO_EN = {
   'hablar:escriba': 'aldea_maya', 'examinar:tablero_palenque': 'palenque', 'hablar:anciana': 'ciudad', 'examinar:altar_trono': 'ciudad',
-  'llegar:mazmorra_maya': 'palenque', 'vencer:cocodrilo_pantano': 'palenque', 'llegar:camaras_estuco': 'palenque', 'vencer:murcielago_estuco': 'palenque', 'llegar:observatorio': 'palenque', // etapa 48: la boca del acueducto
+  'llegar:mazmorra_maya': 'palenque', 'vencer:cocodrilo_pantano': 'palenque', 'llegar:camaras_estuco': 'palenque', 'vencer:murcielago_estuco': 'palenque', 'llegar:observatorio': 'palenque', 'vencer:guardian_ciclos': 'palenque', // etapa 48: la boca del acueducto
   'examinar:hoja_libro': () => juego.interactuables.filter((i) => i.texto === 'Recoger la hoja')[0] || juego.enemigos.find((e) => e.tipo === 'espiritu' && e.vida > 0),
 };
 function objetivoEnMapa() {

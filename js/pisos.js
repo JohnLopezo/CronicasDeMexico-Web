@@ -22,6 +22,9 @@ const PALETA = {
   // Etapa 49, mazmorra maya piso 2 (las cámaras de estuco): estuco crema gastado y estuco pintado de rojo.
   12: { junta: '#3a2119', piedra: ['#c8b494', '#bfab8b', '#cdbb9d', '#b9a584'], claro: '#e0d2b6', oscuro: '#94806a', cara: '#7e3326',
     rojo: ['#9b3526', '#a63d2c', '#8c2f22'], rojoClaro: '#c25a40', glifo: '#4a2016', grieta: '#5a4636', boveda: '#1a1210' },
+  // Etapa 50, mazmorra maya piso 3 (el observatorio): caliza clara bajo la luna, cielo de noche en las ventanas.
+  13: { junta: '#2a2c38', piedra: ['#a9a89c', '#b1b0a3', '#a2a195', '#b8b6a8'], claro: '#d2d0c2', oscuro: '#7d7c72', cara: '#64635e',
+    glifo: '#5d5c54', cielo: '#0e1636', estrella: '#e8e6c8', estuco: '#c9c6b6', rojo: '#8e3a2c' },
 };
 const px = (g, c, x, y, w = 1, h = 1) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
 const elige = (rnd, a) => a[Math.floor(rnd() * a.length)];
@@ -41,6 +44,7 @@ function pintarLosa(g, piso, ox, oy, l) {
   if (piso === 4) return losaPalenque(g, P, rnd, ox, oy, l);
   if (piso === 11) return losaCanal(g, P, rnd, ox, oy, l);
   if (piso === 12) return losaEstuco(g, P, rnd, ox, oy, l);
+  if (piso === 13) return losaObservatorio(g, P, rnd, ox, oy, l);
   if (piso === 2) {
     // Dos o cuatro lajas: un corte vertical y un corte horizontal a cada lado, a alturas distintas.
     const cx = 14 + Math.floor(rnd() * 20), cy = [8 + Math.floor(rnd() * 16), 8 + Math.floor(rnd() * 16)];
@@ -187,10 +191,54 @@ function muroEstuco(esY, variante) {
   return Object.assign(c, { naturalWidth: c.width, naturalHeight: c.height, complete: true });
 }
 
+// Piso 13 (observatorio): losas grandes de caliza, a la luz de la luna; a veces un cartucho con un signo de los días tallado
+// (D: el calendario de 260 días, con 20 signos; F: cuáles). Borde de atrás con pretil; delante, la caída de la torre.
+function losaObservatorio(g, P, rnd, ox, oy, l) {
+  const cx = 16 + Math.floor(rnd() * 16);
+  for (const [x, w] of [[0, cx], [cx, PPU - cx]]) {
+    px(g, elige(rnd, P.piedra), ox + x + 1, oy + 1, w - 2, PX_Y - 2);
+    px(g, P.claro, ox + x + 1, oy + 1, w - 2, 1); px(g, P.oscuro, ox + x + 1, oy + PX_Y - 2, w - 2, 1);
+    for (let i = 0; i < 5; i++) px(g, rnd() < 0.5 ? P.claro : P.oscuro, ox + x + 2 + Math.floor(rnd() * (w - 4)), oy + 2 + Math.floor(rnd() * (PX_Y - 4)));
+  }
+  if (rnd() < 0.05) { // cartucho de un día
+    const gx = ox + 14 + Math.floor(rnd() * 14), gy = oy + 6;
+    bola(g, P.glifo, gx + 6, gy + 10, 7, 9); bola(g, P.claro, gx + 6, gy + 10, 5, 7);
+    px(g, P.glifo, gx + 3, gy + 7, 2, 2); px(g, P.glifo, gx + 8, gy + 7, 2, 2); px(g, P.glifo, gx + 3, gy + 12, 7, 2);
+    px(g, P.glifo, gx + 1, gy + 19, 10, 2); // la peana del cartucho
+  }
+  if (l.arriba) { px(g, P.cara, ox, oy - LOSA.matas, PPU, LOSA.matas); px(g, P.estuco, ox, oy - LOSA.matas, PPU, 2); px(g, P.rojo, ox, oy - 3, PPU, 1); }
+  if (l.abajo) {
+    px(g, P.cara, ox, oy + PX_Y, PPU, LOSA.cara); px(g, P.claro, ox, oy + PX_Y, PPU, 1);
+    for (let x = (l.x % 2) * 12; x < PPU; x += 24) px(g, P.junta, ox + x, oy + PX_Y + 1, 1, LOSA.cara - 1);
+    px(g, P.junta, ox, oy + PX_Y + 7, PPU, 1);
+  }
+}
+// Muro del observatorio: estuco claro con una ventana en T (D: las ventanas en forma del signo ik', «viento», de la torre y el
+// palacio de Palenque; I: que la torre sirviera para mirar el cielo), por la que se ve la noche con estrellas.
+function muroObservatorio(esY, variante) {
+  const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[13], rnd = azar(1300 + variante + (esY ? 50 : 0));
+  c.width = 64; c.height = 112;
+  const [x0, x1, y0, y1] = esY ? [26, 37, 20, 108] : [8, 55, 40, 97];
+  px(g, P.junta, x0 - 1, y0 - 1, x1 - x0 + 3, y1 - y0 + 2);
+  for (let y = y1 - 10, fila = 0; y >= y0; y -= 10, fila++)
+    for (let x = x0 - (fila % 2 ? 8 : 0); x <= x1; x += 16) {
+      const a = Math.max(x, x0), b = Math.min(x + 15, x1);
+      px(g, elige(rnd, P.piedra), a, y + 1, b - a, 9); px(g, P.claro, a, y + 1, b - a, 1); px(g, P.oscuro, a, y + 9, b - a, 1);
+    }
+  if (!esY) {
+    px(g, P.estuco, x0 - 1, y0 - 4, x1 - x0 + 3, 5); px(g, P.rojo, x0 - 1, y0, x1 - x0 + 3, 1); // cornisa
+    const ven = [[24, 52, 16, 8], [29, 60, 6, 18]]; // la T: travesaño y pie
+    for (const [x, y, w, h] of ven) { px(g, P.junta, x - 1, y - 1, w + 2, h + 2); px(g, P.cielo, x, y, w, h); }
+    for (let i = 0; i < 4; i++) { const [x, y, w, h] = ven[i % 2]; px(g, P.estrella, x + Math.floor(rnd() * w), y + Math.floor(rnd() * h)); }
+  } else for (let y = y0; y < y1; y += 22) px(g, P.estuco, x0, y, x1 - x0 + 1, 2);
+  px(g, P.junta, x0 - 1, y1 - 3, x1 - x0 + 3, 3);
+  return Object.assign(c, { naturalWidth: c.width, naturalHeight: c.height, complete: true });
+}
 // Muro del borde de atrás (`y` = false: 48 px de ancho, de y ≈ 36 a 98) o del oeste (`y` = true: una columna, x 25-38, y 18-109).
 function pintarMuro(piso, esY, variante) {
   if (piso === 11) return muroCanal(esY, variante);
   if (piso === 12) return muroEstuco(esY, variante);
+  if (piso === 13) return muroObservatorio(esY, variante);
   const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[piso], rnd = azar(piso * 100 + variante + (esY ? 50 : 0));
   c.width = 64; c.height = 112;
   if (piso === 2) {

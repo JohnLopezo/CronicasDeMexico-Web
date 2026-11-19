@@ -53,6 +53,28 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 50 (2026-11-19): mazmorra maya, piso 3 «el observatorio» y el Guardián de los Ciclos (`js/mazmorra_maya.js`, `js/niveles.js`, `js/pisos.js`)
+
+- **La bajada del 2-4 se abre:** tras el murciélago se sube al 3-1 (`m3_1`…`m3_4`, clave 13), y la misión **MP_MAY_03** avanza
+  («sube hacia el observatorio», «vence al Guardián de los Ciclos»). Al vencerlo, la misión queda **cumplida**.
+- **Piso 3, el observatorio** (`losaObservatorio`, `muroObservatorio`): la azotea de la torre del palacio. Losas grandes de caliza
+  a la luz de la luna, a veces con un cartucho de día tallado; muros de sillares con cornisa y ventanas en T (ik', viento) que
+  dejan ver la noche; el fondo es un cielo de noche con estrellas (`Cielo_Noche`, pintado en `js/mazmorra_maya.js`), sin
+  decorado en el vacío (`deco: []` ahora se admite). Enemigos: espíritus, guacamayas, avispas, monos, ocelotes y aulladores
+  (presupuesto 25-29). Santuario de Vida en el 3-3; armas mayas ★★★.
+- **Jefe del 3-4: el Guardián de los Ciclos** (`guardianCiclos`): el Guardián de la Piedra Viva (`js/guardian.js`: tres fases,
+  sus ataques y el agua que sube en la fase 2) con la figura del Señor de la Lluvia de Unity (Chaak; `g.figura` en
+  `dibujarGuardian`), 1500 de vida y débil al Viento y a la Tierra. Espera dormido; al vencerlo se queda arrodillado. Da 500 de
+  experiencia, 3 semillas y 2 jades.
+- **Salida:** la bajada del 3-4 (el último nivel) es la escalera de la torre y sale a la plaza de Palenque, junto a la boca del
+  acueducto. Ya no hay aviso de «próxima etapa» en la mazmorra maya.
+- Fidelidad: D, la torre del palacio de Palenque y sus ventanas en T; Chaak, dios de la lluvia; los 20 signos de los días.
+  I: la torre como observatorio. F: el Guardián de los Ciclos.
+
+Prueba: `herramientas/dificultad/etapa50.mjs` (9 comprobaciones: del 2-4 al 3-1, misión, piso 13, estrado, santuario,
+Guardián dormido, despierto con barra, mapa, vencido con la misión cumplida, salida a Palenque). `etapa49.mjs` ahora comprueba que
+el 2-4 lleva al 3-1. `recorrido.mjs` sin `[assert]`. Sin medir con el bot la pelea del Guardián (ni las del cocodrilo y el murciélago).
+
 ## Etapa 49 (2026-11-19): mazmorra maya, piso 2 «las cámaras de estuco» (`js/mazmorra_maya.js`, `js/niveles.js`, `js/pisos.js`)
 
 - **La bajada del 1-4 se abre:** tras el cocodrilo de pantano se baja al 2-1 (`m2_1`…`m2_4`, clave 12). Al llegar avanza la misión

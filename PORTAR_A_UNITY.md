@@ -545,3 +545,12 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
 - **Sub-jefe:** el murciélago de la muerte, un `WildEnemy` con el `EnemyData` del murciélago a escala 2,8 y los valores de
   `MURCIELAGO_ESTUCO` (`js/mazmorra_maya.js`), barra de jefe y `ReportOnDefeat` (`vencer:murcielago_estuco`).
 - **Misión:** `MP_MAY_03` suma los pasos `vencer:murcielago_estuco` y `llegar:observatorio`; `llegar:camaras_estuco` al entrar al 2-1.
+
+## 37. Mazmorra maya, piso 3 y el Guardián de los Ciclos (etapa 50)
+
+- **Escenas:** `Maya_Mazmorra_P3` (o niveles generados `m3_1`…`m3_4`) con el estilo «observatorio» (caliza, ventanas en T, cielo
+  de noche de fondo; referencia en `losaObservatorio`/`muroObservatorio`, `js/pisos.js`). Datos del piso en la clave 13.
+- **Jefe:** `StoneGuardian` reutilizado con otro `EnemyData`/animador: sprites `Jefe_SenorLluvia_*` (ya en Unity, Sprites/Jefes),
+  1500 de vida, `BreakGauge` débil a Viento y Tierra, `ReportOnDefeat` (`vencer:guardian_ciclos`), bandera
+  `may.guardian_ciclos_vencido`. Valores en `GUARDIAN_CICLOS` (`js/mazmorra_maya.js`).
+- **Salida:** `ScenePortal` del 3-4 a `Maya_Palenque` (`desde_mazmorra`). Misión `MP_MAY_03` completa con `vencer:guardian_ciclos`.

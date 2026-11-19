@@ -156,7 +156,7 @@ function dibujarGuardian(g) {
   elipse(g.x, g.y, 1.1, '#0007', null, g.suelo ?? g.z);
   const pose = g.estado === 'liberado' ? 'Liberado' : g.estado === 'acecho' && g.mov && Math.floor(g.paso * 3) % 2 ? 'Paso' : g.pose;
   const quieto = pose === 'Sentado' || pose === 'Liberado'; // solo tienen una vista
-  const chac = `Jefe_GuardianOfrenda_${FIGURA_CHACMOOL[pose] || 'Reposo'}1_03`;
+  const chac = `Jefe_${g.figura || 'GuardianOfrenda'}_${FIGURA_CHACMOOL[pose] || 'Reposo'}1_03`;
   const n = SPRITES[chac] ? chac : quieto ? `Guardian_Piedra_${pose}_01` : `Guardian_Piedra_${pose}_${direccion5(g.fx, g.fy)}`;
   // Dormido: apagado, como una estatua; al caminar se mece un poco.
   const filtro = g.destello > 0 ? 'brightness(2.2)' : g.roto > 0 ? ROTO_FILTRO : g.invul > 0 ? 'brightness(1.4) saturate(1.6)' : pose === 'Sentado' && SPRITES[chac] ? 'grayscale(0.7) brightness(0.8)' : null;

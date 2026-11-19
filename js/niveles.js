@@ -11,7 +11,7 @@ const SECUENCIA = NIVELES.flat();
 // Etapa 48: la mazmorra maya («el camino del agua», bajo Palenque): 3 pisos de 4 niveles, m1_1…m3_4, todos generados; el X-4
 // es la arena de un jefe. Por ahora, el piso 1 (los canales del Otolum). Sus pisos usan las claves 11-13 en ESTILO, PALETA,
 // POBLACION, PRESUPUESTO y VIDA_NIVEL, para no chocar con los olmecas (1-3).
-const NIVELES_MAYA = [['m1_1', 'm1_2', 'm1_3', 'm1_4'], ['m2_1', 'm2_2', 'm2_3', 'm2_4']];
+const NIVELES_MAYA = [['m1_1', 'm1_2', 'm1_3', 'm1_4'], ['m2_1', 'm2_2', 'm2_3', 'm2_4'], ['m3_1', 'm3_2', 'm3_3', 'm3_4']];
 const SECUENCIA_MAYA = NIVELES_MAYA.flat();
 const esGenerado = (id) => /^[nm]\d_\d$/.test(id);
 const esMaya = (id) => /^m\d_\d$/.test(id || '');
@@ -20,7 +20,7 @@ const secuenciaDe = (id) => (esMaya(id) ? SECUENCIA_MAYA : SECUENCIA);
 const nombreNivel = (id) => { const S = secuenciaDe(id), i = S.indexOf(id), k = esMaya(id) ? 4 : 5; return i < 0 ? '' : `${Math.floor(i / k) + 1}-${(i % k) + 1}`; };
 const anterior = (id) => (id === 'm1_1' ? 'palenque' : secuenciaDe(id)[secuenciaDe(id).indexOf(id) - 1]);
 const siguiente = (id) => secuenciaDe(id)[secuenciaDe(id).indexOf(id) + 1];
-const SUBJEFE = { n1_5: 'olm.subjefe_1_vencido', m1_4: 'may.subjefe_1_vencido', m2_4: 'may.subjefe_2_vencido' }; // la bajada no se abre hasta vencerlo
+const SUBJEFE = { n1_5: 'olm.subjefe_1_vencido', m1_4: 'may.subjefe_1_vencido', m2_4: 'may.subjefe_2_vencido', m3_4: 'may.guardian_ciclos_vencido' }; // la bajada no se abre hasta vencerlo
 
 // Enemigos de las salas generadas, por piso: [tipo, peso]. 'espiritu' es el espíritu corrompido; los demás, fauna.
 const POBLACION = {
@@ -31,17 +31,19 @@ const POBLACION = {
   11: [['espiritu', 3], ['Murcielago', 2], ['Serpiente', 2], ['Cocodrilo', 2], ['pejelagarto', 2], ['armadillo', 1]],
   // Maya, piso 2 (cámaras de estuco): seco y cerrado; murciélagos, avispas y monos que entran por las grietas, el ocelote.
   12: [['espiritu', 4], ['Murcielago', 3], ['Avispa', 2], ['Serpiente', 1], ['Mono', 2], ['ocelote', 2]],
+  // Maya, piso 3 (observatorio): a cielo abierto, lo que vuela y trepa, y más espíritus cerca del Guardián.
+  13: [['espiritu', 4], ['Guacamaya', 2], ['Avispa', 2], ['Mono', 2], ['ocelote', 2], ['aullador', 1]],
 };
 const SALA = { ancho: [7, 10], alto: [5, 7], pasillo: [2, 4], arena: [13, 9] };
 // Dificultad (revisada el 2026-11-13; ver README, etapa 22): cada nivel tiene un presupuesto de amenaza que se reparte entre
 // sus salas, y cada tipo cuesta según lo peligroso que es (una manada de pecaríes cuesta como un tapir). Presupuesto por piso
 // y nivel (X-1 a X-4; el 1-1 es el piso 1 de Unity). En el X-3 hay un santuario de Vida.
 const COSTE = { Serpiente: 2, Murcielago: 2, Avispa: 2, Guacamaya: 2, armadillo: 2, espiritu: 3, Cocodrilo: 3, Mono: 3, ocelote: 4, aullador: 4, pejelagarto: 4, pecari: 6, tapir: 6 };
-const PRESUPUESTO = { 1: [0, 11, 13, 15], 2: [16, 18, 20, 22], 3: [19, 21, 23, 26], 11: [18, 21, 23], 12: [22, 24, 26] }; // maya: se llega tras el Guardián olmeco // pisos 2 y 3 subidos en la etapa 32 (curva creciente)
+const PRESUPUESTO = { 1: [0, 11, 13, 15], 2: [16, 18, 20, 22], 3: [19, 21, 23, 26], 11: [18, 21, 23], 12: [22, 24, 26], 13: [25, 27, 29] }; // maya: se llega tras el Guardián olmeco // pisos 2 y 3 subidos en la etapa 32 (curva creciente)
 const LIBRE_LLEGADA = 4; // m sin enemigos alrededor de la llegada (etapa 38)
 // Nivel con santuario de Vida en cada piso: el X-3, a mitad de piso. Al 2-1 se llega con las semillas de la nauyaca y al 3-1,
 // con el santuario del 2-5.
-const VIDA_NIVEL = { 1: 3, 2: 3, 3: 3, 11: 3, 12: 3 };
+const VIDA_NIVEL = { 1: 3, 2: 3, 3: 3, 11: 3, 12: 3, 13: 3 };
 
 // ---------- Aspecto de cada piso (etapa 35, solo HTML) ----------
 // En vez del negro, el vacío lleva una textura oscura del piso, y alrededor de las salas generadas crecen plantas y rocas
@@ -61,6 +63,8 @@ ESTILO[4] = { pintado: true, color: '#14301a', textura: 'Suelo_Selva_00', suelto
 ESTILO[11] = { pintado: true, color: '#0b1618', textura: 'Tile_Agua_Anim_01', sueltos: [], luz: 'brightness(.34) saturate(.7)', deco: ['Roca_Musgo_01', 'Roca_Musgo_02', 'Helecho_02'] };
 // Etapa 49: piso 2 maya, las cámaras de estuco (js/pisos.js): estuco pintado de rojo, a oscuras, con escombros.
 ESTILO[12] = { pintado: true, color: '#1a0f0c', sueltos: ['Escombros_Basalto_01', 'Escombros_Basalto_02'], luz: 'brightness(.3) saturate(.6) sepia(.4)', deco: ['Escombros_Basalto_01', 'Escombros_Basalto_02', 'Roca_Basalto_02'] };
+// Etapa 50: piso 3 maya, el observatorio (js/pisos.js): la azotea de la torre, bajo el cielo de noche (Cielo_Noche, js/pisos.js).
+ESTILO[13] = { pintado: true, color: '#0a0f26', textura: 'Cielo_Noche', luz: 'brightness(1)', deco: [] };
 // El muro de basalto de un piso con diseño propio: «Muro_Basalto_01@2» (mismo nombre de base, así choca igual), pintado
 // una vez por js/pisos.js. En el piso 1 queda el de Unity.
 function muroDe(nombre, piso) {
@@ -298,7 +302,7 @@ function generarNivel(id) {
   // Decorado del piso en el vacío, lejos del suelo (más lejos por delante, para que no tape a nadie).
   const deco = ESTILO[piso].deco, cerca = (a, b) => { for (let u = -2; u <= 2; u++) for (let v = -2; v <= 3; v++) if (es(a + u, b + v)) return true; return false; };
   for (let a = lim[0] - 4; a <= lim[1] + 4; a++) for (let b = lim[2] - 4; b <= lim[3] + 4; b++)
-    if (rnd() < 0.12 && !cerca(a, b)) objetos.push({ sprite: deco[Math.floor(rnd() * deco.length)], x: a + rnd() - 0.5, y: b + rnd() - 0.5, z: 0 });
+    if (deco.length && rnd() < 0.12 && !cerca(a, b)) objetos.push({ sprite: deco[Math.floor(rnd() * deco.length)], x: a + rnd() - 0.5, y: b + rnd() - 0.5, z: 0 });
   TRAMPAS[id] = T; VASIJAS[id] = vasijas;
   return { nota: `Generado (${id}, semilla ${semillaIncursion()})`, generado: true, suelo: [], agua, agua_vadeable: true, objetos, niveles: [], rampas: [], muelles: [],
     limites: lim, puntos, vacio, losas, enemigos, fuentes: fuente ? fuente.r.suelo.map((c) => c.sprite) : [], piso };
@@ -341,6 +345,7 @@ function poblarNivel(id, P, E, I, T) {
   if (!limpio) for (const e of d.enemigos) E.push(...(e.tipo === 'espiritu' ? [nuevoEspiritu(e.x, e.y)] : e.tipo === 'pecari' ? manada(e) : e.tipo === 'tapir' ? [nuevoTapir(e.x, e.y)] : e.tipo === 'ocelote' ? [nuevoOcelote(e.x, e.y)] : e.tipo === 'aullador' ? pareja(e) : e.tipo === 'armadillo' ? [nuevoArmadillo(e.x, e.y)] : e.tipo === 'pejelagarto' ? [nuevoPejelagarto(e.x, e.y)] : [nuevaFauna(e.tipo, e.x, e.y, false)]));
   if (id === 'm1_4' && !bandera(SUBJEFE.m1_4)) E.push(cocodriloPantano(P.subjefe.x, P.subjefe.y)); // js/mazmorra_maya.js
   if (id === 'm2_4' && !bandera(SUBJEFE.m2_4)) E.push(murcielagoEstuco(P.subjefe.x, P.subjefe.y));
+  if (id === 'm3_4') E.push(guardianCiclos(P.subjefe.x, P.subjefe.y)); // vencido, se queda sentado (js/mazmorra_maya.js)
   if (id === 'n1_5' && !bandera('olm.subjefe_1_vencido')) E.push(nuevaNauyaca(P.subjefe.x, P.subjefe.y, () => {
     poner('olm.subjefe_1_vencido'); juego.jefe = null;
     entregar({ objetos: [{ id: 'semilla_preparada', n: 2 }] }, 'jefe.nauyaca'); // para llegar al piso 2 con algo de vida
@@ -349,10 +354,9 @@ function poblarNivel(id, P, E, I, T) {
   if (P.vida) santuarioVida(`incursion.vida_${id}`, P.vida, mundo.objetos.find((o) => o.sprite.startsWith('Santuario_Vida'))); // js/juego.js
   ponerArma(id, P.arma); // js/armas.js
   T.push({ ...P.subida, a: anterior(id), punto: id === 'm1_1' ? 'desde_mazmorra' : 'llegada_abajo' });
-  // shortcut: el piso 3 maya aún no existe; la bajada del 2-4 maya se queda cerrada con un aviso (etapa 50 la abre).
-  T.push({ ...P.bajada, a: siguiente(id), punto: 'llegada_arriba', abierto: () => bandera(`incursion.limpio.${id}`) && (!SUBJEFE[id] || bandera(SUBJEFE[id])),
-    cerrado: () => !siguiente(id) && bandera(`incursion.limpio.${id}`) && (!SUBJEFE[id] || bandera(SUBJEFE[id])) ? 'Una escalera sube hacia el cielo abierto: arriba se oye el viento. Por aquí no se pasa todavía (piso 3, el observatorio: próxima etapa).'
-      : SUBJEFE[id] ? 'Algo grande vigila esta sala. La bajada no se abrirá mientras siga en pie.' : 'Una reja de piedra tapa la bajada. Aún quedan enemigos en el nivel.' });
+  // La bajada del último nivel maya (3-4) sale a Palenque, junto a la boca del acueducto.
+  T.push({ ...P.bajada, a: siguiente(id) || 'palenque', punto: siguiente(id) ? 'llegada_arriba' : 'desde_mazmorra', abierto: () => bandera(`incursion.limpio.${id}`) && (!SUBJEFE[id] || bandera(SUBJEFE[id])),
+    cerrado: () => SUBJEFE[id] ? 'Algo grande vigila esta sala. La bajada no se abrirá mientras siga en pie.' : 'Una reja de piedra tapa la bajada. Aún quedan enemigos en el nivel.' });
 }
 // Al vencer al último enemigo de un nivel generado se abre su bajada, con un premio pequeño.
 function revisarNivel() {
@@ -383,7 +387,7 @@ function revisarNivel() {
     console.assert(![d.puntos.llegada_arriba, d.puntos.bajada, d.puntos.llegada_abajo, d.puntos.vida].some((p) => p && charca.has(de(p))), `Niveles: la charca de ${id} no tapa las escaleras ni el santuario`);
   }
   console.assert(nombreNivel('p1') === '1-1' && nombreNivel('n1_5') === '1-5' && nombreNivel('p2') === '2-5' && nombreNivel('p3') === '3-5', 'Niveles: nombres');
-  console.assert(nombreNivel('m1_4') === '1-4' && anterior('m1_1') === 'palenque' && siguiente('m1_3') === 'm1_4' && siguiente('m1_4') === 'm2_1' && nombreNivel('m2_3') === '2-3' && pisoDe('m2_2') === 12 && pisoDe('m1_2') === 11 && pisoDe('n2_1') === 2, 'Niveles mayas: nombres y orden');
+  console.assert(nombreNivel('m1_4') === '1-4' && anterior('m1_1') === 'palenque' && siguiente('m1_3') === 'm1_4' && siguiente('m1_4') === 'm2_1' && nombreNivel('m2_3') === '2-3' && siguiente('m2_4') === 'm3_1' && !siguiente('m3_4') && pisoDe('m3_1') === 13 && pisoDe('m2_2') === 12 && pisoDe('m1_2') === 11 && pisoDe('n2_1') === 2, 'Niveles mayas: nombres y orden');
   Object.assign(juego, { flags: antes.flags }); mundo = antes.mundo;
 })();
 
