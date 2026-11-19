@@ -518,3 +518,10 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
   mono araña (del aullador sin aullido, `ARANA`) y tucán pico canoa (`TUCAN`: vuela a 1 m, franja avisada y picada). Sprites:
   los PNG de `arte/Animales/Jaguar_*`, `MonoArana_*` y `Tucan_*` (de `herramientas/animales.mjs`), o fichas nuevas.
 - Lo que el ocelote y el aullador tengan en Unity (§8) debe leer sus valores de datos para reutilizarse así.
+
+## 34. Mapa de la región (etapa 47)
+
+- Minimapa en el HUD (UI Toolkit): una textura por escena, un píxel por metro, hecha desde el suelo, el agua y los
+  colisionadores (como `fondoMapa`, `js/mapa.js`); marcadores para jugador, enemigos, NPC, `ScenePortal` y `MemoryShrine`.
+- Objetivo: cada paso de `QuestData` puede llevar un objetivo en el mapa (NPC, objeto o escena); si está en otra escena, se
+  marca el portal hacia ella (`RUTA`). Pulsar el minimapa lo agranda; una opción de `ComfortSettings` lo oculta.

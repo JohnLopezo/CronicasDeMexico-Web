@@ -96,6 +96,10 @@
   #bTierra { --c: #e6b94a; right: calc(var(--d) + 189px); bottom: 106px; }
   #bEspecial { --c: #c58cff; right: calc(var(--d) + 107px); bottom: 203px; }
   #bArma { --c: #e8d49a; right: calc(var(--d) + 185px); bottom: 190px; width: 52px; height: 52px; }
+  /* Etapa 47: minimapa (js/mapa.js) bajo la pausa y la bolsa; al tocarlo, grande en el centro. */
+  #minimapa { position: fixed; inset: 62px max(12px, env(safe-area-inset-right)) auto auto; width: 128px; height: 88px; border-radius: 8px;
+    border: 1px solid var(--linea); background: #0d0b08; opacity: .88; image-rendering: pixelated; touch-action: none; z-index: 5; }
+  #minimapa.grande { inset: 50% auto auto 50%; transform: translate(-50%, -50%); width: min(80vw, 640px); height: min(70vh, 440px); opacity: .96; z-index: 20; }
   #bBolsa { --c: #e6b94a; top: 10px; right: calc(max(12px, env(safe-area-inset-right)) + 54px); width: 44px; height: 44px; border-radius: 10px; }
   /* En un celular en vertical: pedir que se gire (el juego se pausa al girarlo, ver juego.js). */
   #girar { position: fixed; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
@@ -169,6 +173,7 @@
 <button id="bSaltar" class="tbtn oculto" data-acc="saltar" aria-label="Saltar"><svg viewBox="0 0 24 24"><path d="M12 18V5M6 11l6-6 6 6M4 21h16"/></svg></button>
 <div id="girar"><div class="icono">📱</div><div>Gira el celular para jugar en horizontal</div></div>
 <button id="bPausa" class="oculto" aria-label="Pausa">II</button>
+<canvas id="minimapa" class="oculto" aria-label="Mapa de la región"></canvas>
 
 <div id="inicio" class="capa">
   <div class="caja">
@@ -198,6 +203,7 @@
       <label>Música <input type="range" id="oMusica" min="0" max="1" step="0.05"></label>
       <label><span>Sacudida de pantalla</span> <input type="checkbox" id="oSacudida"></label>
       <label><span>Vibración (táctil)</span> <input type="checkbox" id="oVibracion"></label>
+      <label><span>Mapa</span> <input type="checkbox" id="oMapa"></label>
     </div>
     <div class="botones"><button id="oCerrar">Volver</button></div>
   </div>
@@ -228,6 +234,7 @@
 <script src="js/niveles.js"></script>
 <script src="js/palenque.js"></script>
 <script src="js/aldea_maya.js"></script>
+<script src="js/mapa.js"></script>
 <script src="js/recompensas.js"></script>
 </body>
 </html>

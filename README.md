@@ -53,6 +53,21 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 47 (2026-11-19): mapa de la región (`js/mapa.js`)
+
+- **Minimapa** arriba a la derecha, bajo la pausa y la bolsa (128 × 88), centrado en ti y con unos 30 m alrededor: suelo,
+  agua y lo que bloquea (hecho una vez por región, un píxel por metro: `fondoMapa`), tú en blanco con una raya hacia donde
+  miras, enemigos en rojo (los jefes, más grandes), habitantes en claro, salidas en amarillo y el santuario de Memoria en verde.
+- **Objetivo:** anillo dorado que parpadea sobre lo que pide el paso de la misión activa (`objetivoEnMapa`): el habitante
+  con quien hay que hablar, el tablero, el altar-trono o las hojas (o el espíritu que guarda una). Si está en otra región,
+  en la salida hacia allá (`RUTA`, `AVISO_EN`; los portales de luz llevan su destino en `a`). Los pasos sin lugar conocido
+  (los olmecas de la mazmorra, que es lineal) no marcan nada.
+- **Al tocarlo** se agranda en el centro con la región entera; al tocarlo otra vez vuelve. **Opciones → Mapa** lo oculta.
+- Se redibuja cada 150 ms (no en cada cuadro) para no gastar batería.
+
+Prueba: `herramientas/dificultad/etapa47.mjs` (7 comprobaciones; capturas del minimapa, el mapa grande, la aldea maya y un
+nivel de la mazmorra).
+
 ## Etapa 46 (2026-11-19): fauna de Chiapas en la selva de Palenque (`js/animales.js`, `herramientas/animales.mjs`)
 
 Tres animales nuevos pintados por código (`node herramientas/animales.mjs`) y el tapir, que ya existía, en Palenque:

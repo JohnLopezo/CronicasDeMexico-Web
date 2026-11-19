@@ -128,14 +128,14 @@ const TXT_MAYA = {
 
 // ---------- El portal ----------
 // Un óvalo de luz verde que respira (F). `a`: a dónde lleva; en la aldea pregunta antes de cambiar de capítulo.
-function portalMemoria(O, I, p, texto, usar) {
+function portalMemoria(O, I, p, texto, usar, a) { // a: región a la que lleva (el mapa marca la salida, js/mapa.js)
   O.push({ x: p.x, y: p.y, z: 0, t: 0, orden: profundidad(p.y, 0), actualizar(o, dt) { o.t += dt; }, dibujar(o) {
     const [sx, sy] = pantalla(o.x, o.y, 0.9), x = Math.round(sx - vista.cx), y = Math.round(sy - vista.cy), k = Math.sin(o.t * 2.5);
     for (const [r, a] of [[40, 0.16], [30, 0.28], [20, 0.45], [11, 0.7]]) { ctx.fillStyle = `rgba(120,230,160,${a + 0.06 * k})`; ctx.beginPath(); ctx.ellipse(x, y, r * 0.62, r + 2 * k, 0, 0, 7); ctx.fill(); }
     ctx.fillStyle = 'rgba(240,255,240,.9)'; ctx.fillRect(x - 1, y - 12, 2, 24);
     for (let i = 0; i < 4; i++) { const a = o.t * 1.5 + i * 1.57; ctx.fillRect(Math.round(x + Math.cos(a) * 16), Math.round(y + Math.sin(a) * 26), 2, 2); } // chispas que giran
   } });
-  I.push({ x: p.x, y: p.y, r: 1.3, texto, usar });
+  I.push({ x: p.x, y: p.y, r: 1.3, texto, usar, a });
 }
 // Tras completar MP_OLM_06 (examinar el altar-trono): cierre del capítulo I y apertura del portal, una sola vez.
 function cierreCapituloI() {
@@ -149,12 +149,12 @@ const portalAldea = (O, I) => portalMemoria(O, I, REGIONES.ciudad.puntos.portal_
       if (!juego.misiones.MP_MAY_01) hablar('', TXT_MAYA.llegada, () => empezarMision('MP_MAY_01'));
       toast("Lakamha' (Palenque)", 3);
     });
-  }));
+  }), 'palenque');
 
 // ---------- Contenido (desde poblar, js/juego.js) ----------
 function poblarPalenque(P, E, O, I, T, santuarioMemoria) {
   santuarioMemoria();
-  portalMemoria(O, I, P.portal, 'Volver al asentamiento', () => mensaje(TXT_MAYA.portal, () => cargarRegion('ciudad', 'desde_maya', juego.jugador.vida)));
+  portalMemoria(O, I, P.portal, 'Volver al asentamiento', () => mensaje(TXT_MAYA.portal, () => cargarRegion('ciudad', 'desde_maya', juego.jugador.vida)), 'ciudad');
   const t = PALENQUE.tablero;
   I.push({ x: t.x, y: t.y - 0.7, r: 1.2, texto: 'Examinar', usar: () => mensaje(TXT_MAYA.tablero, () => avisar('examinar:tablero_palenque')) });
   T.push({ ...P.a_aldea, a: 'aldea_maya', punto: 'llegada' }); // la aldea (js/aldea_maya.js)

@@ -5,6 +5,11 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
+- **Etapa 47 (2026-11-19):** mapa de la región (`js/mapa.js`): minimapa arriba a la derecha con suelo, agua, enemigos,
+  habitantes, salidas, santuario y el objetivo de la misión (en otra región, la salida hacia allá); al tocarlo, grande;
+  Opciones → Mapa lo oculta. Prueba: `etapa47.mjs`. **Siguiente:** la mazmorra maya (`may.camino_agua`, 10-12 pisos y el
+  jefe del agua, Historia_Mundo §6, cap. II). Pendiente: probar 39-47 en el celular.
+
 - **Etapa 46 (2026-11-19):** fauna de Chiapas en Palenque: jaguar (el ocelote en grande, `JAGUAR_SELVA`), mono araña
   (aullador sin aullido que lanza ramas, `ARANA`), tucán pico canoa (vuela y se lanza en picada, `TUCAN`) y el tapir. Ocelote y
   aullador leen sus datos de `e.D`. Prueba: `etapa46.mjs`. **Siguiente:** 47 mapa de la región; luego la mazmorra maya.
@@ -111,6 +116,7 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 | `js/armas.js` | Armas de la mazmorra: `ARMAS`, `NIVEL_ARMA`, estrado (`ponerArma`), dardos del disparo (`lanzarDardo`), golpe (`danoGolpe`, `trasGolpe`, `trasBlandir`), escudo (`factorDefensa`), `MAESTRIA`, cofre de recompensas (`aparecerCofre`), armero (`menuArmero`) |
 | `js/palenque.js` | Capítulo II: portal de la aldea, región de Palenque (`PALENQUE`, `regionPalenque`), templo y tablero pintados, misión `MP_MAY_01` |
 | `js/aldea_maya.js` | Aldea maya: habitantes pintados (`MAYAS`, `pintarMaya`), casas, milpa y telar, `ALDEA_MAYA`, diálogos y misión `MP_MAY_02` (hojas: `HOJAS`, `poblarHojas`) |
+| `js/mapa.js` | Minimapa: `fondoMapa`, `objetivoEnMapa` (`RUTA`, `AVISO_EN`), `dibujarMapa` cada 150 ms |
 | `js/pisos.js` | Suelo (`pintarLosa`) y muros (`pintarMuro`) de los pisos 2 y 3 pintados por código; colores en `PALETA` |
 | `js/juego.js` | Banderas, misiones, `cargarRegion`, guardado, bucle `actualizar` |
 | `js/musica.js` | Música prehispánica: instrumentos, `MUSICA` (patrones por modo), `modoMusica`, secuenciador |
