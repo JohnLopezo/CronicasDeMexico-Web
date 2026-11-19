@@ -7,7 +7,7 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 - **Etapa 42 (2026-11-19):** la energía se recarga sola (4/s, `ENERGIA_REGEN` en `js/actores.js`): la estrella ya no se apaga
   tras 4 usos. El armero cobra: cada arma se compra una vez con ecos y materiales (`PRECIO_ARMERO`, `armero.compradas`);
-  la macana es gratis. Prueba: `herramientas/dificultad/etapa42.mjs`. Pendiente: verlo en el celular y medir con `campana.mjs`.
+  la macana es gratis. Prueba: `herramientas/dificultad/etapa42.mjs`. Campaña medida: 0 caídas, jefes algo más rápidos (README). Pendiente: verlo en el celular.
 
 - **Etapa 41 (2026-11-18):** al caer en el piso 3, si en la incursión ya llegaste al 3-5, despiertas junto a su
   santuario de Memoria con armas y niveles intactos (`incursion.santuario_p3`, derrota en `actualizar`); si no, y en los pisos

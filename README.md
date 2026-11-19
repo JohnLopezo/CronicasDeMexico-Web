@@ -76,8 +76,12 @@ salir sin nada. El arma que ya tenías elegida en una partida de antes cuenta co
 | Jabalina | 30 ecos, 2 obsidianas, 3 fibras |
 
 Prueba: `herramientas/dificultad/etapa42.mjs` (con `?nivel=n1_2`): recarga 8,1 en 2 s sin pasar del tope, la especial daña, sin
-ecos no se compra, al comprar se cobra justo y elegirla de nuevo no cobra. Todo bien y sin `[assert]`. Sin medir aún con el bot
-(`campana.mjs`): con la recarga, la campaña debería ser algo más fácil.
+ecos no se compra, al comprar se cobra justo y elegirla de nuevo no cobra. Todo bien y sin `[assert]`.
+
+**Campaña con la recarga** (`campana.mjs`, perfil celular, Balam; entre paréntesis, la etapa 38): sin armero, 0 caídas del 1-1
+al 3-5 (0); nauyaca vencida en 10 s (13), jaguar en 11 s (16), Guardián al primer intento en 39 s (38). Con la macana del
+armero: 0 caídas; nauyaca 10 s, jaguar 13 s, Guardián 31 s. Los jefes caen algo antes, pero la vida al salir de cada nivel
+(16-49 de 54-68) es como antes: la recarga ayuda sin romper la dificultad. No se cambia nada.
 
 ## Etapa 41 (2026-11-18): al caer en el piso 3, al santuario del 3-5 (`js/juego.js`)
 
