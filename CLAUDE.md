@@ -5,103 +5,20 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 ## Estado (actualizar al cerrar cada etapa; es lo único que hay que leer para retomar)
 
-- **Etapa 51 (2026-11-19):** habilidad de agua y **cierre del capítulo II** (`js/agua.js`): el Guardián de los Ciclos da la
-  Corriente (V / botón Agua, `CORRIENTE`, bandera `may.bendicion_agua`), el Fragmento de la Segunda Memoria y `MP_MAY_04` (escriba →
-  tablero → «Fin del capítulo II»); lodo seco que solo deshace el agua (ofrenda en la plaza). Prueba: `etapa51.mjs`. **El capítulo II
-  está completo.** Siguiente propuesta: capítulo III (altiplano: teotihuacana/zapoteca, Historia_Mundo §6 y `Docs/Historia/Capitulos.md`
-  de Unity), o pulir: medir con el bot los jefes mayas, probar 39-51 en el celular, `etapa43.mjs` «al caer» (ya fallaba).
+El detalle de cada etapa está en su sección `## Etapa N` del README (no repetirlo aquí: este bloque debe quedar corto).
 
-- **Etapa 50 (2026-11-19):** mazmorra maya, piso 3 (el observatorio, `m3_1`…`m3_4`, clave 13; cielo de noche `Cielo_Noche`) y
-  el **Guardián de los Ciclos** en el 3-4 (`guardianCiclos`: el Guardián olmeco con la figura `Jefe_SenorLluvia`, 1500 de vida). Al
-  vencerlo se cumple `MP_MAY_03` y la escalera del 3-4 sale a Palenque. Prueba: `etapa50.mjs`. **Siguiente, etapa 51:** habilidad
-  de agua y cierre del capítulo II (contárselo al escriba; nueva misión tras `may.guardian_ciclos_vencido`). Pendiente: medir con
-  el bot los tres jefes mayas; probar 39-50 en el celular.
-
-- **Etapa 49 (2026-11-19):** mazmorra maya, piso 2 (las cámaras de estuco, `m2_1`…`m2_4`, clave 12): suelo y muros pintados
-  (`losaEstuco`, `muroEstuco`), sub-jefe murciélago de la muerte en el 2-4 (`murcielagoEstuco`), misión `MP_MAY_03` ampliada.
-  Prueba: `etapa49.mjs`. **Siguiente, etapa 50:** piso 3 «observatorio» (`m3_*`, clave 13) y el Guardián de los Ciclos; abrir la
-  bajada del 2-4 (el texto de `cerrado` en `poblarNivel`). Luego 51: habilidad de agua y cierre del capítulo II.
-
-- **Etapa 48 (2026-11-19):** mazmorra maya, piso 1 (los canales del Otolum, `m1_1`…`m1_4`): entrada por la boca del acueducto
-  en la plaza de Palenque (`may.camino_agua`), incursión nueva, generador por cultura (`esMaya`, `pisoDe`, claves 11-13), suelo y
-  muros pintados (`losaCanal`, `muroCanal`), sub-jefe cocodrilo de pantano en el 1-4 y misión `MP_MAY_03`. Prueba: `etapa48.mjs`.
-  **Plan acordado:** 3 pisos de 4; siguiente, etapa 49: piso 2 «cámaras de estuco» (`m2_*`, claves 12) con su mini-jefe; 50: piso 3
-  «observatorio» y el Guardián de los Ciclos; 51: habilidad de agua y cierre del capítulo II.
-
-- **Etapa 47 (2026-11-19):** mapa de la región (`js/mapa.js`): minimapa arriba a la derecha con suelo, agua, enemigos,
-  habitantes, salidas, santuario y el objetivo de la misión (en otra región, la salida hacia allá); al tocarlo, grande;
-  Opciones → Mapa lo oculta. Prueba: `etapa47.mjs`. **Siguiente:** la mazmorra maya (`may.camino_agua`, 10-12 pisos y el
-  jefe del agua, Historia_Mundo §6, cap. II). Pendiente: probar 39-47 en el celular.
-
-- **Etapa 46 (2026-11-19):** fauna de Chiapas en Palenque: jaguar (el ocelote en grande, `JAGUAR_SELVA`), mono araña
-  (aullador sin aullido que lanza ramas, `ARANA`), tucán pico canoa (vuela y se lanza en picada, `TUCAN`) y el tapir. Ocelote y
-  aullador leen sus datos de `e.D`. Prueba: `etapa46.mjs`. **Siguiente:** 47 mapa de la región; luego la mazmorra maya.
-
-- **Etapa 45 (2026-11-19):** armas mayas del Clásico (`cultura: 'maya'` en `ARMAS`): lanza, hacha y cuchillo de pedernal,
-  átlatl, cerbatana y escudo flexible, solo en el armero de Lakamha' (tallador de pedernal; `armero_maya.*`); la mazmorra
-  olmeca sigue con las olmecas (`armasDe`). Prueba: `etapa45.mjs`. **Siguiente:** 46 fauna de Chiapas, 47 mapa, mazmorra maya.
-
-- **Etapa 44 (2026-11-19):** la aldea de Lakamha' (`js/aldea_maya.js`), al este de la plaza: casas, milpa, telar, siete
-  habitantes pintados por código y la misión `MP_MAY_02` (tres hojas del escriba; las de la plaza las guardan espíritus).
-  Prueba: `etapa44.mjs`. **Plan acordado:** 45 armas mayas en un armero de Lakamha', 46 fauna de Chiapas (mono araña,
-  tucán, jaguar, tapir), 47 mapa de la región; después la mazmorra maya (`may.camino_agua`). Pendiente: verlo en el celular.
-
-- **Etapa 43 (2026-11-19):** de la mazmorra a la época maya. Al dejar el fragmento en el altar-trono (MP_OLM_06) se cierra
-  el capítulo I y se abre un portal en la plaza (`may.portal_abierto`) a **Lakamha' (Palenque)**, región pintada por código
-  (`js/palenque.js`, piso 4): llegada con santuario, río Otolum con puente, plaza, templo escalonado y tablero de glifos;
-  misión `MP_MAY_01`. Prueba: `etapa43.mjs`. **Siguiente:** la aldea maya (gente de Lakamha', paso 2 de MP_MAY_01), luego
-  mazmorra (10-12 pisos) y jefe del agua (Historia_Mundo §6, cap. II). Pendiente: verlo en el celular.
-
-- **Etapa 42 (2026-11-19):** la energía se recarga sola (4/s, `ENERGIA_REGEN` en `js/actores.js`): la estrella ya no se apaga
-  tras 4 usos. El armero cobra: cada arma se compra una vez con ecos y materiales (`PRECIO_ARMERO`, `armero.compradas`);
-  la macana es gratis. Prueba: `herramientas/dificultad/etapa42.mjs`. Campaña medida: 0 caídas, jefes algo más rápidos (README). Pendiente: verlo en el celular.
-
-- **Etapa 41 (2026-11-18):** al caer en el piso 3, si en la incursión ya llegaste al 3-5, despiertas junto a su
-  santuario de Memoria con armas y niveles intactos (`incursion.santuario_p3`, derrota en `actualizar`); si no, y en los pisos
-  1-2, a la aldea. El espíritu pegado al santuario no aparece al despertar ahí. Pendiente: verlo en el celular.
-
-- **Etapa 40 (2026-11-18):** el jugador ya no anda «como pingüino» de frente ni de espaldas: los cuadros de Unity
-  `Caminar*_05/_01` de los guerreros no mueven los pies; ahora se usa el reposo y se alza un pie y luego el otro (`pasoFrontal`,
-  `js/actores.js`). Pendiente: verlo en el celular.
-
-- **Etapa 39 (2026-11-18, subida a GitHub):** mejor animación de los enemigos (README, etapa 39): los 7 animales pintados llevan la
-  capa de movimiento por código (`movAnimal`, `POSE_ANIMAL`, `ESTILOS`) y más zancada al andar (40 cuadros repintados con
-  `herramientas/animales.mjs`). Hojas de revisión: `herramientas/dificultad/animaciones.mjs`. Pendiente: verlo en el celular.
-
-- **Etapa 38 (2026-11-18, subida a GitHub):** simulación completa del juego y 8 arreglos (README, etapa 38): enemigos a ≥ 4 m de la
-  llegada (`LIBRE_LLEGADA`), armas de cofres u ofrendas al suelo con las manos llenas (`ofrecerArma`), santuario de Vida en la
-  antesala del 3-5 (`santuarioVidaP3`), `desatascar` enemigos en muros, arma a distancia sin munición se suelta, sin aviso
-  repetido del nivel, inicio sin «etapa 24», iconos del armero más grandes. Campaña simulada: 0 caídas del 1-1 al 3-5.
-  Guiones nuevos: `recorrido.mjs`, `entradas.mjs`, `campana.mjs` (repetirlos tras cada cambio grande). Pendiente: que el
-  usuario lo pruebe en el celular.
-
-- **Paso a Unity en marcha (2026-11-18):** en el repositorio de Unity, rama `feature/port-html`, subida (commit `0fae1d4`). Hecha la etapa
-  **U1** (§1 esquiva saltando de los enemigos y §2 salto del jugador); el plan U1-U9 y qué falta están en la última entrada
-  de `Docs/Bitacora.md` de Unity, que es lo que hay que leer para seguir allí. Este repositorio solo cambió en
-  `PORTAR_A_UNITY.md` (nota «Ya en Unity»).
-
-- **Etapa 37 (2026-11-18, subida a GitHub: `8de39d6` y el ajuste del Guardián):** dos ranuras libres con Cambiar arma (R / `#bArma`), calidad ★-★★★ por piso
-  (`CALIDAD`, ★ ×0,6 tras medir con el bot) y especial de cada arma con cualquier Guardián (`ESPECIAL_ARMA`; el de Balam se
-  quitó). Dificultad medida (README, etapa 37): sin armas ~38 %, con la del armero ~30 %, con mejores ~20 %. Pendiente: que el
-  usuario la pruebe en el celular (posición del botón `#bArma`). Jefes con armas medidos (README, etapa 37): con la del armero,
-  casi como sin armas; con ★★★ el Guardián caía en 9 s, así que su vida pasó de 700 a **1100** (con ★★★: 17 s, gana 9/10; con la
-  del armero: 6/10; sin armas: 2/10). Subido a GitHub.
-- **Antes (2026-11-18):** etapas 35 y 36 **subidas a GitHub** (dos commits: «Etapa 35: … pisos 2 y 3» y
-  «Etapa 36: armas olmecas…»). Etapa 35: HUD compacto, salas que serpentean, fondo por piso y suelo y muros de diseño propio en
-  los pisos 2 («cámaras inundadas») y 3 («templo olmeca»), pintados por código (`js/pisos.js`, también 2-5 y 3-5). Etapa 36
-  (`js/armas.js`): 9 armas olmecas en estrados (X-2 cerca, X-4 distancia, X-1 de pisos 2-3 escudo) con mecánicas propias,
-  maestría por Guardián (`MAESTRIA`), cofre de recompensas al limpiar un nivel (`BOTIN_COFRE`), armas en ofrendas de Unity,
-  armero en la aldea (17,5; 1,5), al caer siempre a la aldea, y fuera de la mazmorra sin monstruos hasta liberar al Guardián
-  (`afueraConMonstruos`). `Ejemplo de controles/` (captura de referencia del usuario) no se sube.
-- **Pendiente de probar en el celular:** diseño de pisos 2-3, armas, cofres, armero, caer a la aldea (31-34 ya los vio: bien
-  y fluido). **Pendiente de medir con el bot:** dificultad con armas (hay armas casi siempre: armero + estrados + cofres).
-- **Ideas abiertas que se le ofrecieron:** teñir los objetos de Unity del piso 3; sigilo del cuchillo y recolectar madera con el hacha (no existen esas
-  mecánicas). Armas siempre de la cultura olmeca (el usuario lo pidió; ver README etapa 36).
-- **Etapas anteriores:** 34 música prehispánica (`js/musica.js`); 32-33 dificultad con perfil celular (`mapas.mjs`,
-  `jefes.mjs`); 30-31 controles táctiles tipo Soul Knight; 26-29 efectos de golpe y animación por partes.
-- **Siguiente propuesta:** que el usuario confirme en el celular; pasar a Unity según `PORTAR_A_UNITY.md` (secciones 21-24 nuevas).
-- **Deseo pendiente del usuario:** mejor animación para los enemigos actuales; más animales (de Chiapas ya: etapa 46).
-- **Deudas:** `/ponytail-debt` lista los `shortcut:` del código.
+- **Hecho hasta la etapa 51 (2026-11-19, subida `2ca920b`):** capítulo I olmeco (aldea, selva, mazmorra 1-1…3-5, Guardián de la
+  Piedra Viva, Bendición de la Tierra) y **capítulo II maya completo**: Palenque (`js/palenque.js`), aldea de Lakamha'
+  (`js/aldea_maya.js`), armas mayas, fauna de Chiapas, minimapa (`js/mapa.js`), mazmorra maya de 3 pisos × 4 (`m1_*`-`m3_*`,
+  claves 11-13, `js/mazmorra_maya.js`) con cocodrilo, murciélago y Guardián de los Ciclos, y la Corriente de agua con el cierre
+  del capítulo (`js/agua.js`, misión `MP_MAY_04`).
+- **Siguiente propuesta:** capítulo III (altiplano: teotihuacana/zapoteca; ver Historia_Mundo §6 y `Docs/Historia/Capitulos.md` en
+  Unity), o pulir lo pendiente.
+- **Pendiente:** probar en el celular las etapas 39-51 (botón Agua junto a Esquivar); medir con el bot los tres jefes mayas y la
+  Corriente; `etapa43.mjs` falla «al caer, al santuario de Palenque» (ya fallaba antes de la 51, sin investigar).
+- **Paso a Unity:** rama `feature/port-html` del repo de Unity, etapa U1 hecha (`0fae1d4`); seguir por la última entrada de
+  `Docs/Bitacora.md` de Unity. Todo lo solo-HTML está en `PORTAR_A_UNITY.md` (§1-38).
+- **Ideas abiertas:** sigilo del cuchillo y madera con el hacha (no existen); más animación de enemigos. **Deudas:** `/ponytail-debt`.
 
 ## Flujo de una etapa (para gastar pocos tokens)
 
