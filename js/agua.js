@@ -89,12 +89,13 @@ const TXT_CIERRE_II = [
   'En la luz del fragmento ves otras ciudades, muy lejos de aquí: en el altiplano, entre montañas, sus piedras también se están quedando lisas.',
   'La Sombra no ataca un solo lugar. Está borrando la memoria de todos los pueblos a la vez.',
 ];
-const FIN_CAPITULO_II = '<h1>Fin del capítulo II</h1><p class="nota">Las ciudades de piedra y agua</p><p>Lakamha\' recuerda sus nombres. Llevas contigo la corriente del agua y el Fragmento de la Segunda Memoria.</p><p>Capítulo III, las ciudades y los pueblos del altiplano: próximamente.</p><div class="botones"><button data-cerrar>Continuar</button></div>';
+const FIN_CAPITULO_II = '<h1>Fin del capítulo II</h1><p class="nota">Las ciudades de piedra y agua</p><p>Lakamha\' recuerda sus nombres. Llevas contigo la corriente del agua y el Fragmento de la Segunda Memoria.</p><p>En la plaza se abrió un nuevo portal: la memoria del altiplano te llama.</p><div class="botones"><button data-cerrar>Continuar</button></div>';
 // Desde el tablero de la plaza (js/palenque.js): si toca, cierra el capítulo y devuelve true.
 function cierreCapituloII() {
   if (juego.misiones.MP_MAY_04?.paso !== 1 || juego.misiones.MP_MAY_04.hecha) return false;
   hablar('', TXT_CIERRE_II, () => {
     poner('may.registros_recuperados'); poner('registro.cultura.maya'); vista.temblor = 0.3; sonar('portal');
+    portalPalenque(juego.otros, juego.interactuables); // etapa 53: a Teotihuacan (js/teotihuacan.js)
     avisar('examinar:tablero_palenque');
     abrirCapa('capitulo', FIN_CAPITULO_II);
   });

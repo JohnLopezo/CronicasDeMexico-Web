@@ -569,3 +569,13 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
 
 - Tras caer y despertar (santuario o aldea), 2 s de invulnerabilidad (`juego.jugador.inv = 2`, con el parpadeo de siempre).
   En Unity: al reaparecer, `Health` invulnerable 2 s (como el i-frame tras recibir daño).
+
+## 40. Capítulo III: Teotihuacan (etapa 53)
+
+- **Transición:** al terminar `MP_MAY_04`, `Portal` en `Maya_Palenque` (16,5; 3,5) con la tarjeta del capítulo III.
+- **Escena nueva `Teo_Calzada`:** claro de llegada con `MemoryShrine`, sendero, Calzada de los Muertos (sur-norte), plaza
+  con la Pirámide del Sol y un mural (`Interactable`, aviso `examinar:mural_teo`), Pirámide de la Luna al norte. Tile de
+  estuco con cara en talud-tablero; props maguey y nopal. Coordenadas en `TEOTIHUACAN` (`js/teotihuacan.js`).
+- **Historia:** `QuestData` `MP_TEO_01` (`examinar:mural_teo`, `hablar:gente_teo`); al caer en la escena, respawn en su santuario.
+- **Plan del capítulo** (usuario): un dios por cultura (Huehueteotl/Fuego, Cocijo/Luz, Serpiente Emplumada/Viento) como jefe
+  que se libera; la habilidad activa depende del día o la hora.

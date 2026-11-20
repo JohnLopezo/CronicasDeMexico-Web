@@ -53,6 +53,32 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 53 (2026-11-20): de Palenque a Teotihuacan, inicio del capítulo III (`js/teotihuacan.js`)
+
+Capítulo III de `Docs/Historia_Mundo.md` §6 de Unity, **«Las ciudades y los pueblos del altiplano»**. El usuario eligió
+**Teotihuacan** para empezar y este plan para el capítulo: **un dios por cultura**, cada uno da una habilidad (Fuego:
+Huehueteotl, Teotihuacan; Luz: Cocijo, Monte Albán; Viento: la Serpiente Emplumada, Xochicalco); el jefe es la memoria del
+dios corrompida por la Sombra, que se libera al vencerla, y **la habilidad activa cambia según el día o la hora** (por definir).
+
+- **Cierre del capítulo II → portal:** al cerrar MP_MAY_04 en el tablero, la pantalla de fin ya no dice «próximamente»: se
+  abre un portal en la plaza de Palenque (16,5; 3,5), que sale siempre que esté `may.registros_recuperados` (también en
+  partidas viejas). Tarjeta «Capítulo III · Las ciudades y los pueblos del altiplano».
+- **Teotihuacan:** región pintada por código (piso 5 en `ESTILO` y `PALETA`, `losaTeo`). Claro de llegada con santuario de
+  Memoria y portal de vuelta a Lakamha', sendero de tierra ocre, la **Calzada de los Muertos** de sur a norte (estuco claro
+  agrietado, bordillo rojo y caras en talud-tablero), la plaza al pie de la **Pirámide del Sol** (5 cuerpos en talud) con un
+  **mural** (figura de perfil con volutas de la palabra; la mitad, borrada) y la **Pirámide de la Luna** al final de la
+  calzada. Magueyes y nopales pintados. Fauna: serpiente, armadillo y dos espíritus en la calzada.
+- **Misión MP_TEO_01 «La ciudad de los dioses»:** examinar el mural (el minimapa lo señala, también desde Palenque y la
+  aldea); el paso siguiente, «Busca a la gente de los barrios (próximamente)», espera a la próxima etapa.
+- Al caer en Teotihuacan despiertas en su santuario; ahí también se guarda.
+- **Fidelidad** (cabecera de `js/teotihuacan.js`): D, el nombre náhuatl posterior (el original no se conoce), la calzada
+  sur-norte que acaba en la Luna, el Sol al este, el talud-tablero, el estuco rojo, los murales con volutas de la palabra,
+  maguey, nopal y la fauna; I, la composición y la escala; F, el portal, la voz y el mural borrado.
+
+Prueba: `herramientas/dificultad/etapa53.mjs` (15 comprobaciones: sin portal antes del cierre, fin del capítulo II,
+tarjeta, llegada, misión, minimapa, mural, guardado, caída al santuario de Teotihuacan y vuelta a Palenque), con capturas.
+`etapa43.mjs` sigue entera; sin `[assert]`.
+
 ## Etapa 52 (2026-11-20): pulido (respiro al despertar y jefes mayas medidos)
 
 - **Al caer, 2 s sin recibir daño** (`despertar` en `actualizar`, `js/juego.js`): el tucán de la plaza de Palenque se lanzaba

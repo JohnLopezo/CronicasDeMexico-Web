@@ -42,6 +42,7 @@ function pintarLosa(g, piso, ox, oy, l) {
   const P = PALETA[piso], rnd = azar(((l.x * 73856093) ^ (l.y * 19349663)) >>> 0);
   px(g, P.junta, ox, oy, PPU, PX_Y);
   if (piso === 4) return losaPalenque(g, P, rnd, ox, oy, l);
+  if (piso === 5) return losaTeo(g, P, rnd, ox, oy, l); // js/teotihuacan.js
   if (piso === 11) return losaCanal(g, P, rnd, ox, oy, l);
   if (piso === 12) return losaEstuco(g, P, rnd, ox, oy, l);
   if (piso === 13) return losaObservatorio(g, P, rnd, ox, oy, l);
