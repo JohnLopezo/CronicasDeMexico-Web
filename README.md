@@ -53,6 +53,23 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 52 (2026-11-20): pulido (respiro al despertar y jefes mayas medidos)
+
+- **Al caer, 2 s sin recibir daño** (`despertar` en `actualizar`, `js/juego.js`): el tucán de la plaza de Palenque se lanzaba
+  sobre el jugador ~1 s después de despertar junto al santuario (−8 de vida y un empujón). Era el fallo de `etapa43.mjs`
+  «al caer, al santuario de Palenque»; ahora pasa entera. Vale para los tres despertares (Palenque, piso 3, aldea).
+- **`jefes.mjs`** busca al jefe por `jefe: true` (el cocodrilo y el murciélago son `tipo: 'fauna'`) y borra las banderas mayas
+  entre peleas. Uso: `JEFES='[["fauna","m1_4",5,0.7],["fauna","m2_4",6,0.7],["guardian","m3_4",7,0.7]]' N=4`.
+- **Medición** (arma inicial, llega al 70 %, 4 peleas por fila; los niveles 5-7 son una suposición del avance):
+
+| Jefe | habilidad 0,65 | habilidad 0,85 |
+|---|---|---|
+| Cocodrilo de pantano (1-4, nv 5) | gana 4/4 · 16 s · −12 | gana 4/4 · 16 s · −3 |
+| Murciélago de la muerte (2-4, nv 6) | gana 4/4 · 20 s · −28 | gana 4/4 · 21 s · −9 |
+| Guardián de los Ciclos (3-4, nv 7) | gana 2/4 · 38 s · −44 | gana 3/4 · 40 s · −28 |
+
+  Como en el capítulo I: sub-jefes cómodos y el Guardián, la pelea dura. No se cambió ningún valor. La Corriente no se midió.
+
 ## Etapa 51 (2026-11-19): la habilidad de agua y el cierre del capítulo II (`js/agua.js`)
 
 Lo que pide la biblia (Historia_Mundo, cap. II, Recompensa): el guardián liberado concede una habilidad de agua que supera

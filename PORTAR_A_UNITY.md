@@ -564,3 +564,8 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
   `RewardChest` (`REC_ofrenda_may_lodo`).
 - **Historia:** `QuestData` `MP_MAY_04` (`hablar:escriba`, `examinar:tablero_palenque`), `ItemData` `fragmento_segunda_memoria`,
   entrada de Museo `registro.cultura.maya`, diálogos nuevos del escriba y la pantalla de fin de capítulo.
+
+## 39. Respiro al despertar (etapa 52)
+
+- Tras caer y despertar (santuario o aldea), 2 s de invulnerabilidad (`juego.jugador.inv = 2`, con el parpadeo de siempre).
+  En Unity: al reaparecer, `Health` invulnerable 2 s (como el i-frame tras recibir daño).

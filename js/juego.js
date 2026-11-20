@@ -459,9 +459,11 @@ function actualizar(dt) {
   if (j.vida <= 0 && j.muerto <= 0) {
     if (juego.prueba) { j.vida = j.max; j.inv = 2; toast('Te levantas de nuevo.'); return; }
     if (!['ciudad', 'selva', 'palenque', 'aldea_maya'].includes(juego.region)) poner('incursion.caido');
-    if (juego.region === 'palenque' || juego.region === 'aldea_maya' || esMaya(juego.region)) cargarRegion('palenque', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4)); // etapa 43
-    else if (NIVELES[2].includes(juego.region) && bandera('incursion.santuario_p3')) cargarRegion('p3', 'memoria_llegada', estadisticas().vida).then(() => toast('Caíste. Despiertas junto al santuario de Memoria.', 4));
-    else cargarRegion('ciudad', 'inicio', estadisticas().vida).then(() => toast('Caíste. Despiertas en la aldea, junto al agua.', 4));
+    // Al despertar, 2 s sin recibir daño (etapa 52): el tucán de Palenque se lanzaba sobre ti nada más levantarte.
+    const despertar = (r, p, t) => cargarRegion(r, p, estadisticas().vida).then(() => { juego.jugador.inv = 2; toast(t, 4); });
+    if (juego.region === 'palenque' || juego.region === 'aldea_maya' || esMaya(juego.region)) despertar('palenque', 'memoria_llegada', 'Caíste. Despiertas junto al santuario de Memoria.'); // etapa 43
+    else if (NIVELES[2].includes(juego.region) && bandera('incursion.santuario_p3')) despertar('p3', 'memoria_llegada', 'Caíste. Despiertas junto al santuario de Memoria.');
+    else despertar('ciudad', 'inicio', 'Caíste. Despiertas en la aldea, junto al agua.');
   }
 }
 

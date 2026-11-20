@@ -7,17 +7,16 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 El detalle de cada etapa está en su sección `## Etapa N` del README (no repetirlo aquí: este bloque debe quedar corto).
 
-- **Hecho hasta la etapa 51 (2026-11-19, subida `2ca920b`):** capítulo I olmeco (aldea, selva, mazmorra 1-1…3-5, Guardián de la
+- **Hecho hasta la etapa 52 (2026-11-20, sin subir):** capítulo I olmeco (aldea, selva, mazmorra 1-1…3-5, Guardián de la
   Piedra Viva, Bendición de la Tierra) y **capítulo II maya completo**: Palenque (`js/palenque.js`), aldea de Lakamha'
   (`js/aldea_maya.js`), armas mayas, fauna de Chiapas, minimapa (`js/mapa.js`), mazmorra maya de 3 pisos × 4 (`m1_*`-`m3_*`,
   claves 11-13, `js/mazmorra_maya.js`) con cocodrilo, murciélago y Guardián de los Ciclos, y la Corriente de agua con el cierre
-  del capítulo (`js/agua.js`, misión `MP_MAY_04`).
+  del capítulo (`js/agua.js`, misión `MP_MAY_04`). Etapa 52: 2 s sin daño al despertar y jefes mayas medidos con `jefes.mjs`.
 - **Siguiente propuesta:** capítulo III (altiplano: teotihuacana/zapoteca; ver Historia_Mundo §6 y `Docs/Historia/Capitulos.md` en
   Unity), o pulir lo pendiente.
-- **Pendiente:** probar en el celular las etapas 39-51 (botón Agua junto a Esquivar); medir con el bot los tres jefes mayas y la
-  Corriente; `etapa43.mjs` falla «al caer, al santuario de Palenque» (ya fallaba antes de la 51, sin investigar).
+- **Pendiente:** probar en el celular las etapas 39-52 (botón Agua junto a Esquivar); medir la Corriente con el bot.
 - **Paso a Unity:** rama `feature/port-html` del repo de Unity, etapa U1 hecha (`0fae1d4`); seguir por la última entrada de
-  `Docs/Bitacora.md` de Unity. Todo lo solo-HTML está en `PORTAR_A_UNITY.md` (§1-38).
+  `Docs/Bitacora.md` de Unity. Todo lo solo-HTML está en `PORTAR_A_UNITY.md` (§1-39).
 - **Ideas abiertas:** sigilo del cuchillo y madera con el hacha (no existen); más animación de enemigos. **Deudas:** `/ponytail-debt`.
 
 ## Flujo de una etapa (para gastar pocos tokens)
