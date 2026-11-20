@@ -7,15 +7,15 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 El detalle de cada etapa está en su sección `## Etapa N` del README (no repetirlo aquí: este bloque debe quedar corto).
 
-- **Hecho hasta la etapa 53 (2026-11-20, sin subir):** capítulo I olmeco (aldea, selva, mazmorra 1-1…3-5, Guardián de la
+- **Hecho hasta la etapa 53 (2026-11-20, subida `5051da2`):** capítulo I olmeco (aldea, selva, mazmorra 1-1…3-5, Guardián de la
   Piedra Viva, Bendición de la Tierra) y **capítulo II maya completo**: Palenque (`js/palenque.js`), aldea de Lakamha'
   (`js/aldea_maya.js`), armas mayas, fauna de Chiapas, minimapa (`js/mapa.js`), mazmorra maya de 3 pisos × 4 (`m1_*`-`m3_*`,
   claves 11-13, `js/mazmorra_maya.js`) con cocodrilo, murciélago y Guardián de los Ciclos, y la Corriente de agua con el cierre
   del capítulo (`js/agua.js`, misión `MP_MAY_04`). Etapa 52: 2 s sin daño al despertar. **Capítulo III empezado** (etapa 53): portal en la plaza de Palenque y Teotihuacan (`js/teotihuacan.js`: calzada, pirámides del Sol y la Luna, mural, misión `MP_TEO_01`).
-- **Plan del capítulo III (usuario):** un dios por cultura y una habilidad cada uno (Fuego: Huehueteotl, Teotihuacan; Luz: Cocijo,
-  Monte Albán; Viento: Serpiente Emplumada, Xochicalco); el jefe es la memoria corrompida del dios y se libera; la habilidad
-  activa cambia según el día o la hora (falta definir cómo). **Siguiente:** gente de los barrios de Teotihuacan (paso 2 de
-  `MP_TEO_01`), luego armas, fauna del altiplano y la mazmorra con Huehueteotl.
+- **Plan de dioses (usuario, propuesta en `PROPUESTA_DIOSES.md`, aún no en la biblia de Unity):** el jefe final de cada mazmorra es
+  un dios de esa cultura (su memoria corrompida, que se libera); cada cultura tiene 3-4 y aparece uno según el momento de un
+  ciclo de día y noche del juego; cada dios da su versión de un elemento. **Siguiente:** gente de los barrios de Teotihuacan (paso 2 de
+  `MP_TEO_01`), luego armas, fauna del altiplano y la mazmorra con el altar de los dioses y el ciclo de día y noche.
 - **Pendiente:** probar en el celular las etapas 39-52 (botón Agua junto a Esquivar); medir la Corriente con el bot.
 - **Paso a Unity:** rama `feature/port-html` del repo de Unity, etapa U1 hecha (`0fae1d4`); seguir por la última entrada de
   `Docs/Bitacora.md` de Unity. Todo lo solo-HTML está en `PORTAR_A_UNITY.md` (§1-40).
@@ -36,6 +36,8 @@ El detalle de cada etapa está en su sección `## Etapa N` del README (no repeti
 ## Reglas
 
 - Responder siempre en **español**.
+- **Prioridad (usuario, 2026-11-20): terminar primero el juego en la versión web.** Los cambios de diseño (como
+  `PROPUESTA_DIOSES.md`) se aplican aquí; la biblia de Unity y el paso a Unity se actualizan después, cuando el usuario lo pida.
 - El proyecto de Unity **solo se lee**, nunca se modifica (`sincronizar.mjs` copia de él arte y datos).
 - Todo lo que solo existe aquí se anota en `PORTAR_A_UNITY.md` (valores y clases de Unity destino).
 - Cada etapa nueva: sección `## Etapa N (fecha)` al principio del README, con qué hace, valores y pruebas.
