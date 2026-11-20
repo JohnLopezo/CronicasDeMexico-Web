@@ -25,7 +25,7 @@ const RUTA = { ciudad: { palenque: 'palenque', aldea_maya: 'palenque', teotihuac
   barrio_teo: { teotihuacan: 'teotihuacan', palenque: 'teotihuacan', ciudad: 'teotihuacan', aldea_maya: 'teotihuacan' } }; // etapas 53-54
 // Dónde está cada aviso de misión que no se encuentra por su habitante: [región, o una función que da el punto en la región].
 const AVISO_EN = {
-  'hablar:escriba': 'aldea_maya', 'examinar:tablero_palenque': 'palenque', 'examinar:mural_teo': 'teotihuacan', 'hablar:comerciante_teo': 'barrio_teo', 'hablar:ruta': 'barrio_teo', 'llegar:cueva_teo': 'teotihuacan', 'vencer:cascabel_cueva': 'teotihuacan', 'llegar:teo_piso2': 'teotihuacan', 'hablar:anciana': 'ciudad', 'examinar:altar_trono': 'ciudad',
+  'hablar:escriba': 'aldea_maya', 'examinar:tablero_palenque': 'palenque', 'examinar:mural_teo': 'teotihuacan', 'hablar:comerciante_teo': 'barrio_teo', 'hablar:ruta': 'barrio_teo', 'llegar:cueva_teo': 'teotihuacan', 'vencer:cascabel_cueva': 'teotihuacan', 'llegar:teo_piso2': 'teotihuacan', 'vencer:jaguar_reticulado': 'teotihuacan', 'llegar:teo_piso3': 'teotihuacan', 'examinar:altar_dioses': 'teotihuacan', 'hablar:anciana': 'ciudad', 'examinar:altar_trono': 'ciudad',
   'llegar:mazmorra_maya': 'palenque', 'vencer:cocodrilo_pantano': 'palenque', 'llegar:camaras_estuco': 'palenque', 'vencer:murcielago_estuco': 'palenque', 'llegar:observatorio': 'palenque', 'vencer:guardian_ciclos': 'palenque', // etapa 48: la boca del acueducto
   'examinar:hoja_libro': () => juego.interactuables.filter((i) => i.texto === 'Recoger la hoja')[0] || juego.enemigos.find((e) => e.tipo === 'espiritu' && e.vida > 0),
 };

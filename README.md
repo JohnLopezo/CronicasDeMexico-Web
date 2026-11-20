@@ -53,6 +53,31 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 57 (2026-11-20): la cueva, pisos 2 y 3, y la cámara del altar de los dioses (`js/cueva_teo.js`, `js/pisos.js`)
+
+Lo pidió el usuario: los pisos 2 y 3 de la cueva. La mazmorra teotihuacana queda completa en **3 pisos de 4 niveles**
+(`t1_*`…`t3_*`, claves 21-23); los dioses del altar, con el ciclo de día y noche, en la etapa siguiente.
+
+- **Piso 2, el túnel de los espejos** (`losaEspejos`, `muroEspejos`): roca casi negra con motas de pirita (oro) y mica
+  (plata) que brillan, y ofrendas de concha. Espíritus, murciélagos, serpientes, ocelotes y armadillos (presupuesto 30-34).
+- **Sub-jefe del 2-4: el jaguar reticulado** (`jaguarReticulado`): el jaguar de la selva al ×1,8 (`dibujarOcelote` admite ahora
+  `e.escala` y `e.tinte`), 620 de vida, salto de 22 con 1,7 m de radio y zarpazo de 14; débil al Agua y a la Luz.
+- **Piso 3, la cámara de las cuatro flores** (`losaFlores`, `muroFlores`): estuco rojo gastado con flores de cuatro pétalos y
+  muros en talud-tablero. Sobre todo espíritus (presupuesto 33-37).
+- **El 3-4: la cámara del altar.** Un altar en talud-tablero con un brasero apagado (`Altar_Dioses`, lo pone `generarNivel` y
+  choca). Al examinarlo se ven las cuatro figuras borrosas (el dios viejo del fuego, la serpiente emplumada, el dios de la
+  tormenta y la de gran tocado) y se cierra **MP_TEO_03**; hasta entonces la salida a la plaza no se abre
+  (`SUBJEFE.t3_4 = 'teo.altar_visto'`). Al limpiar el nivel, el aviso ya no dice «la bajada está abierta» si falta algo.
+- La bajada del 1-4 lleva ahora al piso 2. MP_TEO_03 tiene seis pasos (piso 2, jaguar, piso 3, altar).
+- Sin decorado de escombro fuera de los tres pisos de la cueva: el de Unity trae musgo.
+- **Fidelidad:** D, el túnel bajo el Templo de la Serpiente Emplumada (2003) con muros de polvo metálico y miles de ofrendas;
+  las cámaras de cuatro lóbulos al fondo de la cueva del Sol; la flor de cuatro pétalos y los jaguares con red de los murales
+  (Tetitla, Zacuala, Atetelco); I, juntar ambos túneles en una sola cueva; F, el jaguar vivo y el altar con los dioses.
+
+Prueba: `herramientas/dificultad/etapa57.mjs` (12 comprobaciones: del 1-4 al piso 2, santuario, jaguar con barra, piso 3,
+altar que choca y que marca el mapa, salida cerrada hasta examinarlo, MP_TEO_03 cumplida, salida a la plaza y caída).
+`etapa55.mjs` cambia su final (ahora prueba la subida del 1-1 a la plaza) y pasa entera, como `etapa48.mjs`; sin `[assert]`.
+
 ## Etapa 56 (2026-11-20): los habitantes con el arte de Unity y la ropa de cada cultura (`herramientas/vestir.mjs`)
 
 Lo pidió el usuario: los habitantes mayas y teotihuacanos pintados por código (etapas 44 y 54) no se parecían a los demás;

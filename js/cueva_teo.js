@@ -27,20 +27,27 @@ Object.assign(REGIONES.teotihuacan.puntos, { desde_mazmorra: BOCA_CUEVA.llegada 
 MISIONES.MP_TEO_03 = { titulo: 'La cueva bajo el Sol', banderas: [], pasos: [
   { aviso: 'llegar:cueva_teo', veces: 1, texto: 'Entra en la cueva, al pie de la escalinata de la Pirámide del Sol' },
   { aviso: 'vencer:cascabel_cueva', veces: 1, texto: 'Baja por la cueva y vence a lo que la vigila' },
-  { aviso: 'llegar:teo_piso2', veces: 1, texto: 'Sigue bajando hacia el fondo de la cueva (próximamente)' },
+  { aviso: 'llegar:teo_piso2', veces: 1, texto: 'Sigue bajando hacia el túnel de los espejos' },
+  { aviso: 'vencer:jaguar_reticulado', veces: 1, texto: 'Cruza el túnel y vence a lo que lo vigila' },
+  { aviso: 'llegar:teo_piso3', veces: 1, texto: 'Baja hasta la cámara de las cuatro flores' },
+  { aviso: 'examinar:altar_dioses', veces: 1, texto: 'Llega al fondo de la cueva y examina el altar' },
 ] };
 DIALOGOS.comerciante_teo.find((r) => r.requiere.includes('teo.ruta_mercadera_teo')).mision = 'MP_TEO_03'; // al recordar los caminos, te manda a la cueva
-LLEGAR.t1_1 = 'llegar:cueva_teo';
+LLEGAR.t1_1 = 'llegar:cueva_teo'; LLEGAR.t2_1 = 'llegar:teo_piso2'; LLEGAR.t3_1 = 'llegar:teo_piso3';
 for (const id of SECUENCIA_TEO) AMBIENTES[id] = { f: 170, vol: 0.3, dron: 38, gotas: 0.12 }; // cueva seca: viento hondo, casi sin gotas
 const TXT_CUEVA = {
   boca: 'Al pie de la escalinata se abre una grieta en la roca. Sale un aire frío que huele a humo viejo. No sabrías a dónde lleva.',
   entrar: 'El comerciante tenía razón: aquí empiezan los caminos. La cueva baja bajo la pirámide, a oscuras; en el suelo hay copal y cenizas de fuegos de hace mucho.',
-  cascabel: 'La cascabel suelta un último cascabeleo y se deshace en humo violeta. Detrás, el túnel sigue hacia el corazón de la pirámide, pero un derrumbe lo tapa. Por ahora, la salida te devuelve a la plaza.',
+  cascabel: 'La cascabel suelta un último cascabeleo y se deshace en humo violeta. Detrás, el túnel sigue bajando, y de lo hondo llega un brillo, como de estrellas.',
+  jaguar: 'El jaguar se tiende en el suelo y la red de su piel se apaga. Ya no es más que pintura, como en los muros de la ciudad. Más abajo, el aire huele a copal recién quemado.',
+  altar: ['Al fondo, la cueva se abre en cuatro cámaras, como los pétalos de una flor. En el centro hay un altar de piedra con un brasero apagado.',
+    'En las paredes se ven, borrosas, cuatro figuras: un anciano con un brasero sobre la cabeza, una serpiente de plumas, un rostro con anteojeras y colmillos, y una figura con un gran tocado. Todas tienen grietas violetas.',
+    'El altar está frío. Sientes que aquí despiertan memorias muy antiguas, pero no todas a la vez: cada una tiene su momento del día. Por ahora, el camino de salida está abierto.'],
 };
 // Desde poblarTeotihuacan (js/teotihuacan.js): la boca se examina siempre; con el camino de la cueva, se entra.
 function bocaCueva(I) {
   if (bandera('teo.camino_cueva')) empezarMision('MP_TEO_03'); // también para partidas que ya lo sabían
-  I.push({ ...BOCA_CUEVA.usar, r: 1.3, texto: 'Boca de la cueva', aviso: ['llegar:cueva_teo', 'vencer:cascabel_cueva', 'llegar:teo_piso2'], usar() {
+  I.push({ ...BOCA_CUEVA.usar, r: 1.3, texto: 'Boca de la cueva', aviso: ['llegar:cueva_teo', 'vencer:cascabel_cueva', 'llegar:teo_piso2', 'vencer:jaguar_reticulado', 'llegar:teo_piso3', 'examinar:altar_dioses'], usar() {
     if (!bandera('teo.camino_cueva')) return mensaje(TXT_CUEVA.boca);
     mensaje(TXT_CUEVA.entrar, () => entrarMazmorraMaya('t1_1')); // la misma incursión nueva que la mazmorra maya (js/mazmorra_maya.js)
   } });
@@ -71,5 +78,42 @@ function cascabelCueva(x, y) {
   const antes = mundo; mundo = construirMundo('teotihuacan');
   console.assert(!bloqueado(BOCA_CUEVA.usar.x, BOCA_CUEVA.usar.y, 0.25) && !bloqueado(BOCA_CUEVA.llegada.x, BOCA_CUEVA.llegada.y, 0.25), 'Cueva: la boca está en la plaza');
   mundo = antes;
-  console.assert(SECUENCIA_TEO.every((id) => AMBIENTES[id] && esGenerado(id) && esTeo(id) && pisoDe(id) === 21) && anterior('t1_1') === 'teotihuacan' && !siguiente('t1_4') && nombreNivel('t1_4') === '1-4', 'Cueva: niveles');
+  console.assert(SECUENCIA_TEO.every((id) => AMBIENTES[id] && esGenerado(id) && esTeo(id) && pisoDe(id) === 20 + +id[1]) && anterior('t1_1') === 'teotihuacan' && siguiente('t1_4') === 't2_1' && siguiente('t2_4') === 't3_1' && !siguiente('t3_4') && nombreNivel('t3_4') === '3-4' && pisoDe('t3_2') === 23, 'Cueva: niveles');
 })();
+
+// ---------- Sub-jefe del 2-4: el jaguar reticulado (etapa 57) ----------
+// El jaguar de la selva (js/animales.js) al ×1,8, con más vida, salto más largo y zarpazos más duros. D: los murales de
+// Teotihuacan (Tetitla, Zacuala, Atetelco) pintan jaguares con una red sobre la piel. F: el jaguar vivo que sale de la pintura.
+const JAGUAR_RETICULADO = { ...JAGUAR_SELVA, vida: 620, r: 0.75, carrera: 5.4, alerta: 10, distancia: 4.4, esquiva: 0.12,
+  salto: { aviso: 0.7, vuelo: 0.52, alto: 1.1, radio: 1.7, dano: 22, maximo: 6.5 }, zarpazo: { dano: 14, radio: 1.3, dur: 0.34 },
+  nombre: 'Jaguar reticulado', debil: ['Agua', 'Luz'], escudo: 7 };
+function jaguarReticulado(x, y) {
+  const e = nuevoOcelote(x, y, JAGUAR_RETICULADO), morir = e.alMorir;
+  Object.assign(e, { vida: JAGUAR_RETICULADO.vida, max: JAGUAR_RETICULADO.vida, escala: 1.8, tinte: 'saturate(1.3) hue-rotate(-8deg)', jefe: true });
+  e.alMorir = (f) => {
+    morir(f); poner(SUBJEFE.t2_4); juego.jefe = null;
+    entregar({ xp: 320, objetos: [{ id: 'semilla_preparada', n: 2 }, { id: 'jade', n: 1 }] }, 'jefe.jaguar_reticulado');
+    mensaje(TXT_CUEVA.jaguar, () => avisar('vencer:jaguar_reticulado'));
+  };
+  juego.jefe = e;
+  return e;
+}
+
+// ---------- El altar de los dioses, en el 3-4 (etapa 57; los dioses, en la etapa siguiente) ----------
+// Altar de piedra con talud-tablero rojo, una flor de cuatro pétalos y un brasero apagado encima (D: braseros del dios viejo
+// del fuego). Base en la fila 60 de 64.
+function pintarAltarDioses() {
+  const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[23]; c.width = 80; c.height = 64;
+  px(g, P.junta, 6, 30, 68, 31); px(g, P.tezontle[0], 7, 46, 66, 14); px(g, P.estuco, 9, 31, 62, 2); px(g, P.piedra[1], 9, 33, 62, 12); px(g, P.piedra[3], 13, 35, 54, 8);
+  const cx = 40, cy = 39; for (const [u, v] of [[0, -3], [5, 0], [0, 3], [-5, 0]]) bola(g, P.flor, cx + u, cy + v, 2, 2); bola(g, P.verde, cx, cy, 1, 1);
+  px(g, P.junta, 27, 12, 26, 19); px(g, '#7a6a58', 28, 14, 24, 16); px(g, '#5a4c3e', 26, 12, 28, 3); px(g, '#2a2420', 30, 9, 20, 4); // el brasero
+  registrarLienzo('Altar_Dioses', c, 4 / 64);
+}
+pintarAltarDioses();
+OBSTACULOS.push(['Altar_Dioses', 1.4, 0.6]);
+// El altar lo pone generarNivel (js/niveles.js) en el centro de la cámara; desde poblarNivel, su uso: al examinarlo se cierra MP_TEO_03 y se abre la salida.
+function altarDioses(p, I) {
+  I.push({ x: p.x, y: p.y - 0.4, r: 1.5, texto: 'Examinar el altar', aviso: 'examinar:altar_dioses', usar: () => hablar('', TXT_CUEVA.altar, () => {
+    poner(SUBJEFE.t3_4); avisar('examinar:altar_dioses');
+  }) });
+}

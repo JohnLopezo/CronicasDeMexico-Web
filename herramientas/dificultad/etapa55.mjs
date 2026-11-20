@@ -39,9 +39,11 @@ export default async ({ ev, espera, foto, log }) => {
   ok(await ev(`objetivoEnMapa() === juego.jefe`), 'el mapa marca al jefe');
   await limpiar(); await cerrar();
   ok(await ev(`bandera('teo.subjefe_1_vencido') && juego.misiones.MP_TEO_03.paso === 2`), `cascabel vencida: ${await ev('objetivo()')}`);
-  const p = JSON.parse(await ev(`JSON.stringify(juego.portales.find((t) => t.a === 'teotihuacan' && t.abierto))`));
-  await ev(`juego.jugador.x = ${p.x - 1.5}; juego.jugador.y = ${p.y}`); await espera(250); await ev(`juego.jugador.x = ${p.x}; juego.jugador.y = ${p.y}`); await espera(1800); await cerrar();
-  ok(await ev(`juego.region === 'teotihuacan' && Math.hypot(juego.jugador.x - 10, juego.jugador.y - 4.1) < 0.6`), 'la salida del 1-4 vuelve a la plaza, junto a la boca');
+  // La subida del 1-1 vuelve a la plaza, junto a la boca (desde la etapa 57, la bajada del 1-4 lleva al piso 2: etapa57.mjs).
+  await ev(`cargarRegion('t1_1', 'llegada_abajo', juego.jugador.vida)`); await espera(1800); await cerrar();
+  const p = JSON.parse(await ev(`JSON.stringify(juego.portales.find((t) => t.a === 'teotihuacan'))`));
+  await ev(`juego.jugador.x = ${p.x + 1.5}; juego.jugador.y = ${p.y}`); await espera(250); await ev(`juego.jugador.x = ${p.x}; juego.jugador.y = ${p.y}`); await espera(1800); await cerrar();
+  ok(await ev(`juego.region === 'teotihuacan' && Math.hypot(juego.jugador.x - 10, juego.jugador.y - 4.1) < 0.6`), 'la subida del 1-1 vuelve a la plaza, junto a la boca');
   // Caer en la cueva: al santuario de Teotihuacan.
   await usar('Boca de la cueva'); await cerrar(); await espera(1800); await cerrar();
   await ev(`juego.jugador.vida = 0`); await espera(2600); await cerrar();

@@ -607,3 +607,11 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
   `herramientas/vestir.mjs` (recolorear la tela turquesa y roja de `Sprites/Npc` por matiz, conservando la luminosidad, y
   añadir el tocado) y `NpcCharacterAssets` armar sus `DirectionalSpriteSet` con los pivotes de la base.
 - Tabla de bases, colores y tocados: `VESTIDOS` y `TRAJES` en `herramientas/vestir.mjs`.
+
+## 44. La cueva, pisos 2 y 3, y la cámara del altar (etapa 57)
+
+- **Escenas `Teo_Cueva_2_*` y `3_*`:** tiles del túnel de los espejos (roca oscura con pirita y mica) y de la cámara de las
+  cuatro flores (estuco rojo, talud-tablero); poblaciones y presupuestos en `POBLACION`/`PRESUPUESTO` 22 y 23 (`js/niveles.js`).
+- **Sub-jefe Jaguar reticulado:** el jaguar de la selva (§ etapa 46) con vida 620, salto 22 (radio 1,7) y zarpazo 14, escala 1,8.
+- **Cámara del altar (3-4):** `InscriptionInteractable` en el altar (`examinar:altar_dioses`) que cierra `MP_TEO_03` y pone
+  `teo.altar_visto`; la salida (`ScenePortal` a `Teo_Calzada`) se abre con esa bandera. Los dioses, en la siguiente etapa.

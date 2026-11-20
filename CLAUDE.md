@@ -7,18 +7,18 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 El detalle de cada etapa está en su sección `## Etapa N` del README (no repetirlo aquí: este bloque debe quedar corto).
 
-- **Hecho hasta la etapa 56 (2026-11-20, sin subir):** capítulo I olmeco (aldea, selva, mazmorra 1-1…3-5, Guardián de la
+- **Hecho hasta la etapa 57 (2026-11-20, sin subir):** capítulo I olmeco (aldea, selva, mazmorra 1-1…3-5, Guardián de la
   Piedra Viva, Bendición de la Tierra) y **capítulo II maya completo**: Palenque (`js/palenque.js`), aldea de Lakamha'
   (`js/aldea_maya.js`), armas mayas, fauna de Chiapas, minimapa (`js/mapa.js`), mazmorra maya de 3 pisos × 4 (`m1_*`-`m3_*`,
   claves 11-13, `js/mazmorra_maya.js`) con cocodrilo, murciélago y Guardián de los Ciclos, y la Corriente de agua con el cierre
-  del capítulo (`js/agua.js`, misión `MP_MAY_04`). Etapa 52: 2 s sin daño al despertar. **Capítulo III empezado** (etapa 53): portal en la plaza de Palenque y Teotihuacan (`js/teotihuacan.js`: calzada, pirámides del Sol y la Luna, mural, misión `MP_TEO_01`) y el barrio (etapa 54, `js/barrio_teo.js`: ropa de cada cultura, zapoteco y mercadera maya, `MP_TEO_02`) y el piso 1 de la mazmorra, la cueva bajo la Pirámide del Sol (etapa 55, `js/cueva_teo.js`, niveles `t1_*`, cascabel de la cueva, `MP_TEO_03`). Etapa 56: los habitantes mayas y teotihuacanos usan el arte de Unity con la ropa de su cultura (`herramientas/vestir.mjs`).
+  del capítulo (`js/agua.js`, misión `MP_MAY_04`). Etapa 52: 2 s sin daño al despertar. **Capítulo III empezado** (etapa 53): portal en la plaza de Palenque y Teotihuacan (`js/teotihuacan.js`: calzada, pirámides del Sol y la Luna, mural, misión `MP_TEO_01`) y el barrio (etapa 54, `js/barrio_teo.js`: ropa de cada cultura, zapoteco y mercadera maya, `MP_TEO_02`) y el piso 1 de la mazmorra, la cueva bajo la Pirámide del Sol (etapa 55, `js/cueva_teo.js`, niveles `t1_*`, cascabel de la cueva, `MP_TEO_03`). Etapa 56: los habitantes mayas y teotihuacanos usan el arte de Unity con la ropa de su cultura (`herramientas/vestir.mjs`). Etapa 57: la cueva completa (pisos 2 y 3, jaguar reticulado en el 2-4 y el altar de los dioses, aún dormido, en el 3-4).
 - **Plan de dioses (usuario, propuesta en `PROPUESTA_DIOSES.md`, aún no en la biblia de Unity):** el jefe final de cada mazmorra es
   un dios de esa cultura (su memoria corrompida, que se libera); cada cultura tiene 3-4 y aparece uno según el momento de un
-  ciclo de día y noche del juego; cada dios da su versión de un elemento. **Siguiente:** pisos 2 y 3 de la cueva (`t2_*`, `t3_*`) y, al
-  fondo, el altar de los dioses con el ciclo de día y noche; también armas de obsidiana (hoy la cueva da armas mayas) y fauna del altiplano.
+  ciclo de día y noche del juego; cada dios da su versión de un elemento. **Siguiente:** los dioses en el altar del 3-4 (`altarDioses`, `js/cueva_teo.js`)
+  con el ciclo de día y noche; también armas de obsidiana (hoy la cueva da armas mayas) y fauna del altiplano.
 - **Pendiente:** probar en el celular las etapas 39-52 (botón Agua junto a Esquivar); medir la Corriente con el bot.
 - **Paso a Unity:** rama `feature/port-html` del repo de Unity, etapa U1 hecha (`0fae1d4`); seguir por la última entrada de
-  `Docs/Bitacora.md` de Unity. Todo lo solo-HTML está en `PORTAR_A_UNITY.md` (§1-43).
+  `Docs/Bitacora.md` de Unity. Todo lo solo-HTML está en `PORTAR_A_UNITY.md` (§1-44).
 - **Ideas abiertas:** sigilo del cuchillo y madera con el hacha (no existen); más animación de enemigos. **Deudas:** `/ponytail-debt`.
 
 ## Flujo de una etapa (para gastar pocos tokens)

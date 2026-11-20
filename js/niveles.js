@@ -13,8 +13,8 @@ const SECUENCIA = NIVELES.flat();
 // POBLACION, PRESUPUESTO y VIDA_NIVEL, para no chocar con los olmecas (1-3).
 const NIVELES_MAYA = [['m1_1', 'm1_2', 'm1_3', 'm1_4'], ['m2_1', 'm2_2', 'm2_3', 'm2_4'], ['m3_1', 'm3_2', 'm3_3', 'm3_4']];
 const SECUENCIA_MAYA = NIVELES_MAYA.flat();
-// Etapa 55: la mazmorra teotihuacana, la cueva bajo la Pirámide del Sol (js/cueva_teo.js). Piso 1 por ahora; claves 21-23.
-const NIVELES_TEO = [['t1_1', 't1_2', 't1_3', 't1_4']];
+// Etapas 55 y 57: la mazmorra teotihuacana, la cueva bajo la Pirámide del Sol (js/cueva_teo.js), 3 pisos de 4; claves 21-23.
+const NIVELES_TEO = [['t1_1', 't1_2', 't1_3', 't1_4'], ['t2_1', 't2_2', 't2_3', 't2_4'], ['t3_1', 't3_2', 't3_3', 't3_4']];
 const SECUENCIA_TEO = NIVELES_TEO.flat();
 const esGenerado = (id) => /^[nmt]\d_\d$/.test(id);
 const esTeo = (id) => /^t\d_\d$/.test(id || '');
@@ -25,7 +25,7 @@ const salidaDe = (id) => (esTeo(id) ? 'teotihuacan' : 'palenque'); // a dónde s
 const nombreNivel = (id) => { const S = secuenciaDe(id), i = S.indexOf(id), k = esMaya(id) || esTeo(id) ? 4 : 5; return i < 0 ? '' : `${Math.floor(i / k) + 1}-${(i % k) + 1}`; };
 const anterior = (id) => (id === 'm1_1' || id === 't1_1' ? salidaDe(id) : secuenciaDe(id)[secuenciaDe(id).indexOf(id) - 1]);
 const siguiente = (id) => secuenciaDe(id)[secuenciaDe(id).indexOf(id) + 1];
-const SUBJEFE = { n1_5: 'olm.subjefe_1_vencido', m1_4: 'may.subjefe_1_vencido', m2_4: 'may.subjefe_2_vencido', m3_4: 'may.guardian_ciclos_vencido', t1_4: 'teo.subjefe_1_vencido' }; // la bajada no se abre hasta vencerlo
+const SUBJEFE = { n1_5: 'olm.subjefe_1_vencido', m1_4: 'may.subjefe_1_vencido', m2_4: 'may.subjefe_2_vencido', m3_4: 'may.guardian_ciclos_vencido', t1_4: 'teo.subjefe_1_vencido', t2_4: 'teo.subjefe_2_vencido', t3_4: 'teo.altar_visto' }; // t3_4: la cámara del altar de los dioses // la bajada no se abre hasta vencerlo
 
 // Enemigos de las salas generadas, por piso: [tipo, peso]. 'espiritu' es el espíritu corrompido; los demás, fauna.
 const POBLACION = {
@@ -40,17 +40,21 @@ const POBLACION = {
   13: [['espiritu', 4], ['Guacamaya', 2], ['Avispa', 2], ['Mono', 2], ['ocelote', 2], ['aullador', 1]],
   // Teotihuacan, piso 1 (la cueva): seca y volcánica; murciélagos, serpientes de cascabel, armadillos y espíritus.
   21: [['espiritu', 4], ['Murcielago', 3], ['Serpiente', 3], ['armadillo', 2]],
+  // Teotihuacan, piso 2 (el túnel de los espejos): más espíritus, murciélagos y el ocelote que entra a cazarlos.
+  22: [['espiritu', 5], ['Murcielago', 3], ['Serpiente', 2], ['ocelote', 2], ['armadillo', 1]],
+  // Teotihuacan, piso 3 (la cámara de las cuatro flores): sobre todo espíritus de la Sombra, cerca del altar.
+  23: [['espiritu', 6], ['Murcielago', 2], ['ocelote', 2], ['Serpiente', 2]],
 };
 const SALA = { ancho: [7, 10], alto: [5, 7], pasillo: [2, 4], arena: [13, 9] };
 // Dificultad (revisada el 2026-11-13; ver README, etapa 22): cada nivel tiene un presupuesto de amenaza que se reparte entre
 // sus salas, y cada tipo cuesta según lo peligroso que es (una manada de pecaríes cuesta como un tapir). Presupuesto por piso
 // y nivel (X-1 a X-4; el 1-1 es el piso 1 de Unity). En el X-3 hay un santuario de Vida.
 const COSTE = { Serpiente: 2, Murcielago: 2, Avispa: 2, Guacamaya: 2, armadillo: 2, espiritu: 3, Cocodrilo: 3, Mono: 3, ocelote: 4, aullador: 4, pejelagarto: 4, pecari: 6, tapir: 6 };
-const PRESUPUESTO = { 1: [0, 11, 13, 15], 2: [16, 18, 20, 22], 3: [19, 21, 23, 26], 11: [18, 21, 23], 12: [22, 24, 26], 13: [25, 27, 29], 21: [27, 29, 31] }; // maya: se llega tras el Guardián olmeco // pisos 2 y 3 subidos en la etapa 32 (curva creciente)
+const PRESUPUESTO = { 1: [0, 11, 13, 15], 2: [16, 18, 20, 22], 3: [19, 21, 23, 26], 11: [18, 21, 23], 12: [22, 24, 26], 13: [25, 27, 29], 21: [27, 29, 31], 22: [30, 32, 34], 23: [33, 35, 37] }; // maya: se llega tras el Guardián olmeco // pisos 2 y 3 subidos en la etapa 32 (curva creciente)
 const LIBRE_LLEGADA = 4; // m sin enemigos alrededor de la llegada (etapa 38)
 // Nivel con santuario de Vida en cada piso: el X-3, a mitad de piso. Al 2-1 se llega con las semillas de la nauyaca y al 3-1,
 // con el santuario del 2-5.
-const VIDA_NIVEL = { 1: 3, 2: 3, 3: 3, 11: 3, 12: 3, 13: 3, 21: 3 };
+const VIDA_NIVEL = { 1: 3, 2: 3, 3: 3, 11: 3, 12: 3, 13: 3, 21: 3, 22: 3, 23: 3 };
 
 // ---------- Aspecto de cada piso (etapa 35, solo HTML) ----------
 // En vez del negro, el vacío lleva una textura oscura del piso, y alrededor de las salas generadas crecen plantas y rocas
@@ -73,7 +77,10 @@ ESTILO[12] = { pintado: true, color: '#1a0f0c', sueltos: ['Escombros_Basalto_01'
 // Etapa 50: piso 3 maya, el observatorio (js/pisos.js): la azotea de la torre, bajo el cielo de noche (Cielo_Noche, js/pisos.js).
 ESTILO[13] = { pintado: true, color: '#0a0f26', textura: 'Cielo_Noche', luz: 'brightness(1)', deco: [] };
 // Etapa 55: piso 1 teotihuacano, la cueva bajo la Pirámide del Sol (js/pisos.js): roca volcánica a oscuras.
-ESTILO[21] = { pintado: true, color: '#0d0a09', sueltos: ['Escombros_Basalto_02'], luz: 'brightness(.28) saturate(.3)', deco: ['Escombros_Basalto_01', 'Escombros_Basalto_02', 'Escombros_Basalto_03'] }; // sin musgo: cueva seca
+// Etapa 57: piso 2, el túnel de los espejos (polvo de pirita en los muros), y piso 3, la cámara de las cuatro flores (estuco rojo).
+ESTILO[22] = { pintado: true, color: '#07080c', sueltos: [], luz: 'brightness(.3) saturate(.5)', deco: [] };
+ESTILO[23] = { pintado: true, color: '#140807', sueltos: [], luz: 'brightness(.3) saturate(.6) sepia(.3)', deco: [] }; // la cueva, sin decorado fuera: el escombro de Unity trae musgo
+ESTILO[21] = { pintado: true, color: '#0d0a09', sueltos: [], luz: 'brightness(.28) saturate(.3)', deco: [] }; // sin musgo: cueva seca
 // El muro de basalto de un piso con diseño propio: «Muro_Basalto_01@2» (mismo nombre de base, así choca igual), pintado
 // una vez por js/pisos.js. En el piso 1 queda el de Unity.
 function muroDe(nombre, piso) {
@@ -307,6 +314,7 @@ function generarNivel(id) {
   // Santuario de Vida (LifeShrine) en la primera sala del X-3: cura la mitad de la vida, una vez por incursión.
   if (n === VIDA_NIVEL[piso]) { const v = { x: s0.x1 - 2, y: s0.y1 - 0.6 }; objetos.push({ sprite: 'Santuario_Vida_01', x: v.x, y: v.y, z: 0 }); puntos.vida = { x: v.x, y: v.y - 0.9 }; }
   if (arena) puntos.subjefe = { x: sf.cx + 2, y: sf.cy };
+  if (id === 't3_4') objetos.push({ sprite: 'Altar_Dioses', x: puntos.subjefe.x, y: puntos.subjefe.y + 0.6, z: 0 }); // js/cueva_teo.js
   if (NIVEL_ARMA[n] && !arena) puntos.arma = { x: s0.x1 - 2.5, y: s0.y1 - 1.2 }; // estrado del arma (js/armas.js)
   // Decorado del piso en el vacío, lejos del suelo (más lejos por delante, para que no tape a nadie).
   const deco = ESTILO[piso].deco, cerca = (a, b) => { for (let u = -2; u <= 2; u++) for (let v = -2; v <= 3; v++) if (es(a + u, b + v)) return true; return false; };
@@ -355,6 +363,8 @@ function poblarNivel(id, P, E, I, T) {
   if (id === 'm1_4' && !bandera(SUBJEFE.m1_4)) E.push(cocodriloPantano(P.subjefe.x, P.subjefe.y)); // js/mazmorra_maya.js
   if (id === 'm2_4' && !bandera(SUBJEFE.m2_4)) E.push(murcielagoEstuco(P.subjefe.x, P.subjefe.y));
   if (id === 't1_4' && !bandera(SUBJEFE.t1_4)) E.push(cascabelCueva(P.subjefe.x, P.subjefe.y)); // js/cueva_teo.js
+  if (id === 't2_4' && !bandera(SUBJEFE.t2_4)) E.push(jaguarReticulado(P.subjefe.x, P.subjefe.y));
+  if (id === 't3_4') altarDioses(P.subjefe, I); // el altar de los dioses (aún dormido)
   if (id === 'm3_4') E.push(guardianCiclos(P.subjefe.x, P.subjefe.y)); // vencido, se queda sentado (js/mazmorra_maya.js)
   if (id === 'n1_5' && !bandera('olm.subjefe_1_vencido')) E.push(nuevaNauyaca(P.subjefe.x, P.subjefe.y, () => {
     poner('olm.subjefe_1_vencido'); juego.jefe = null;
@@ -376,7 +386,7 @@ function revisarNivel() {
   poner(`incursion.limpio.${id}`);
   aparecerCofre(id); // cofre de recompensas (js/armas.js)
   const piso = esMaya(id) ? 3 + +id[1] : esTeo(id) ? 6 + +id[1] : +id[1], n = +id[3]; // maya: más experiencia (se llega tras el capítulo olmeca)
-  sonar('premio'); toast(`Nivel ${nombreNivel(id)} superado: la bajada está abierta`);
+  sonar('premio'); toast(SUBJEFE[id] && !bandera(SUBJEFE[id]) ? `Nivel ${nombreNivel(id)} superado` : `Nivel ${nombreNivel(id)} superado: la bajada está abierta`) // el 3-4 de la cueva espera al altar;
   // Experiencia (más que antes: el jugador sube algo más en la mazmorra) y, en los niveles lejos de un santuario (X-2 y X-4),
   // una semilla medicinal preparada (cura 20, tecla 1): entre dos santuarios hay tres niveles.
   entregar({ xp: 15 * piso + 10 * n, objetos: n % 2 === 0 ? [{ id: 'semilla_preparada', n: 1 }] : [] }, `nivel.${id}.${semillaIncursion()}`);

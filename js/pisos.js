@@ -28,6 +28,12 @@ const PALETA = {
   // Etapa 55, cueva bajo la Pirámide del Sol: toba y basalto volcánicos, tezontle rojizo, hollín de antorchas y copal.
   21: { junta: '#1a1412', piedra: ['#4a3f3a', '#52463f', '#443a35', '#5a4d45'], claro: '#6e6058', oscuro: '#2e2622', cara: '#2a221e',
     tezontle: ['#6a3a2e', '#5e3428', '#74443a'], hollin: '#16110f', copal: '#d8d0b8' },
+  // Etapa 57, el túnel de los espejos: roca casi negra con polvo de pirita (oro) y mica (plata), y ofrendas de concha.
+  22: { junta: '#0c0c10', piedra: ['#2a2a30', '#30303a', '#26262c', '#353540'], claro: '#4a4a56', oscuro: '#18181e', cara: '#1c1c22',
+    pirita: ['#d8b860', '#f0d890', '#b89840'], mica: '#c8d0dc', concha: '#e8dcc4' },
+  // Etapa 57, la cámara de las cuatro flores: estuco pintado de rojo, gastado, con flores de cuatro pétalos y talud-tablero.
+  23: { junta: '#2a0f0b', piedra: ['#8e3324', '#9c3a2a', '#86301f', '#a4422f'], claro: '#c25a40', oscuro: '#5e2016', cara: '#6a2418',
+    estuco: '#d9d0bf', flor: '#d1a232', verde: '#3f8a5a', tezontle: ['#5e3428', '#6a3a2e'] },
 };
 const px = (g, c, x, y, w = 1, h = 1) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
 const elige = (rnd, a) => a[Math.floor(rnd() * a.length)];
@@ -50,6 +56,8 @@ function pintarLosa(g, piso, ox, oy, l) {
   if (piso === 12) return losaEstuco(g, P, rnd, ox, oy, l);
   if (piso === 13) return losaObservatorio(g, P, rnd, ox, oy, l);
   if (piso === 21) return losaCueva(g, P, rnd, ox, oy, l);
+  if (piso === 22) return losaEspejos(g, P, rnd, ox, oy, l);
+  if (piso === 23) return losaFlores(g, P, rnd, ox, oy, l);
   if (piso === 2) {
     // Dos o cuatro lajas: un corte vertical y un corte horizontal a cada lado, a alturas distintas.
     const cx = 14 + Math.floor(rnd() * 20), cy = [8 + Math.floor(rnd() * 16), 8 + Math.floor(rnd() * 16)];
@@ -245,6 +253,8 @@ function pintarMuro(piso, esY, variante) {
   if (piso === 12) return muroEstuco(esY, variante);
   if (piso === 13) return muroObservatorio(esY, variante);
   if (piso === 21) return muroCueva(esY, variante);
+  if (piso === 22) return muroEspejos(esY, variante);
+  if (piso === 23) return muroFlores(esY, variante);
   const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[piso], rnd = azar(piso * 100 + variante + (esY ? 50 : 0));
   c.width = 64; c.height = 112;
   if (piso === 2) {
@@ -297,5 +307,47 @@ function muroCueva(esY, variante) {
   for (const [x, y, rx, ry] of rocas) bola(g, P.junta, x, y, rx + 1, ry + 1);
   for (const [x, y, rx, ry] of rocas) { bola(g, rnd() < 0.15 ? elige(rnd, P.tezontle) : elige(rnd, P.piedra), x, y, rx, ry); px(g, P.claro, x - 2, y - ry + 1, 3, 1); }
   g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(14,10,9,.5)'; g.fillRect(0, 0, 64, y0 + 16); // hollín del techo
+  return Object.assign(c, { naturalWidth: c.width, naturalHeight: c.height, complete: true });
+}
+
+// Piso 22 (el túnel de los espejos, etapa 57): lajas de roca casi negra con motas de pirita y mica que brillan (D: el túnel
+// bajo el Templo de la Serpiente Emplumada tenía los muros cubiertos de polvo metálico); a veces una ofrenda de conchas.
+function losaEspejos(g, P, rnd, ox, oy, l) {
+  const cy = 10 + Math.floor(rnd() * 12);
+  for (const [y, h] of [[0, cy], [cy, PX_Y - cy]]) { px(g, elige(rnd, P.piedra), ox + 1, oy + y + 1, PPU - 2, h - 2); px(g, P.claro, ox + 1, oy + y + 1, PPU - 2, 1); }
+  for (let i = 0; i < 9; i++) px(g, rnd() < 0.7 ? elige(rnd, P.pirita) : P.mica, ox + 2 + Math.floor(rnd() * (PPU - 4)), oy + 2 + Math.floor(rnd() * (PX_Y - 4)));
+  if (rnd() < 0.06) for (let i = 0; i < 4; i++) bola(g, P.concha, ox + 14 + i * 6, oy + 14 + (i % 2) * 4, 2, 1); // conchas de ofrenda
+  if (l.arriba) { px(g, P.oscuro, ox, oy - LOSA.matas, PPU, LOSA.matas); for (let i = 0; i < 5; i++) px(g, elige(rnd, P.pirita), ox + Math.floor(rnd() * PPU), oy - LOSA.matas + Math.floor(rnd() * 8)); }
+  if (l.abajo) { px(g, P.cara, ox, oy + PX_Y, PPU, LOSA.cara); for (let i = 0; i < 5; i++) px(g, elige(rnd, P.pirita), ox + Math.floor(rnd() * PPU), oy + PX_Y + 2 + Math.floor(rnd() * 10)); }
+}
+// Muro del túnel de los espejos: roca oscura en bultos, salpicada de pirita y mica que brilla como un cielo de noche.
+function muroEspejos(esY, variante) {
+  const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[22], rnd = azar(2200 + variante + (esY ? 50 : 0));
+  c.width = 64; c.height = 112;
+  const [x0, x1, y0, y1] = esY ? [26, 37, 20, 108] : [8, 55, 38, 98];
+  for (let y = y1 - 6; y > y0 + 4; y -= 8) for (let x = x0 + 4; x <= x1 - 3; x += esY ? 8 : 11) { bola(g, P.junta, x, y, esY ? 6 : 7, 6); bola(g, elige(rnd, P.piedra), x, y, esY ? 5 : 6, 5); }
+  for (let i = 0; i < (esY ? 14 : 40); i++) px(g, rnd() < 0.7 ? elige(rnd, P.pirita) : P.mica, x0 + Math.floor(rnd() * (x1 - x0)), y0 + Math.floor(rnd() * (y1 - y0)));
+  return Object.assign(c, { naturalWidth: c.width, naturalHeight: c.height, complete: true });
+}
+// Piso 23 (la cámara de las cuatro flores, etapa 57): losas de estuco pintado de rojo, gastadas hasta el blanco en partes, y a
+// veces una flor de cuatro pétalos pintada (D: la cueva acaba en cámaras de cuatro lóbulos; la flor de cuatro pétalos es un
+// motivo teotihuacano). Delante, la cara en talud-tablero.
+function losaFlores(g, P, rnd, ox, oy, l) {
+  px(g, elige(rnd, P.piedra), ox + 1, oy + 1, PPU - 2, PX_Y - 2); px(g, P.claro, ox + 1, oy + 1, PPU - 2, 1); px(g, P.oscuro, ox + 1, oy + PX_Y - 2, PPU - 2, 1);
+  if (rnd() < 0.5) px(g, P.estuco, ox + 6 + Math.floor(rnd() * 30), oy + 5 + Math.floor(rnd() * 20), 3 + Math.floor(rnd() * 6), 2); // el rojo gastado
+  if (rnd() < 0.12) { const cx = ox + 24, cy = oy + 16; for (const [u, v] of [[0, -5], [6, 0], [0, 5], [-6, 0]]) bola(g, P.flor, cx + u, cy + v, 3, 2); bola(g, P.verde, cx, cy, 2, 1); }
+  if (l.arriba) { px(g, P.cara, ox, oy - LOSA.matas, PPU, LOSA.matas); px(g, P.estuco, ox, oy - 3, PPU, 1); }
+  if (l.abajo) { px(g, elige(rnd, P.tezontle), ox, oy + PX_Y, PPU, 5); px(g, P.estuco, ox, oy + PX_Y + 5, PPU, 1); px(g, P.cara, ox, oy + PX_Y + 6, PPU, LOSA.cara - 6); px(g, P.piedra[1], ox + 3, oy + PX_Y + 8, PPU - 6, LOSA.cara - 10); }
+}
+// Muro de la cámara: talud de tezontle abajo y tablero de estuco rojo enmarcado arriba, con flores de cuatro pétalos.
+function muroFlores(esY, variante) {
+  const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[23], rnd = azar(2300 + variante + (esY ? 50 : 0));
+  c.width = 64; c.height = 112;
+  const [x0, x1, y0, y1] = esY ? [26, 37, 20, 108] : [8, 55, 38, 98], w = x1 - x0 + 1, medio = y1 - Math.round((y1 - y0) * 0.4);
+  px(g, P.junta, x0 - 1, y0 - 1, w + 2, y1 - y0 + 2);
+  for (let y = medio; y <= y1; y++) px(g, (y - medio) % 4 ? elige(rnd, P.tezontle) : P.junta, x0, y, w, 1); // talud
+  px(g, P.estuco, x0, y0, w, medio - y0); px(g, P.piedra[1], x0 + 2, y0 + 2, w - 4, medio - y0 - 4); // tablero enmarcado
+  if (!esY) for (let x = x0 + 9; x < x1 - 4; x += 16) { const cy = y0 + Math.round((medio - y0) / 2); for (const [u, v] of [[0, -4], [4, 0], [0, 4], [-4, 0]]) bola(g, P.flor, x + u, cy + v, 2, 2); bola(g, P.verde, x, cy, 1, 1); }
+  for (let i = 0; i < 8; i++) px(g, P.oscuro, x0 + Math.floor(rnd() * w), y0 + Math.floor(rnd() * (medio - y0)), 1 + Math.floor(rnd() * 3), 1); // grietas
   return Object.assign(c, { naturalWidth: c.width, naturalHeight: c.height, complete: true });
 }

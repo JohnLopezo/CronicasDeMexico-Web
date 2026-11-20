@@ -329,8 +329,8 @@ function dibujarOcelote(e) {
   const a = e.D.arte, n = muerto ? cuadroAnimal(a, 'Muerte', 0.9 - e.muriendo, true)
     : e.anim === 'Salto' ? `${a}_Salto_${1 + Math.min(4, Math.floor((1 - Math.max(0, e.t) / e.D.salto.vuelo) * 5))}` : cuadroAnimal(a, e.anim, e.ta, e.anim === 'Zarpazo');
   elipse(e.x, e.y, e.r + 0.01, '#0006', null, e.suelo ?? 0);
-  const filtro = e.destello > 0 ? 'brightness(2.4)' : e.roto > 0 ? ROTO_FILTRO : null;
-  dibujar(n, e.x, e.y, e.z || 0, { espejo, filtro, alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null, ...movAnimal(e, 'Ocelote') });
+  const filtro = e.destello > 0 ? 'brightness(2.4)' : e.roto > 0 ? ROTO_FILTRO : e.tinte || null;
+  dibujar(n, e.x, e.y, e.z || 0, { espejo, filtro, escala: e.escala, /* escala y tinte: sub-jefes (etapa 57) */ alfa: muerto ? Math.min(1, e.muriendo / 0.4) : null, ...movAnimal(e, 'Ocelote') });
   if (!muerto && e.vida < e.max) barraMini(e, (e.D === OCELOTE ? 0.85 : 1.15) + (e.z || 0));
 }
 
