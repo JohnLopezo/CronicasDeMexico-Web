@@ -53,6 +53,33 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 54 (2026-11-20): el barrio de Teotihuacan y la ropa de cada cultura (`js/barrio_teo.js`)
+
+Lo pidió el usuario: la gente de los barrios, con **ropa distinta según la cultura**.
+
+- **El barrio:** al este de la plaza de la Pirámide del Sol, por un camino de tierra. Es un patio de estuco entre conjuntos
+  de departamentos (talud de tezontle, muro encalado, tablero rojo pintado y techo plano), con un altar en talud-tablero al
+  centro, un taller de obsidiana (petate con núcleos y navajas negras y verdes), fogón, vasijas y cestos.
+- **Ropa del altiplano** (`pintarMaya` de `js/aldea_maya.js`, ampliado): tilma anudada al hombro, quechquemitl (la capa
+  triangular de las mujeres), tocado ancho de plumas, orejeras, peinado de dos mechones, y lo que carga cada uno (fardo con
+  mecapal, núcleo de obsidiana, vasija anaranjada, bastón). Las prendas mayas no cambian.
+- **Siete habitantes:** el comerciante (tilma, tocado ancho y fardo), el tallador de obsidiana, la alfarera (quechquemitl),
+  una niña y un niño teotihuacanos; y gente de otras culturas con su propia ropa: el **viajero zapoteco** del barrio
+  oaxaqueño (capa azul, tocado alto con máscara, como el de las urnas) y la **mercadera maya** (huipil y enredo de Lakamha').
+- **Misiones:** hablar con el comerciante cumple **MP_TEO_01** y empieza **MP_TEO_02 «Los caminos olvidados»**: preguntar por su
+  camino al tallador (el norte de la obsidiana), al zapoteco (el sur, Oaxaca) y a la mercadera (el cacao), y volver con el
+  comerciante. Al final recuerda la **cueva bajo la Pirámide del Sol** (`teo.camino_cueva`), la entrada a la mazmorra.
+- `rama` admite `aviso` (`conversar` lo emite además de `hablar:id`): así varias personas cuentan para el mismo paso, una vez cada una.
+- Cocinar (fogón de la alfarera) y Comerciar (mercadera). Al caer en el barrio, al santuario de Teotihuacan.
+- **Fidelidad** (cabecera de `js/barrio_teo.js`): D, los conjuntos de departamentos con patio y altar, el barrio zapoteco de
+  Tlailotlacan y el «Barrio de los Comerciantes», los talleres de obsidiana verde, la cerámica anaranjado delgado, y en
+  figurillas y murales los tocados anchos, orejeras, quechquemitl, tilma y mecapal; I, colores y cortes, la ropa de diario
+  del zapoteco y los peinados; F, las personas y sus palabras.
+
+Prueba: `herramientas/dificultad/etapa54.mjs` (12 comprobaciones: salida y minimapa, llegada, siete habitantes, las dos
+misiones, sin contar dos veces al mismo informante, servicios y caída) y la hoja `54_habitantes.png`. Las etapas 53, 44 y 43
+siguen enteras; sin `[assert]`.
+
 ## Etapa 53 (2026-11-20): de Palenque a Teotihuacan, inicio del capítulo III (`js/teotihuacan.js`)
 
 Capítulo III de `Docs/Historia_Mundo.md` §6 de Unity, **«Las ciudades y los pueblos del altiplano»**. El usuario eligió

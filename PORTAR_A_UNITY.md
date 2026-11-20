@@ -579,3 +579,14 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
 - **Historia:** `QuestData` `MP_TEO_01` (`examinar:mural_teo`, `hablar:gente_teo`); al caer en la escena, respawn en su santuario.
 - **Plan del capítulo** (usuario): un dios por cultura (Huehueteotl/Fuego, Cocijo/Luz, Serpiente Emplumada/Viento) como jefe
   que se libera; la habilidad activa depende del día o la hora.
+
+## 41. El barrio de Teotihuacan (etapa 54)
+
+- **Escena `Teo_Barrio`** (salida al este de la plaza de `Teo_Calzada`): patio de estuco, conjuntos de departamentos, altar
+  de patio, taller de obsidiana, fogón (`Station` Cocina) y comercio. Coordenadas en `BARRIO_TEO` (`js/barrio_teo.js`).
+- **NPC** (`NpcData` + fichas nuevas; en HTML se pintan con `pintarMaya`): comerciante, tallador de obsidiana, alfarera,
+  niña, niño, viajero zapoteco y mercadera maya (reutiliza la ficha maya). Prendas: tilma, quechquemitl, tocado ancho,
+  orejeras, tocado zapoteco.
+- **Historia:** `MP_TEO_01` paso 2 = `hablar:comerciante_teo`; `QuestData` `MP_TEO_02` (`hablar:ruta` ×3 y
+  `hablar:comerciante_teo`; bandera `teo.camino_cueva`). En Unity, `DialogueData` necesita emitir un aviso extra por rama
+  (como `rama(..., { aviso })`).

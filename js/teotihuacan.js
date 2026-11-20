@@ -159,6 +159,7 @@ const portalPalenque = (O, I) => portalMemoria(O, I, PALENQUE.puntos.portal_teo,
 function poblarTeotihuacan(P, E, O, I, T, santuarioMemoria) {
   santuarioMemoria();
   portalMemoria(O, I, P.portal, 'Volver a Lakamha\'', () => mensaje(TXT_TEO.portal, () => cargarRegion('palenque', 'desde_teo', juego.jugador.vida)), 'palenque');
+  T.push({ ...P.a_barrio, a: 'barrio_teo', punto: 'llegada' }); // el barrio (js/barrio_teo.js)
   const m = TEOTIHUACAN.mural;
   I.push({ x: m.x, y: m.y - 0.7, r: 1.2, texto: 'Examinar', aviso: 'examinar:mural_teo', usar: () => mensaje(TXT_TEO.mural, () => { poner('teo.mural_visto'); avisar('examinar:mural_teo'); }) });
   for (const [tipo, x, y] of TEOTIHUACAN.fauna)

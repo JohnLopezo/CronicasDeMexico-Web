@@ -88,6 +88,7 @@ function conversar(n, dialogo = n.id) {
     r.alTerminar.forEach(poner);
     if (r.mision) empezarMision(r.mision);
     avisar(`hablar:${n.id}`);
+    if (r.aviso) avisar(r.aviso); // js/aldea_maya.js, rama (etapa 54)
   });
 }
 
@@ -280,6 +281,7 @@ function poblar(id) {
   if (esGenerado(id)) poblarNivel(id, P, E, I, T);
   if (id === 'palenque') poblarPalenque(P, E, O, I, T, santuarioMemoria); // js/palenque.js
   if (id === 'teotihuacan') poblarTeotihuacan(P, E, O, I, T, santuarioMemoria); // js/teotihuacan.js
+  if (id === 'barrio_teo') poblarBarrioTeo(P, E, O, I, T); // js/barrio_teo.js
   if (id === 'aldea_maya') poblarAldeaMaya(P, E, O, I, T); // js/aldea_maya.js
   poblarTrampas(id); // antes que la fauna, para que no aparezca dentro de un brasero
   poblarFauna(id, P);
@@ -459,10 +461,10 @@ function actualizar(dt) {
   // niveles limpios). Siempre con la vida llena; lo ganado se queda. En el enlace de prueba (?nivel=) te levantas en el sitio.
   if (j.vida <= 0 && j.muerto <= 0) {
     if (juego.prueba) { j.vida = j.max; j.inv = 2; toast('Te levantas de nuevo.'); return; }
-    if (!['ciudad', 'selva', 'palenque', 'aldea_maya', 'teotihuacan'].includes(juego.region)) poner('incursion.caido');
+    if (!['ciudad', 'selva', 'palenque', 'aldea_maya', 'teotihuacan', 'barrio_teo'].includes(juego.region)) poner('incursion.caido');
     // Al despertar, 2 s sin recibir daño (etapa 52): el tucán de Palenque se lanzaba sobre ti nada más levantarte.
     const despertar = (r, p, t) => cargarRegion(r, p, estadisticas().vida).then(() => { juego.jugador.inv = 2; toast(t, 4); });
-    if (juego.region === 'teotihuacan') despertar('teotihuacan', 'memoria_llegada', 'Caíste. Despiertas junto al santuario de Memoria.'); // etapa 53
+    if (juego.region === 'teotihuacan' || juego.region === 'barrio_teo') despertar('teotihuacan', 'memoria_llegada', 'Caíste. Despiertas junto al santuario de Memoria.'); // etapa 53
     else if (juego.region === 'palenque' || juego.region === 'aldea_maya' || esMaya(juego.region)) despertar('palenque', 'memoria_llegada', 'Caíste. Despiertas junto al santuario de Memoria.'); // etapa 43
     else if (NIVELES[2].includes(juego.region) && bandera('incursion.santuario_p3')) despertar('p3', 'memoria_llegada', 'Caíste. Despiertas junto al santuario de Memoria.');
     else despertar('ciudad', 'inicio', 'Caíste. Despiertas en la aldea, junto al agua.');

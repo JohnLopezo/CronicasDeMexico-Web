@@ -20,11 +20,12 @@ function fondoMapa() {
   return (mundo.mapa = c);
 }
 // Por qué regiones se pasa para llegar a otra (de las que tienen mapa de misión): la siguiente desde cada una.
-const RUTA = { ciudad: { palenque: 'palenque', aldea_maya: 'palenque', teotihuacan: 'palenque' }, palenque: { ciudad: 'ciudad', aldea_maya: 'aldea_maya', teotihuacan: 'teotihuacan' },
-  aldea_maya: { palenque: 'palenque', ciudad: 'palenque', teotihuacan: 'palenque' }, teotihuacan: { palenque: 'palenque', ciudad: 'palenque', aldea_maya: 'palenque' } }; // etapa 53
+const RUTA = { ciudad: { palenque: 'palenque', aldea_maya: 'palenque', teotihuacan: 'palenque', barrio_teo: 'palenque' }, palenque: { ciudad: 'ciudad', aldea_maya: 'aldea_maya', teotihuacan: 'teotihuacan', barrio_teo: 'teotihuacan' },
+  aldea_maya: { palenque: 'palenque', ciudad: 'palenque', teotihuacan: 'palenque', barrio_teo: 'palenque' }, teotihuacan: { palenque: 'palenque', ciudad: 'palenque', aldea_maya: 'palenque', barrio_teo: 'barrio_teo' },
+  barrio_teo: { teotihuacan: 'teotihuacan', palenque: 'teotihuacan', ciudad: 'teotihuacan', aldea_maya: 'teotihuacan' } }; // etapas 53-54
 // Dónde está cada aviso de misión que no se encuentra por su habitante: [región, o una función que da el punto en la región].
 const AVISO_EN = {
-  'hablar:escriba': 'aldea_maya', 'examinar:tablero_palenque': 'palenque', 'examinar:mural_teo': 'teotihuacan', 'hablar:anciana': 'ciudad', 'examinar:altar_trono': 'ciudad',
+  'hablar:escriba': 'aldea_maya', 'examinar:tablero_palenque': 'palenque', 'examinar:mural_teo': 'teotihuacan', 'hablar:comerciante_teo': 'barrio_teo', 'hablar:ruta': 'barrio_teo', 'hablar:anciana': 'ciudad', 'examinar:altar_trono': 'ciudad',
   'llegar:mazmorra_maya': 'palenque', 'vencer:cocodrilo_pantano': 'palenque', 'llegar:camaras_estuco': 'palenque', 'vencer:murcielago_estuco': 'palenque', 'llegar:observatorio': 'palenque', 'vencer:guardian_ciclos': 'palenque', // etapa 48: la boca del acueducto
   'examinar:hoja_libro': () => juego.interactuables.filter((i) => i.texto === 'Recoger la hoja')[0] || juego.enemigos.find((e) => e.tipo === 'espiritu' && e.vida > 0),
 };
