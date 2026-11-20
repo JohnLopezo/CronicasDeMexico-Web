@@ -53,6 +53,55 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 56 (2026-11-20): los habitantes con el arte de Unity y la ropa de cada cultura (`herramientas/vestir.mjs`)
+
+Lo pidió el usuario: los habitantes mayas y teotihuacanos pintados por código (etapas 44 y 54) no se parecían a los demás;
+que sean **los mismos dibujos con otra ropa**.
+
+- **`herramientas/vestir.mjs`** (como `animales.mjs`): toma los cuadros de los habitantes olmecas de Unity
+  (`arte/Npc`), cambia los tonos de la tela olmeca, turquesa y rojo, por los de cada cultura conservando luz y sombra (la
+  piel, el pelo y el contorno no cambian), añade el tocado y escribe `arte/NpcCulturas/` y `datos/vestidos.js` (arte → base).
+  El juego registra esos cuadros con los pivotes de su base (`js/aldea_maya.js`). Se hace fuera del juego para no leer
+  píxeles de imágenes `file://` (Chrome lo bloquea al abrir con doble clic).
+- **Colores:** maya, azul y amarillo; Teotihuacan, rojo y ocre; zapoteca, añil y grana. **Tocados:** el ancho de plumas
+  del comerciante teotihuacano, el alto con máscara del viajero zapoteco y el pincel del escriba maya.
+- **Bases:** escriba y tallador ← mensajero; tejedora y alfarera ← curandera; mercadera ← comerciante (mujer); pescador ←
+  pescador; cazador ← guerrero; armero y comerciante teotihuacano ← comerciante; viajero zapoteco ← anciano (con su
+  bastón); niñas y niños ← niña 2/3 y niño 2/3.
+- Se quitan `pintarMaya`, `MAYAS` y `GENTE_TEO` (el código que los pintaba a mano).
+- Para regenerar: `node herramientas/vestir.mjs [hoja.png]` (con hoja: cada uno de frente, de lado y de espaldas ×3).
+
+Prueba: `etapa44.mjs` (19) y `etapa54.mjs` (12) comprueban ahora que cargan los 215 cuadros vestidos (las hojas de revisión
+pasan a `vestir.mjs`); `etapa55.mjs` sigue entera; sin `[assert]`.
+
+## Etapa 55 (2026-11-20): la cueva bajo la Pirámide del Sol, piso 1 de la mazmorra teotihuacana (`js/cueva_teo.js`)
+
+Lo pidió el usuario: la mazmorra de la cueva. Como la maya, irá en **3 pisos de 4 niveles**; al final, el altar de los dioses
+de `PROPUESTA_DIOSES.md` (el dios según el momento de un ciclo de día y noche). Esta etapa hace la entrada y el piso 1.
+
+- **Entrada:** la boca de la cueva, al pie de la escalinata de la Pirámide del Sol (pintada: marco de tezontle, oscuridad y
+  copal). Sin `teo.camino_cueva` solo se examina. Al recordar los caminos, el comerciante del barrio empieza **MP_TEO_03 «La
+  cueva bajo el Sol»** (también en partidas que ya lo sabían). Se entra con la incursión nueva de la mazmorra maya
+  (`entrarMazmorraMaya('t1_1')`).
+- **Generador por cultura:** niveles `t1_1`…`t1_4` (`NIVELES_TEO`, `esTeo`, `salidaDe`), claves 21-23 en `ESTILO`, `PALETA`,
+  `POBLACION`, `PRESUPUESTO` (27-31) y `VIDA_NIVEL`. El primero y el último salen a Teotihuacan, junto a la boca. Más
+  experiencia por nivel que la maya.
+- **Piso 1, la cueva** (`losaCueva`, `muroCueva` en `js/pisos.js`): suelo de lajas de toba y basalto con tezontle, cenizas de
+  fuegos viejos y copal; muros de roca volcánica en bultos con hollín arriba; fondo oscuro sin musgo. Enemigos: espíritus,
+  murciélagos, serpientes y armadillos. Santuario de Vida en el 1-3.
+- **Sub-jefe del 1-4: la cascabel de la cueva** (`cascabelCueva`): la serpiente de Unity al ×2,2, **teñida de pardo** (nuevo
+  `e.tinte` en `js/fauna.js`), con 520 de vida, mordida de 16 y escupitajo de 10 a 6 m; débil al Agua, al Viento y a la Luz.
+  Da 260 de experiencia, 2 semillas y jade. Vencida, el túnel sigue tapado por un derrumbe (piso 2, próximamente) y la salida
+  devuelve a la plaza.
+- **Atajo** (`shortcut:` en `js/armas.js`): estrados y cofres de la cueva dan **armas mayas** hasta que haya armas de obsidiana.
+- **Fidelidad** (cabecera de `js/cueva_teo.js`): D, el túnel de unos 100 m bajo la Pirámide del Sol, con cámaras al fondo y
+  restos de ofrendas y fuego, y la cascabel del altiplano; I, que sea volcánica en todo su recorrido y tenga varios niveles;
+  F, la Sombra y la cascabel gigante.
+
+Prueba: `herramientas/dificultad/etapa55.mjs` (14 comprobaciones: boca cerrada, el comerciante manda a la cueva, mapa,
+entrada, misión, santuario, cascabel con barra, mapa del jefe, salida a la plaza y caída). Las etapas 53, 54 y 48 siguen
+enteras; sin `[assert]` (la autocomprobación de niveles recorre también los de la cueva).
+
 ## Etapa 54 (2026-11-20): el barrio de Teotihuacan y la ropa de cada cultura (`js/barrio_teo.js`)
 
 Lo pidió el usuario: la gente de los barrios, con **ropa distinta según la cultura**.

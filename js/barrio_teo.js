@@ -1,7 +1,7 @@
 'use strict';
 // El barrio de Teotihuacan (etapa 54, solo HTML; ver PORTAR_A_UNITY.md §41). Al este de la plaza de la Pirámide del Sol: un
 // patio de estuco entre conjuntos de departamentos, con un altar al centro, un taller de obsidiana y un fogón. Siete
-// habitantes pintados con `pintarMaya` (js/aldea_maya.js), ampliado con ropa del altiplano, y gente de otras culturas con la
+// habitantes con el arte de Unity vestido con la ropa de su cultura (herramientas/vestir.mjs, etapa 56), y gente de otras con la
 // suya: un viajero zapoteco del barrio oaxaqueño y la mercadera maya. Misión MP_TEO_02 «Los caminos olvidados»: preguntar
 // por las rutas a tres personas de culturas distintas y volver con el comerciante.
 // Fidelidad (D documentado, I interpretación, F ficción):
@@ -10,23 +10,9 @@
 //      Comerciantes», con cerámica maya y de la costa del Golfo; talleres de obsidiana (la verde, de la Sierra de las
 //      Navajas); la cerámica «anaranjado delgado», de Puebla, se llevaba a toda Mesoamérica; en figurillas y murales:
 //      tocados anchos con plumas, orejeras, el quechquemitl de las mujeres, la tilma anudada y el mecapal para cargar.
-//   I: los colores y cortes de cada prenda, la ropa de diario del viajero zapoteco (su tocado sale de las urnas), los
-//      peinados de dos mechones y el orden del barrio.
+//   I: la ropa: los cortes de los habitantes olmecas de Unity con los colores del altiplano (rojo y ocre) o zapotecos
+//      (añil y grana), el tocado ancho y el del viajero zapoteco (sale de las urnas), y el orden del barrio.
 //   F: las personas, sus palabras y los caminos que la Sombra borra de la memoria.
-
-// ---------- Habitantes (cuadros de 48 × 64, como en la aldea maya) ----------
-const GENTE_TEO = {
-  TeoComerciante: { piel: '#9a6440', pelo: '#1d1712', peinado: 'corto', torso: 'tilma', capa: '#c8a46a', borde: '#9c3a2a', bajo: 'ex', ropa: '#e6dcc4', tocado: 'ancho', plumas: '#3f8a4a', orejeras: '#3f8a6a', lleva: 'fardo' },
-  TeoTallador: { piel: '#8a5636', pelo: '#1a1410', peinado: 'corto', torso: 'desnudo', bajo: 'ex', ropa: '#d8cfb6', borde: '#9c3a2a', orejeras: '#d9d0bf', lleva: 'nucleo' },
-  TeoAlfarera: { piel: '#a06a44', pelo: '#211a14', peinado: 'mechones', torso: 'quechquemitl', ropa: '#e6dcc4', borde: '#9c3a2a', bajo: 'falda', falda: '#c8a46a', lleva: 'vasija' },
-  ZapotecoViajero: { piel: '#8f5c3a', pelo: '#1a1410', peinado: 'corto', torso: 'capa', capa: '#3d4f8a', borde: '#d1a232', bajo: 'ex', ropa: '#efe7d2', tocado: 'zapoteco', plumas: '#2f6e8a', orejeras: '#3f8a6a', lleva: 'baston' },
-  TeoNina: { piel: '#a06a44', pelo: '#211a14', peinado: 'mechones', torso: 'quechquemitl', ropa: '#efe7d2', borde: '#3f6f8a', bajo: 'falda', falda: '#9c3a2a', nino: true },
-  TeoNino: { piel: '#9a6642', pelo: '#1b1511', peinado: 'corto', torso: 'desnudo', bajo: 'ex', ropa: '#e6dcc4', borde: '#9c3a2a', nino: true },
-};
-for (const [arte, s] of Object.entries(GENTE_TEO)) for (const dir of ['01', '03', '05']) {
-  registrarLienzo(`Npc_${arte}_Reposo1_${dir}`, pintarMaya(s, dir, 0), 2 / 64);
-  for (let f = 1; f <= 4; f++) registrarLienzo(`Npc_${arte}_Caminar${f}_${dir}`, pintarMaya(s, dir, f), 2 / 64);
-}
 
 // ---------- Conjunto de departamentos, altar del patio y taller ----------
 // Conjunto: talud de tezontle, muro de estuco con un tablero rojo arriba, la puerta y el techo plano. Base en la fila 106.
@@ -155,5 +141,5 @@ function poblarBarrioTeo(P, E, O, I, T) {
   mundo = construirMundo('teotihuacan');
   console.assert(!bloqueado(17.5, 2, 0.25) && !bloqueado(19.2, 2, 0.25), 'Teotihuacan: el camino al barrio está libre');
   mundo = antes;
-  console.assert(Object.keys(GENTE_TEO).every((a) => ['01', '03', '05'].every((d) => SPRITES[`Npc_${a}_Caminar4_${d}`])), 'Barrio teotihuacano: cuadros de los habitantes');
+  console.assert(BARRIO_TEO.habitantes.every(([, a]) => ['01', '03', '05'].every((d) => SPRITES[`Npc_${a}_Reposo1_${d}`])), 'Barrio teotihuacano: cuadros de los habitantes');
 })();

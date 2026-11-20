@@ -25,6 +25,9 @@ const PALETA = {
   // Etapa 50, mazmorra maya piso 3 (el observatorio): caliza clara bajo la luna, cielo de noche en las ventanas.
   13: { junta: '#2a2c38', piedra: ['#a9a89c', '#b1b0a3', '#a2a195', '#b8b6a8'], claro: '#d2d0c2', oscuro: '#7d7c72', cara: '#64635e',
     glifo: '#5d5c54', cielo: '#0e1636', estrella: '#e8e6c8', estuco: '#c9c6b6', rojo: '#8e3a2c' },
+  // Etapa 55, cueva bajo la Pirámide del Sol: toba y basalto volcánicos, tezontle rojizo, hollín de antorchas y copal.
+  21: { junta: '#1a1412', piedra: ['#4a3f3a', '#52463f', '#443a35', '#5a4d45'], claro: '#6e6058', oscuro: '#2e2622', cara: '#2a221e',
+    tezontle: ['#6a3a2e', '#5e3428', '#74443a'], hollin: '#16110f', copal: '#d8d0b8' },
 };
 const px = (g, c, x, y, w = 1, h = 1) => { g.fillStyle = c; g.fillRect(x, y, w, h); };
 const elige = (rnd, a) => a[Math.floor(rnd() * a.length)];
@@ -46,6 +49,7 @@ function pintarLosa(g, piso, ox, oy, l) {
   if (piso === 11) return losaCanal(g, P, rnd, ox, oy, l);
   if (piso === 12) return losaEstuco(g, P, rnd, ox, oy, l);
   if (piso === 13) return losaObservatorio(g, P, rnd, ox, oy, l);
+  if (piso === 21) return losaCueva(g, P, rnd, ox, oy, l);
   if (piso === 2) {
     // Dos o cuatro lajas: un corte vertical y un corte horizontal a cada lado, a alturas distintas.
     const cx = 14 + Math.floor(rnd() * 20), cy = [8 + Math.floor(rnd() * 16), 8 + Math.floor(rnd() * 16)];
@@ -240,6 +244,7 @@ function pintarMuro(piso, esY, variante) {
   if (piso === 11) return muroCanal(esY, variante);
   if (piso === 12) return muroEstuco(esY, variante);
   if (piso === 13) return muroObservatorio(esY, variante);
+  if (piso === 21) return muroCueva(esY, variante);
   const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[piso], rnd = azar(piso * 100 + variante + (esY ? 50 : 0));
   c.width = 64; c.height = 112;
   if (piso === 2) {
@@ -268,5 +273,29 @@ function pintarMuro(piso, esY, variante) {
     else for (let y = y0; y < y1; y += 22) px(g, P.friso, x0, y, x1 - x0 + 1, 2); // fajas en la pilastra
     px(g, P.junta, x0 - 1, y1 - 3, x1 - x0 + 3, 3); // zócalo
   }
+  return Object.assign(c, { naturalWidth: c.width, naturalHeight: c.height, complete: true });
+}
+
+// Piso 21 (la cueva bajo la Pirámide del Sol, etapa 55): suelo de roca volcánica irregular, lajas de toba con tezontle
+// rojizo, a veces hollín de un fuego viejo o un puñado de copal (D: en la cueva se hallaron restos de ofrendas y de fuego).
+function losaCueva(g, P, rnd, ox, oy, l) {
+  px(g, P.piedra[2], ox, oy, PPU, PX_Y);
+  for (let i = 0; i < 5; i++) { const w = 10 + Math.floor(rnd() * 16), h = 6 + Math.floor(rnd() * 8); px(g, elige(rnd, P.piedra), ox + Math.floor(rnd() * (PPU - w)), oy + Math.floor(rnd() * (PX_Y - h)), w, h); }
+  for (let i = 0; i < 7; i++) px(g, rnd() < 0.5 ? P.claro : P.oscuro, ox + Math.floor(rnd() * PPU), oy + Math.floor(rnd() * PX_Y), 2, 1);
+  if (rnd() < 0.35) bola(g, elige(rnd, P.tezontle), ox + 8 + rnd() * 32, oy + 6 + rnd() * 20, 3, 2);
+  if (rnd() < 0.08) bola(g, P.hollin, ox + 24, oy + 16, 9, 5); // restos de fuego
+  else if (rnd() < 0.05) for (let i = 0; i < 5; i++) px(g, P.copal, ox + 18 + Math.floor(rnd() * 12), oy + 12 + Math.floor(rnd() * 8), 2, 2); // copal
+  if (l.arriba) { px(g, P.oscuro, ox, oy - LOSA.matas, PPU, LOSA.matas); for (let x = 0; x < PPU; x += 4) px(g, P.piedra[0], ox + x, oy - LOSA.matas + Math.floor(rnd() * 4), 4, 3); }
+  if (l.abajo) { px(g, P.cara, ox, oy + PX_Y, PPU, LOSA.cara); for (let i = 0; i < 5; i++) bola(g, elige(rnd, P.piedra), ox + 4 + Math.floor(rnd() * 40), oy + PX_Y + 5 + Math.floor(rnd() * 5), 4, 2); }
+}
+// Muro de la cueva: roca volcánica en bultos redondeados (túnel de lava y toba), con vetas de tezontle y hollín arriba.
+function muroCueva(esY, variante) {
+  const c = document.createElement('canvas'), g = c.getContext('2d'), P = PALETA[21], rnd = azar(2100 + variante + (esY ? 50 : 0));
+  c.width = 64; c.height = 112;
+  const [x0, x1, y0, y1] = esY ? [26, 37, 20, 108] : [8, 55, 38, 98], rocas = [];
+  for (let y = y1 - 6; y > y0 + 4; y -= 8) for (let x = x0 + 4; x <= x1 - 3; x += esY ? 8 : 10 + Math.floor(rnd() * 4)) rocas.push([x + Math.floor(rnd() * 3), y, esY ? 5 : 6 + Math.floor(rnd() * 3), 5 + Math.floor(rnd() * 2)]);
+  for (const [x, y, rx, ry] of rocas) bola(g, P.junta, x, y, rx + 1, ry + 1);
+  for (const [x, y, rx, ry] of rocas) { bola(g, rnd() < 0.15 ? elige(rnd, P.tezontle) : elige(rnd, P.piedra), x, y, rx, ry); px(g, P.claro, x - 2, y - ry + 1, 3, 1); }
+  g.globalCompositeOperation = 'source-atop'; g.fillStyle = 'rgba(14,10,9,.5)'; g.fillRect(0, 0, 64, y0 + 16); // hollín del techo
   return Object.assign(c, { naturalWidth: c.width, naturalHeight: c.height, complete: true });
 }

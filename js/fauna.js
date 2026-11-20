@@ -218,7 +218,7 @@ function dibujarFauna(e) {
     : e.estado === 'golpe' || e.estado === 'especial' ? ['Ataque'] : e.estado === 'guardia' ? ['Defensa'] : vuela ? ['Volar']
     : e.movido ? [e.persigue ? 'Correr' : 'Caminar'] : ['Reposo'];
   const nombre = elegir(`${b}${pose}1_03`, `${b}Reposo1_03`), o = { espejo: e.fx < 0, alfa, escala: e.escala,
-    filtro: e.destello > 0 ? 'brightness(3)' : e.roto > 0 ? ROTO_FILTRO : null, ...movimiento(e, e.especie, ...mov) };
+    filtro: e.destello > 0 ? 'brightness(3)' : e.roto > 0 ? ROTO_FILTRO : e.tinte || null, /* tinte: color propio de un sub-jefe (etapa 55) */ ...movimiento(e, e.especie, ...mov) };
   // Ataque por partes (js/cuadros.js); al soltarlo, el cuadro de ataque se funde 0,12 s sobre el siguiente.
   if (e.cuadro?.includes('_Ataque') && nombre !== e.cuadro && !juego.dibujandoEstela) e.salida = { nombre: e.cuadro, t: juego.t };
   if (!juego.dibujandoEstela) e.cuadro = nombre;

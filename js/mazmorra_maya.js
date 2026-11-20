@@ -62,11 +62,11 @@ function bocaAcueducto(I) {
 }
 // Empieza una incursión (como IncursionReset al pasar por la selva olmeca): sala nueva, sin armas de la anterior, con la del
 // tallador de pedernal (o la lanza que presta).
-function entrarMazmorraMaya() {
+function entrarMazmorraMaya(nivel = 'm1_1') { // etapa 55: también la cueva teotihuacana (t1_1)
   for (const k of Object.keys(juego.flags)) if (k.startsWith('incursion.')) delete juego.flags[k];
   const id = ARMAS[juego.flags['armero_maya.eleccion']] ? juego.flags['armero_maya.eleccion'] : 'lanza_maya';
   juego.flags['incursion.ranuras'] = [nuevaRanura(id, 1)]; juego.flags['incursion.mano'] = 0;
-  cargarRegion('m1_1', 'llegada_arriba', juego.jugador.vida);
+  cargarRegion(nivel, 'llegada_arriba', juego.jugador.vida);
 }
 
 // ---------- Sub-jefe del 1-4: el cocodrilo de pantano ----------

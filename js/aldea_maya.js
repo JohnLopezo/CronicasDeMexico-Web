@@ -1,90 +1,22 @@
 'use strict';
 // La aldea de Lakamha' (etapa 44, solo HTML; ver PORTAR_A_UNITY.md §31). Al este de la plaza del templo de Palenque: casas
-// de bajareque con techo de palma sobre plataformas, milpa, telar de cintura, fogón de tres piedras y el río al sur. Seis
-// habitantes pintados por código (no hay fichas mayas en Unity) y la misión MP_MAY_02 «Los registros perdidos»: tres hojas del
+// de bajareque con techo de palma sobre plataformas, milpa, telar de cintura, fogón de tres piedras y el río al sur. Ocho
+// habitantes (el arte de Unity con ropa maya, herramientas/vestir.mjs) y la misión MP_MAY_02 «Los registros perdidos»: tres hojas del
 // libro de corteza del escriba, una junto al río y dos en la plaza, guardadas por seres de la Sombra.
 // Fidelidad (D documentado, I interpretación, F ficción):
 //   D: casas mayas de bajareque y techo de guano (palma) sobre plataformas bajas, como las de hoy en la región; la milpa
 //      de maíz, frijol y calabaza; el telar de cintura; el fogón de tres piedras; el comercio de cacao y sal; los escribas
 //      (aj tz'ihb) pintaban con pincel y a veces llevaban pinceles en el tocado (vasijas del Clásico); libros de papel de
 //      corteza (huun) en el Clásico, conocidos por imágenes y restos (no se conserva ninguno legible).
-//   I: el peinado y la ropa de cada habitante (taparrabo, huipil, enredo, capa), simplificados; el orden de la aldea.
+//   I: la ropa: los cortes de los habitantes olmecas de Unity con los colores mayas (azul y amarillo); el orden de la aldea.
 //   F: las personas, sus palabras, las hojas que se vuelan y los seres que las guardan.
 // Reutiliza de Unity objetos de casa sin rasgos de cultura (fogón de piedras, cestos, vasijas, estera, canoa).
 
-// ---------- Habitantes pintados por código ----------
-// Cuadros de 48 × 64 como las fichas de Unity (pies en la fila 62): Reposo1 y Caminar1-4 en 05 (de frente), 01 (de espaldas)
-// y 03 (de lado, mirando a la derecha; el juego lo voltea). `nino`: se pinta igual y se reduce a ×0,72.
-const MAYAS = {
-  MayaEscriba: { piel: '#a06a44', pelo: '#1d1712', peinado: 'mono', torso: 'capa', capa: '#e8e0cc', bajo: 'ex', ropa: '#efe7d2', borde: '#a4483a', tocado: 'pincel', lleva: 'concha' },
-  MayaTejedora: { piel: '#93603e', pelo: '#9a9690', peinado: 'trenzas', cinta: '#3d6fa8', torso: 'huipil', ropa: '#f1ead8', borde: '#b23a3a', bajo: 'falda', falda: '#2f4f7a' },
-  MayaMercadera: { piel: '#a8714a', pelo: '#211a14', peinado: 'trenzas', cinta: '#d1a232', torso: 'huipil', ropa: '#d9b25a', borde: '#7a3b2a', bajo: 'falda', falda: '#6b4a2e', lleva: 'canasta' },
-  MayaPescador: { piel: '#7f5134', pelo: '#191410', peinado: 'mono', torso: 'desnudo', bajo: 'ex', ropa: '#d8cfb6', borde: '#4b6b7a', lleva: 'red' },
-  MayaCazador: { piel: '#8f5c3a', pelo: '#1a1410', peinado: 'mono', torso: 'capa', capa: '#9a7448', bajo: 'ex', ropa: '#d8cfb6', borde: '#5a7a3a', tocado: 'plumas', lleva: 'lanza' },
-  MayaArmero: { piel: '#8a5636', pelo: '#1a1410', peinado: 'mono', torso: 'capa', capa: '#7a5f42', bajo: 'ex', ropa: '#d8cfb6', borde: '#a4483a', lleva: 'lanza' }, // etapa 45
-  MayaNina: { piel: '#a8714a', pelo: '#211a14', peinado: 'trenzas', cinta: '#c0503a', torso: 'huipil', ropa: '#f3eddc', borde: '#4f7d34', bajo: 'falda', falda: '#8a5a3a', nino: true },
-  MayaNino: { piel: '#9a6642', pelo: '#1b1511', peinado: 'corto', torso: 'desnudo', bajo: 'ex', ropa: '#efe7d2', borde: '#3d6fa8', nino: true },
-};
-function pintarMaya(s, dir, fase) {
-  const c = document.createElement('canvas'), g = c.getContext('2d', { willReadFrequently: true }); c.width = 48; c.height = 64;
-  const lado = dir === '03', espalda = dir === '01', paso = fase ? [0, 1, 0, -1][fase % 4] : 0, bote = fase && fase % 2 === 0 ? -1 : 0;
-  const R = (col, x, y, w, h) => px(g, col, x, y + bote, w, h), oscuro = '#3a2a1c', h = s.torso === 'huipil' || s.torso === 'quechquemitl';
-  // Piernas y sandalias: de frente se alza un pie y luego el otro; de lado se cruzan.
-  const piernas = lado ? [[20 + paso * 2, 0], [24 - paso * 2, 0]] : [[16, paso > 0 ? 2 : 0], [26, paso < 0 ? 2 : 0]];
-  for (const [x, alza] of piernas) { px(g, s.piel, x, 44, lado ? 5 : 6, 17 - alza); px(g, oscuro, x, 60 - alza, lado ? 6 : 6, 2); }
-  // Prenda de abajo: enredo hasta el tobillo o taparrabo (ex) con su paño delante.
-  if (s.bajo === 'falda') { R(s.falda, lado ? 17 : 14, 40, lado ? 14 : 20, 18); R(s.borde, lado ? 17 : 14, 56, lado ? 14 : 20, 2); }
-  else { R(s.ropa, lado ? 18 : 15, 40, lado ? 13 : 18, 5); R(s.borde, lado ? 18 : 15, 41, lado ? 13 : 18, 1); if (!espalda) R(s.ropa, lado ? 26 : 21, 45, lado ? 4 : 6, 7); }
-  // Torso: huipil (banda bordada y escote) o desnudo, con capa corta.
-  const [tx, tw] = lado ? [18, 12] : [15, 18];
-  if (s.torso === 'quechquemitl') { R(s.ropa, tx - 2, 26, tw + 4, 18); for (let y = 0; y < 12; y++) { const w = Math.max(2, tw + 6 - y * 2); R(y % 4 === 3 ? s.ropa : s.borde, (lado ? 24 : 24) - (w >> 1), 26 + y, w, 1); } } // etapa 54: capa triangular del altiplano
-  else if (h) { R(s.ropa, tx - 2, 26, tw + 4, 18); R(s.borde, tx - 2, 29, tw + 4, 3); R(s.borde, tx - 2, 42, tw + 4, 1); if (!lado && !espalda) R(s.borde, 21, 26, 6, 2); }
-  else { R(s.piel, tx, 26, tw, 15); if (s.torso === 'capa') { R(s.capa, tx - 2, 26, tw + 4, 8); R(s.borde || oscuro, tx - 2, 33, tw + 4, 1); }
-    if (s.torso === 'tilma') { R(s.capa, tx - 2, 26, tw + 4, 17); R(s.borde, tx - 2, 42, tw + 4, 1); if (!espalda) R(s.borde, lado ? 22 : 28, 26, 3, 3); } } // tilma anudada al hombro (etapa 54)
-  // Brazos (se balancean al andar; con huipil solo asoman los antebrazos).
-  const brazo = (x, dy) => R(s.piel, x, (h ? 37 : 27) + dy, 4, h ? 6 : 15);
-  if (lado) brazo(22 + paso * 2, 0); else { brazo(h ? 9 : 11, paso); brazo(h ? 35 : 33, -paso); }
-  // Cabeza y pelo; de lado, la frente alargada hacia atrás (I: la modificación craneal, muy representada en el Clásico).
-  const hx = lado ? 19 : 18;
-  R(s.piel, hx, 14, lado ? 11 : 12, 12);
-  if (lado) { R(s.piel, 30, 19, 1, 3); R(oscuro, 27, 19, 2, 1); R(s.pelo, 19, 13, 5, 11); R(s.pelo, 19, 12, 9, 2); }
-  else if (!espalda) { R(oscuro, 20, 19, 2, 1); R(oscuro, 26, 19, 2, 1); R('#7a4a30', 23, 23, 2, 1); R(s.pelo, 18, 12, 12, 3); }
-  else R(s.pelo, 18, 12, 12, 13);
-  if (s.peinado === 'mono') R(s.pelo, lado ? 20 : 21, 6, 6, 7); // el pelo atado en lo alto
-  if (s.peinado === 'trenzas') { R(s.pelo, lado ? 18 : 16, 13, 2, 16); if (!lado) R(s.pelo, 30, 13, 2, 16); R(s.cinta, lado ? 19 : 18, 13, lado ? 8 : 12, 2); if (espalda) R(s.cinta, 23, 22, 2, 6); }
-  if (s.peinado === 'corto') R(s.pelo, hx, 12, lado ? 11 : 12, 4);
-  if (s.peinado === 'mechones') { R(s.pelo, lado ? 20 : 17, 8, 4, 5); if (!lado) R(s.pelo, 27, 8, 4, 5); } // dos mechones en lo alto (etapa 54)
-  if (s.orejeras) { if (lado) R(s.orejeras, 21, 19, 3, 3); else if (!espalda) { R(s.orejeras, 16, 19, 2, 3); R(s.orejeras, 30, 19, 2, 3); } }
-  if (s.tocado) R(s.borde || '#a4483a', hx, 15, lado ? 11 : 12, 2);
-  if (s.tocado === 'ancho') { const w = (lado ? 11 : 12) + 10; R(s.borde, hx - 5, 9, w, 6); R(s.capa || s.ropa, hx - 4, 10, w - 2, 2); for (let x = 0; x < w; x += 3) R(s.plumas, hx - 5 + x, 4 + (x % 2), 2, 5); } // tocado ancho de plumas (altiplano)
-  if (s.tocado === 'zapoteco') { R(s.borde, hx + 1, 4, 10, 11); R('#d9d0bf', hx + 3, 7, 6, 5); R(oscuro, hx + 4, 8, 1, 1); R(oscuro, hx + 7, 8, 1, 1); R(s.plumas, hx - 1, 0, 14, 4); } // tocado alto con máscara (I: urnas zapotecas)
-  if (s.tocado === 'pincel') for (let k = 0; k < 8; k++) R(k < 2 ? oscuro : '#c9a35a', 28 + Math.floor(k / 3), 14 - k, 1, 1); // pincel en el tocado
-  if (s.tocado === 'plumas') { R('#3f8a4a', 24, 3, 2, 10); R('#2f6e8a', 20, 5, 2, 8); }
-  // Lo que lleva cada uno.
-  if (s.lleva === 'concha') R('#f2efe6', lado ? 25 : 36, 42, 4, 3);
-  if (s.lleva === 'canasta') { R('#8a6438', lado ? 26 : 35, 36, 9, 8); for (let y = 37; y < 44; y += 2) R('#6b4a2a', lado ? 26 : 35, y, 9, 1); }
-  if (s.lleva === 'red') for (let y = 32; y < 48; y += 2) for (let x = 0; x < 8; x += 2) R('#cdbf98', (lado ? 13 : 6) + x + (y % 4 ? 1 : 0), y, 1, 1);
-  if (s.lleva === 'fardo') { if (espalda) R('#b89a6a', 14, 24, 20, 16); else { R('#6b4a2a', hx, 15, lado ? 11 : 12, 1); R('#b89a6a', lado ? 12 : 13, 22, lado ? 7 : 22, lado ? 16 : 4); } } // fardo con mecapal
-  if (s.lleva === 'nucleo') { R('#1f2a26', lado ? 25 : 36, 40, 4, 5); R('#4f7a66', lado ? 26 : 37, 40, 1, 2); }
-  if (s.lleva === 'vasija') { R('#d07a3a', lado ? 25 : 35, 36, 8, 7); R('#a85a2a', lado ? 25 : 35, 36, 8, 1); }
-  if (s.lleva === 'baston') R('#7a5a36', lado ? 32 : 40, 10, 2, 52);
-  if (s.lleva === 'lanza') { R('#7a5a36', lado ? 32 : 40, 6, 2, 56); R('#4a4a52', lado ? 31 : 39, 1, 4, 6); }
-  // Contorno oscuro de 1 px alrededor de la figura, como en las fichas.
-  const im = g.getImageData(0, 0, 48, 64), a = im.data, borde = [];
-  for (let y = 0; y < 64; y++) for (let x = 0; x < 48; x++) {
-    if (a[(y * 48 + x) * 4 + 3]) continue;
-    if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([u, v]) => x + u >= 0 && x + u < 48 && y + v >= 0 && y + v < 64 && a[((y + v) * 48 + x + u) * 4 + 3] > 0)) borde.push([x, y]);
-  }
-  for (const [x, y] of borde) px(g, '#1a120c', x, y);
-  if (!s.nino) return c;
-  const k = document.createElement('canvas'), q = k.getContext('2d'); k.width = 48; k.height = 64; q.imageSmoothingEnabled = false;
-  q.drawImage(c, 0, 0, 48, 64, Math.round(24 - 24 * 0.72), Math.round(62 - 62 * 0.72), Math.round(48 * 0.72), Math.round(64 * 0.72));
-  return k;
-}
-for (const [arte, s] of Object.entries(MAYAS)) for (const dir of ['01', '03', '05']) {
-  registrarLienzo(`Npc_${arte}_Reposo1_${dir}`, pintarMaya(s, dir, 0), 2 / 64);
-  for (let f = 1; f <= 4; f++) registrarLienzo(`Npc_${arte}_Caminar${f}_${dir}`, pintarMaya(s, dir, f), 2 / 64);
-}
+// ---------- Habitantes: el arte de Unity con la ropa de cada cultura (etapa 56) ----------
+// herramientas/vestir.mjs recolorea los cuadros de los habitantes olmecas de Unity (turquesa y rojo → los tonos de la cultura)
+// y les pone su tocado; aquí se registran con los pivotes de su base. VESTIDOS (datos/vestidos.js): arte → base de Unity.
+for (const [arte, base] of Object.entries(VESTIDOS))
+  for (const k of Object.keys(SPRITES)) if (k.startsWith(`Npc_${base}_`)) { const n = k.replace(`Npc_${base}_`, `Npc_${arte}_`); SPRITES[n] = [`arte/NpcCulturas/${n}.png`, ...SPRITES[k].slice(1)]; }
 
 // ---------- Casas, milpa y telar ----------
 // Casa: plataforma de piedra, muros de bajareque encalados con la puerta al frente y techo alto de palma. Base en la fila 116.
@@ -244,5 +176,5 @@ function poblarAldeaMaya(P, E, O, I, T) {
   mundo = construirMundo('palenque');
   console.assert([HOJAS[2], HOJAS[3]].every((p) => !bloqueado(p.x, p.y, 0.3)), 'Palenque: hojas en la plaza');
   mundo = antes;
-  console.assert(Object.keys(MAYAS).every((a) => ['01', '03', '05'].every((d) => SPRITES[`Npc_${a}_Caminar4_${d}`])), 'Aldea maya: cuadros de los habitantes');
+  console.assert(ALDEA_MAYA.habitantes.every(([, a]) => ['01', '03', '05'].every((d) => SPRITES[`Npc_${a}_Reposo1_${d}`])), 'Aldea maya: cuadros de los habitantes');
 })();

@@ -91,13 +91,13 @@ const QUE_HACE = {
 function armaDelNivel(id) {
   const piso = +id[1], n = NIVEL_ARMA[+id[3]];
   if (!n || piso < n.desde) return null;
-  const ids = armasDe(esMaya(id) ? 'maya' : 'olmeca').filter((k) => ARMAS[k].clase === n.clase), rnd = azar(hash(`${id}:arma:${semillaIncursion()}`));
+  const ids = armasDe(esMaya(id) || esTeo(id) ? 'maya' : 'olmeca') /* shortcut: armas mayas en la cueva teotihuacana hasta que haya armas de obsidiana */.filter((k) => ARMAS[k].clase === n.clase), rnd = azar(hash(`${id}:arma:${semillaIncursion()}`));
   return ids[Math.floor(rnd() * ids.length)];
 }
 
 // Calidad de lo que da un nivel: la de su piso; en la mazmorra maya, una más (se llega más fuerte), hasta ★★★.
-const calidadNivel = (id) => (esMaya(id) ? Math.min(3, +id[1] + 1) : +(String(id).match(/\d/) || [1])[0]);
-const armasCofreDe = (id) => (esMaya(id) ? armasDe('maya').filter((k) => ARMAS[k].clase !== 'escudo') : ARMAS_COFRE);
+const calidadNivel = (id) => (esMaya(id) || esTeo(id) ? Math.min(3, +id[1] + (esTeo(id) ? 2 : 1)) : +(String(id).match(/\d/) || [1])[0]);
+const armasCofreDe = (id) => (esMaya(id) || esTeo(id) ? armasDe('maya').filter((k) => ARMAS[k].clase !== 'escudo') : ARMAS_COFRE);
 // El estrado: objeto que se dibuja encima y se toma con Usar (o Atacar junto a él).
 function ponerArma(id, punto) {
   const clave = `incursion.arma_${id}`, tipo = armaDelNivel(id);
@@ -172,7 +172,7 @@ function aparecerCofre(id) {
   juego.interactuables.push({ x: p.x, y: p.y, r: 1.1, texto: 'Abrir el cofre', usar() {
     if (bandera(clave)) return mensaje('El cofre ya está vacío.');
     poner(clave); sonar('premio');
-    const piso = esMaya(id) ? 3 : +(id.match(/\d/) || [1])[0], rnd = azar(hash(`${id}:premio:${semillaIncursion()}`)), objetos = [];
+    const piso = esMaya(id) || esTeo(id) ? 3 : +(id.match(/\d/) || [1])[0], rnd = azar(hash(`${id}:premio:${semillaIncursion()}`)), objetos = [];
     for (let k = 0; k < 2; k++) { // dos tiradas de la tabla del piso
       const T = BOTIN_COFRE[piso] || BOTIN_COFRE[1], total = T.reduce((t, x) => t + x[1], 0);
       let q = rnd() * total; const [o, , a, b] = T.find((x) => (q -= x[1]) < 0) || T[0];

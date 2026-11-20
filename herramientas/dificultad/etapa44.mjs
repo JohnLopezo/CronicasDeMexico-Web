@@ -42,9 +42,5 @@ export default async ({ ev, espera, foto, log }) => {
   await ir(20.5, 0); await espera(300); await ir(23.2, 0); await espera(1800); await cerrar();
   ok(await hablarCon('escriba'), 'vuelve al escriba'); await cerrar(); await espera(200);
   ok(await ev(`bandera('mision.MP_MAY_02.completada') && bandera('may.camino_agua')`), 'MP_MAY_02 cumplida (camino del agua)');
-  // Hoja de los habitantes: cada uno de frente, de lado y de espaldas, ×3.
-  await ev(`(()=>{ const c = document.createElement('canvas'), g = c.getContext('2d'); c.width = 7 * 3 * 48 * 3; c.height = 64 * 3 * 2; g.imageSmoothingEnabled = false; g.fillStyle = '#4a3a2a'; g.fillRect(0, 0, c.width, c.height);
-    Object.keys(MAYAS).forEach((a, i) => ['05', '03', '01'].forEach((d, k) => { g.drawImage(imagenes['Npc_' + a + '_Reposo1_' + d], (i * 3 + k) * 144, 0, 144, 192); g.drawImage(imagenes['Npc_' + a + '_Caminar2_' + d], (i * 3 + k) * 144, 192, 144, 192); }));
-    document.body.innerHTML = ''; document.body.appendChild(c); c.style.cssText = 'position:fixed;left:0;top:0;width:844px'; juego.activo = false; })()`);
-  await espera(300); await foto('44_habitantes');
+  ok(await ev(`(async () => { const n = Object.keys(SPRITES).filter((k) => Object.keys(VESTIDOS).some((a) => k.startsWith('Npc_' + a + '_'))); await precargar(n); return n.length > 100 && n.every((k) => imagenes[k].naturalWidth > 0); })()`), 'los cuadros de los habitantes vestidos cargan (arte/NpcCulturas)');
 };

@@ -35,11 +35,5 @@ export default async ({ ev, espera, foto, log }) => {
   await ev(`juego.jugador.x = 0; juego.jugador.y = 0; juego.jugador.vida = 0`); await espera(2600);
   ok(await ev(`juego.region === 'teotihuacan' && Math.hypot(juego.jugador.x + 15.5, juego.jugador.y - 1.2) < 0.5`), 'al caer en el barrio, al santuario de Teotihuacan');
 
-  // Hoja con la ropa de todos (×3): de frente, de lado y de espaldas, más un cuadro de andar.
-  await ev(`(()=>{ const artes = [...Object.keys(GENTE_TEO), 'MayaMercadera', 'MayaEscriba'], c = document.createElement('canvas'), g = c.getContext('2d');
-    c.width = artes.length * 4 * 48 * 3 / 2; c.height = 64 * 3 * 2; g.imageSmoothingEnabled = false; g.fillStyle = '#6b5236'; g.fillRect(0, 0, c.width, c.height);
-    artes.forEach((a, i) => ['05', '03', '01'].concat(['05']).forEach((d, k) => { const im = imagenes[\`Npc_\${a}_\${k === 3 ? 'Caminar2' : 'Reposo1'}_\${d}\`];
-      const col = i % (artes.length / 2), fila = Math.floor(i / (artes.length / 2)); g.drawImage(im, (col * 4 + k) * 144, fila * 192, 144, 192); }));
-    Object.assign(c.style, { position: 'fixed', left: 0, top: 0, zIndex: 99, width: '100vw' }); document.body.appendChild(c); })()`);
-  await espera(200); await foto('54_habitantes');
+  ok(await ev(`(async () => { const n = Object.keys(SPRITES).filter((k) => Object.keys(VESTIDOS).some((a) => k.startsWith('Npc_' + a + '_'))); await precargar(n); return n.length > 100 && n.every((k) => imagenes[k].naturalWidth > 0); })()`), 'los cuadros de los habitantes vestidos cargan (arte/NpcCulturas)');
 };

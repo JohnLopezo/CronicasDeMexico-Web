@@ -590,3 +590,20 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
 - **Historia:** `MP_TEO_01` paso 2 = `hablar:comerciante_teo`; `QuestData` `MP_TEO_02` (`hablar:ruta` ×3 y
   `hablar:comerciante_teo`; bandera `teo.camino_cueva`). En Unity, `DialogueData` necesita emitir un aviso extra por rama
   (como `rama(..., { aviso })`).
+
+## 42. La cueva bajo la Pirámide del Sol, piso 1 (etapa 55)
+
+- **Entrada:** `ScenePortal` en la boca de la cueva (`Teo_Calzada`, al pie de la escalinata), activo con `teo.camino_cueva`;
+  `QuestData` `MP_TEO_03` (`llegar:cueva_teo`, `vencer:cascabel_cueva`, `llegar:teo_piso2`). Al entrar, `IncursionReset`.
+- **Escenas `Teo_Cueva_1_1`…`1_4`** (o el generador de mazmorra con datos por piso): tiles de roca volcánica con tezontle,
+  cenizas y copal, muros de roca en bultos; población: espíritus, murciélagos, serpientes y armadillos; `LifeShrine` en el
+  1-3; `DefeatReturn` al santuario de Teotihuacan.
+- **Sub-jefe `WildEnemy` Cascabel de la cueva:** `EnemyData` de la serpiente con vida 520, mordida 16, escupitajo 10 a 6 m,
+  escala 2,2, tinte pardo (material o sprite propio) y `BreakGauge` débil a Agua, Viento y Luz.
+
+## 43. Habitantes de otras culturas con el arte olmeco (etapa 56)
+
+- En Unity no hay fichas mayas ni teotihuacanas. Mientras no las haya: `Tools/ArtPipeline` puede hacer lo mismo que
+  `herramientas/vestir.mjs` (recolorear la tela turquesa y roja de `Sprites/Npc` por matiz, conservando la luminosidad, y
+  añadir el tocado) y `NpcCharacterAssets` armar sus `DirectionalSpriteSet` con los pivotes de la base.
+- Tabla de bases, colores y tocados: `VESTIDOS` y `TRAJES` en `herramientas/vestir.mjs`.

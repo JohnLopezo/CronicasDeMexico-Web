@@ -7,18 +7,18 @@ El detalle de cada etapa está en `README.md` (largo): **lee solo la sección qu
 
 El detalle de cada etapa está en su sección `## Etapa N` del README (no repetirlo aquí: este bloque debe quedar corto).
 
-- **Hecho hasta la etapa 54 (2026-11-20, sin subir):** capítulo I olmeco (aldea, selva, mazmorra 1-1…3-5, Guardián de la
+- **Hecho hasta la etapa 56 (2026-11-20, sin subir):** capítulo I olmeco (aldea, selva, mazmorra 1-1…3-5, Guardián de la
   Piedra Viva, Bendición de la Tierra) y **capítulo II maya completo**: Palenque (`js/palenque.js`), aldea de Lakamha'
   (`js/aldea_maya.js`), armas mayas, fauna de Chiapas, minimapa (`js/mapa.js`), mazmorra maya de 3 pisos × 4 (`m1_*`-`m3_*`,
   claves 11-13, `js/mazmorra_maya.js`) con cocodrilo, murciélago y Guardián de los Ciclos, y la Corriente de agua con el cierre
-  del capítulo (`js/agua.js`, misión `MP_MAY_04`). Etapa 52: 2 s sin daño al despertar. **Capítulo III empezado** (etapa 53): portal en la plaza de Palenque y Teotihuacan (`js/teotihuacan.js`: calzada, pirámides del Sol y la Luna, mural, misión `MP_TEO_01`) y el barrio (etapa 54, `js/barrio_teo.js`: ropa de cada cultura, zapoteco y mercadera maya, `MP_TEO_02`).
+  del capítulo (`js/agua.js`, misión `MP_MAY_04`). Etapa 52: 2 s sin daño al despertar. **Capítulo III empezado** (etapa 53): portal en la plaza de Palenque y Teotihuacan (`js/teotihuacan.js`: calzada, pirámides del Sol y la Luna, mural, misión `MP_TEO_01`) y el barrio (etapa 54, `js/barrio_teo.js`: ropa de cada cultura, zapoteco y mercadera maya, `MP_TEO_02`) y el piso 1 de la mazmorra, la cueva bajo la Pirámide del Sol (etapa 55, `js/cueva_teo.js`, niveles `t1_*`, cascabel de la cueva, `MP_TEO_03`). Etapa 56: los habitantes mayas y teotihuacanos usan el arte de Unity con la ropa de su cultura (`herramientas/vestir.mjs`).
 - **Plan de dioses (usuario, propuesta en `PROPUESTA_DIOSES.md`, aún no en la biblia de Unity):** el jefe final de cada mazmorra es
   un dios de esa cultura (su memoria corrompida, que se libera); cada cultura tiene 3-4 y aparece uno según el momento de un
-  ciclo de día y noche del juego; cada dios da su versión de un elemento. **Siguiente:** la mazmorra de la cueva bajo la Pirámide del Sol
-  (`teo.camino_cueva`) con el altar de los dioses y el ciclo de día y noche; también armas y fauna del altiplano.
+  ciclo de día y noche del juego; cada dios da su versión de un elemento. **Siguiente:** pisos 2 y 3 de la cueva (`t2_*`, `t3_*`) y, al
+  fondo, el altar de los dioses con el ciclo de día y noche; también armas de obsidiana (hoy la cueva da armas mayas) y fauna del altiplano.
 - **Pendiente:** probar en el celular las etapas 39-52 (botón Agua junto a Esquivar); medir la Corriente con el bot.
 - **Paso a Unity:** rama `feature/port-html` del repo de Unity, etapa U1 hecha (`0fae1d4`); seguir por la última entrada de
-  `Docs/Bitacora.md` de Unity. Todo lo solo-HTML está en `PORTAR_A_UNITY.md` (§1-41).
+  `Docs/Bitacora.md` de Unity. Todo lo solo-HTML está en `PORTAR_A_UNITY.md` (§1-43).
 - **Ideas abiertas:** sigilo del cuchillo y madera con el hacha (no existen); más animación de enemigos. **Deudas:** `/ponytail-debt`.
 
 ## Flujo de una etapa (para gastar pocos tokens)
@@ -63,12 +63,14 @@ El detalle de cada etapa está en su sección `## Etapa N` del README (no repeti
 | `js/mazmorra_maya.js` | Mazmorra maya: boca del acueducto (`BOCA`, `bocaAcueducto`, `entrarMazmorraMaya`), misión `MP_MAY_03`, sub-jefes `cocodriloPantano` y `murcielagoEstuco`, jefe `guardianCiclos` |
 | `js/teotihuacan.js` | Capítulo III: portal en Palenque (`portalPalenque`), región `TEOTIHUACAN` (piso 5, `losaTeo`), pirámides, mural, maguey y nopal pintados, misión `MP_TEO_01` |
 | `js/barrio_teo.js` | Barrio de Teotihuacan: habitantes (`GENTE_TEO`, con `pintarMaya`), conjuntos, altar y taller pintados, `BARRIO_TEO`, misión `MP_TEO_02` |
+| `js/cueva_teo.js` | Mazmorra teotihuacana: boca de la cueva (`BOCA_CUEVA`, `bocaCueva`), misión `MP_TEO_03`, sub-jefe `cascabelCueva`; niveles `t1_*` en `js/niveles.js` (`esTeo`, `salidaDe`) |
 | `js/agua.js` | Bendición del Agua (`corrienteDeAgua`, `CORRIENTE`), lodo seco (`lodoSeco`), cierre del capítulo II (`MP_MAY_04`, `cierreCapituloII`) |
 | `js/pisos.js` | Suelo (`pintarLosa`) y muros (`pintarMuro`) de los pisos 2 y 3 pintados por código; colores en `PALETA` |
 | `js/juego.js` | Banderas, misiones, `cargarRegion`, guardado, bucle `actualizar` |
 | `js/musica.js` | Música prehispánica: instrumentos, `MUSICA` (patrones por modo), `modoMusica`, secuenciador |
 | `js/recompensas.js` · `js/sonido.js` · `js/senda.js` · `js/movimiento.js` | Progresión · sonido · senda · movimiento de sprites |
 | `herramientas/animales.mjs` | Pinta los animales (`arte/Animales`, `datos/animales.js`) |
+| `herramientas/vestir.mjs` | Viste a los habitantes de Unity con la ropa de otra cultura (`arte/NpcCulturas`, `datos/vestidos.js`) |
 | `datos/*.js` | Generados: no editar a mano |
 
 Patrón de un enemigo nuevo: constantes en mayúsculas, `nuevoX(x, y)` con `actualizar`/`dibujar`/`alHerir`/`alMorir`,
@@ -78,6 +80,7 @@ Patrón de un enemigo nuevo: constantes en mayúsculas, `nuevoX(x, y)` con `actu
 
 - Abrir: doble clic en `index.html`. Celular: `node servir-en-red.mjs` (puerto 8080). Probar un nivel: `index.html?nivel=n2_2`.
 - Animales: `node herramientas/animales.mjs [hoja.png]` (con hoja = cuadros ×3 para revisarlos).
+- Habitantes de otras culturas: `node herramientas/vestir.mjs [hoja.png]` (el arte de Unity con otra ropa; `VESTIDOS` y `TRAJES` dentro).
 - Arte o mapas cambiados en Unity: `node sincronizar.mjs`.
 - Pruebas sin ventana (Chrome por DevTools): `node herramientas/dificultad/prueba.mjs "file:///…/index.html" <salida> <guion.mjs>`.
   Guiones de ejemplo en `herramientas/dificultad/`; bots `bot_grupo.js` (`GRUPO`, opción `orilla`) y `bot_jefe.js` (`PELEA`).
