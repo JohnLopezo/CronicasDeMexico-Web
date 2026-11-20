@@ -42,12 +42,12 @@ const TXT_CUEVA = {
   jaguar: 'El jaguar se tiende en el suelo y la red de su piel se apaga. Ya no es más que pintura, como en los muros de la ciudad. Más abajo, el aire huele a copal recién quemado.',
   altar: ['Al fondo, la cueva se abre en cuatro cámaras, como los pétalos de una flor. En el centro hay un altar de piedra con un brasero apagado.',
     'En las paredes se ven, borrosas, cuatro figuras: un anciano con un brasero sobre la cabeza, una serpiente de plumas, un rostro con anteojeras y colmillos, y una figura con un gran tocado. Todas tienen grietas violetas.',
-    'El altar está frío. Sientes que aquí despiertan memorias muy antiguas, pero no todas a la vez: cada una tiene su momento del día. Por ahora, el camino de salida está abierto.'],
+    'El altar está frío. Sientes que aquí despiertan memorias muy antiguas, pero no todas a la vez: cada una tiene su momento del día.'],
 };
 // Desde poblarTeotihuacan (js/teotihuacan.js): la boca se examina siempre; con el camino de la cueva, se entra.
 function bocaCueva(I) {
   if (bandera('teo.camino_cueva')) empezarMision('MP_TEO_03'); // también para partidas que ya lo sabían
-  I.push({ ...BOCA_CUEVA.usar, r: 1.3, texto: 'Boca de la cueva', aviso: ['llegar:cueva_teo', 'vencer:cascabel_cueva', 'llegar:teo_piso2', 'vencer:jaguar_reticulado', 'llegar:teo_piso3', 'examinar:altar_dioses'], usar() {
+  I.push({ ...BOCA_CUEVA.usar, r: 1.3, texto: 'Boca de la cueva', aviso: ['llegar:cueva_teo', 'vencer:cascabel_cueva', 'llegar:teo_piso2', 'vencer:jaguar_reticulado', 'llegar:teo_piso3', 'examinar:altar_dioses', 'vencer:dios_teo'], usar() {
     if (!bandera('teo.camino_cueva')) return mensaje(TXT_CUEVA.boca);
     mensaje(TXT_CUEVA.entrar, () => entrarMazmorraMaya('t1_1')); // la misma incursión nueva que la mazmorra maya (js/mazmorra_maya.js)
   } });
@@ -111,9 +111,3 @@ function pintarAltarDioses() {
 }
 pintarAltarDioses();
 OBSTACULOS.push(['Altar_Dioses', 1.4, 0.6]);
-// El altar lo pone generarNivel (js/niveles.js) en el centro de la cámara; desde poblarNivel, su uso: al examinarlo se cierra MP_TEO_03 y se abre la salida.
-function altarDioses(p, I) {
-  I.push({ x: p.x, y: p.y - 0.4, r: 1.5, texto: 'Examinar el altar', aviso: 'examinar:altar_dioses', usar: () => hablar('', TXT_CUEVA.altar, () => {
-    poner(SUBJEFE.t3_4); avisar('examinar:altar_dioses');
-  }) });
-}

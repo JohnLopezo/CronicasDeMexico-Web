@@ -421,6 +421,7 @@ $('continuar').onclick = () => empezar(leerPartida());
 function actualizar(dt) {
   const j = juego.jugador;
   juego.t += dt;
+  avanzarCiclo(dt); // el ciclo de día y noche (js/ciclo.js)
   j.actualizar(j, dt);
   for (const o of juego.otros) o.actualizar(o, dt);
   if (!juego.dialogo) for (const e of juego.enemigos) if (e.vida > 0) e.actualizar(e, dt);
@@ -509,6 +510,7 @@ function dibujarTodo() {
     if (f.tipo === 'destello') elipse(f.x, f.y, 0.8 * (1 - f.t / 0.3), null, '#c9a8ff');
     dibujarEfecto(f); // los de js/efectos.js
   }
+  dibujarCiclo(); // la luz del momento del día, fuera (js/ciclo.js)
 }
 
 function hud(dtReal) {

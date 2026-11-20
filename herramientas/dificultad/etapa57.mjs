@@ -38,8 +38,9 @@ export default async ({ ev, espera, foto, log }) => {
   await limpiar();
   ok(await ev(`!juego.portales.find((t) => t.a === 'teotihuacan' && t.punto === 'desde_mazmorra').abierto()`), 'sin examinar el altar, la salida sigue cerrada');
   await ev(`(()=>{ const i = juego.interactuables.find((i) => i.texto === 'Examinar el altar'); juego.jugador.x = i.x; juego.jugador.y = i.y - 0.6; })()`); await espera(700); await foto('57_altar');
-  await ev(`juego.interactuables.find((i) => i.texto === 'Examinar el altar').usar()`); await cerrar();
-  ok(await ev(`bandera('teo.altar_visto') && !!juego.misiones.MP_TEO_03.hecha`), 'el altar cierra MP_TEO_03');
+  // Al atardecer el altar duerme (etapa 58: a otras horas despierta un dios, ver etapa58.mjs) y abre la salida.
+  await ev(`juego.flags['ciclo.t'] = 800; juego.interactuables.find((i) => i.texto === 'Examinar el altar').usar()`); await cerrar();
+  ok(await ev(`bandera('teo.altar_visto') && juego.misiones.MP_TEO_03.paso === 5 && !juego.enemigos.some((e) => e.jefe && e.vida > 1)`), 'al atardecer el altar duerme; MP_TEO_03 espera al dios');
   await pasar('desde_mazmorra');
   ok(await ev(`juego.region === 'teotihuacan'`), 'la salida del 3-4 vuelve a la plaza');
   // Caer en el piso 3: al santuario de Teotihuacan.

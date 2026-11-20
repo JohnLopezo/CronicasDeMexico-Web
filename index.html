@@ -34,6 +34,7 @@
   #esqTxt { font-size: 11px; line-height: 1; color: #e8d49a; letter-spacing: 2px; }
   #panel.baja .barra.vida { animation: latido .8s ease-in-out infinite; } /* poca vida: la barra late */
   @keyframes latido { 50% { box-shadow: 0 0 8px #ff4a3a; border-color: #ff6a5a; } }
+  #hora { display: block; width: max-content; margin-top: 4px; padding: 1px 8px; border-radius: 8px; background: #14100c99; font-size: 11px; color: #e8dcc0; }
   #objetivo { display: inline-block; margin-top: 8px; padding: 2px 10px; border-radius: 8px; background: #14100c99; font-size: 12px;
     max-width: min(340px, 44vw); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--oro); text-shadow: 0 1px 2px #000; }
   #objetivo:empty { display: none; }
@@ -155,6 +156,7 @@
       <div class="barra fina xp"><i id="xpBar"></i></div><div id="esqTxt" aria-label="Esquivas"></div></div></div>
   <div id="zona" class="oculto"></div>
   <div id="objetivo"></div>
+  <div id="hora"></div>
 </div>
 <div id="jefe" class="oculto"><div id="jefeNombre"></div><div class="barra"><i id="jefeBar"></i></div></div>
 <div id="ruptura" class="oculto"><span id="rNombre"></span> <span id="rRombos"></span> <span class="rDebilTxt">Débil:</span><span id="rDebil"></span> <b id="rRota">¡RUPTURA!</b></div>
@@ -242,6 +244,7 @@
 <script src="js/teotihuacan.js"></script>
 <script src="js/barrio_teo.js"></script>
 <script src="js/cueva_teo.js"></script>
+<script src="js/ciclo.js"></script>
 <script src="js/mapa.js"></script>
 <script src="js/recompensas.js"></script>
 </body>

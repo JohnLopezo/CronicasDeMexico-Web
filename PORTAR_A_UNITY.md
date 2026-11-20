@@ -615,3 +615,13 @@ lado del pivote y luego del otro, con 1 px de bote en cada apoyo (`pasoFrontal`,
 - **Sub-jefe Jaguar reticulado:** el jaguar de la selva (§ etapa 46) con vida 620, salto 22 (radio 1,7) y zarpazo 14, escala 1,8.
 - **Cámara del altar (3-4):** `InscriptionInteractable` en el altar (`examinar:altar_dioses`) que cierra `MP_TEO_03` y pone
   `teo.altar_visto`; la salida (`ScenePortal` a `Teo_Calzada`) se abre con esa bandera. Los dioses, en la siguiente etapa.
+
+## 45. Ciclo de día y noche y los dioses del altar (etapa 58)
+
+- **Servicio `DayCycle`** (Core): segundos de un día de 1440 s de juego, guardados en la partida; cuatro momentos de 360 s
+  (amanecer, día, atardecer, noche); evento al cambiar. En las escenas de superficie, un volumen o luz global con el color de
+  cada momento (valores en `CICLO.velo`, `js/ciclo.js`). HUD: etiqueta con el momento.
+- **Altar de los dioses** (`Teo_Cueva_3_4`): al interactuar, instancia el `StoneGuardian` del momento con su figura
+  (Guardián de la Ofrenda teñido = Dios Viejo del Fuego; Señor de la Lluvia teñido = Dios de la Tormenta; Serpiente
+  Emplumada), vida 1700. Liberado: banderas `teo.dios_<id>` y `teo.bendicion_<elemento>`, recompensa y `vencer:dios_teo`
+  (último paso de `MP_TEO_03`). Al atardecer, sin dios (falta figura para la Gran Diosa).

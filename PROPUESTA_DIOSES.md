@@ -1,6 +1,7 @@
 # Propuesta: los dioses como jefes finales, según la hora del día
 
-Estado: **propuesta del autor (2026-11-20), pendiente de pasar a la biblia** (`Docs/Historia_Mundo.md` y
+Estado: **propuesta del autor (2026-11-20); en la web, el ciclo y tres dioses de Teotihuacan desde la etapa 58 (falta figura
+para la Gran Diosa; habilidades, en la siguiente). Pendiente de pasar a la biblia** (`Docs/Historia_Mundo.md` y
 `Docs/Historia/Capitulos.md` del proyecto de Unity). Cuando se revise, se copia allí con los cambios de la sección 5.
 
 ## 1. La idea

@@ -53,6 +53,36 @@ mismos números (escala ×10).
 | `sincronizar.mjs` | Copia arte y mapas desde Unity |
 | `servir-en-red.mjs` | Servidor para el celular. Solo entrega `index.html`, `js/`, `datos/` y `arte/` |
 
+## Etapa 58 (2026-11-20): el ciclo de día y noche y los dioses del altar (`js/ciclo.js`)
+
+Lo pidió el usuario (`PROPUESTA_DIOSES.md`): el jefe final de la mazmorra es un dios de la cultura, el que corresponde al
+momento del día; la memoria del dios corrompida por la Sombra, que se libera al vencerla.
+
+- **Ciclo:** un día de juego dura 24 minutos de juego (6 por momento: amanecer, día, atardecer y noche). La hora avanza en el
+  bucle salvo en diálogos y en el enlace de prueba, y se guarda con la partida (bandera `ciclo.t`; una partida nueva empieza
+  de día). El HUD la muestra bajo el objetivo (☀ Día, ☾ Noche…) y avisa al cambiar de momento. Fuera (aldeas, selva, Palenque,
+  Teotihuacan y el barrio) un velo de luz: cálido al amanecer, anaranjado al atardecer y azul oscuro de noche.
+- **Los dioses** (`DIOSES`), con el jefe guardián (`js/guardian.js`, ahora con `g.tinte`) y una figura de Unity cada uno, 1700
+  de vida:
+  - **Noche: el Dios Viejo del Fuego** (figura del Guardián de la Ofrenda, teñida de brasa); da la bendición del fuego.
+  - **Día: el Dios de la Tormenta** (la del Señor de la Lluvia, en gris azulado); da la de la luz.
+  - **Amanecer: la Serpiente Emplumada** (su propia figura); da la del viento.
+  - **Atardecer:** la Gran Diosa de la propuesta no tiene figura adecuada en Unity (las que quedan son esqueletos y un perro de
+    fuego), así que el altar duerme y abre la salida.
+- **El altar del 3-4:** examinarlo despierta al dios del momento; liberado (`teo.dios_<id>`, `teo.bendicion_<elemento>`) abre la
+  salida, da 600 de experiencia, 3 semillas y 2 jades, y cumple el último paso de **MP_TEO_03** («Despierta al dios del altar y
+  libéralo»). Un dios ya liberado queda en paz. Los otros se liberan volviendo a la cueva a su hora.
+- **Las habilidades** de fuego, luz y viento, y cómo cambiar entre ellas, en la etapa siguiente; por ahora solo se guarda la
+  bendición y un aviso lo dice.
+- **Fidelidad** (cabecera de `js/ciclo.js`): D, los tres dioses en Teotihuacan (el viejo con el brasero, el de la tormenta con
+  anteojeras y rayo, la serpiente emplumada de su templo); I, el momento de cada uno, las figuras de Unity y la relación de la
+  serpiente con el viento (mexica); F, el altar, la Sombra y la pelea.
+
+Prueba: `herramientas/dificultad/etapa58.mjs` (12 comprobaciones: hora inicial, cambio con aviso, guardado, salida cerrada, el
+dios de la noche con su barra, liberación que cierra MP_TEO_03 y abre la salida, altar en paz, los dioses del día y del
+amanecer, y el altar dormido al atardecer). `etapa57.mjs` examina ahora el altar al atardecer; pasa entera, como la 43; sin
+`[assert]`.
+
 ## Etapa 57 (2026-11-20): la cueva, pisos 2 y 3, y la cámara del altar de los dioses (`js/cueva_teo.js`, `js/pisos.js`)
 
 Lo pidió el usuario: los pisos 2 y 3 de la cueva. La mazmorra teotihuacana queda completa en **3 pisos de 4 niveles**

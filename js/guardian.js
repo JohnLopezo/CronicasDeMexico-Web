@@ -159,7 +159,7 @@ function dibujarGuardian(g) {
   const chac = `Jefe_${g.figura || 'GuardianOfrenda'}_${FIGURA_CHACMOOL[pose] || 'Reposo'}1_03`;
   const n = SPRITES[chac] ? chac : quieto ? `Guardian_Piedra_${pose}_01` : `Guardian_Piedra_${pose}_${direccion5(g.fx, g.fy)}`;
   // Dormido: apagado, como una estatua; al caminar se mece un poco.
-  const filtro = g.destello > 0 ? 'brightness(2.2)' : g.roto > 0 ? ROTO_FILTRO : g.invul > 0 ? 'brightness(1.4) saturate(1.6)' : pose === 'Sentado' && SPRITES[chac] ? 'grayscale(0.7) brightness(0.8)' : null;
+  const filtro = g.destello > 0 ? 'brightness(2.2)' : g.roto > 0 ? ROTO_FILTRO : g.invul > 0 ? 'brightness(1.4) saturate(1.6)' : pose === 'Sentado' && SPRITES[chac] ? 'grayscale(0.7) brightness(0.8)' : g.tinte || null; // tinte: los dioses del altar (js/ciclo.js)
   const z = g.z + (pose === 'Paso' && SPRITES[chac] ? 0.08 : 0);
   // Movimiento por código: respira, camina con peso, se echa atrás al avisar y se lanza al embestir.
   const mov = g.estado === 'dormido' || g.estado === 'liberado' ? ['Reposo'] : g.embiste > 0 ? ['Correr'] : g.estado === 'ataca' ? (pose === 'Embestida' || pose === 'Golpe' ? ['Aviso', 0.8] : ['Aviso', 0.5])
